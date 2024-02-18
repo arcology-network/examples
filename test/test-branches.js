@@ -24,6 +24,11 @@ async function main() {
     await vote.deployed();
     console.log(`Deployed vote at ${vote.address}`)
 
+    const coin_factory = await ethers.getContractFactory("SubCoin");
+    const coin = await coin_factory.deploy();
+    await coin.deployed();
+    console.log(`Deployed SubCoin at ${coin.address}`)
+
 
 
 
@@ -66,6 +71,46 @@ async function main() {
       txs.push(ptool.generateTx(function([contract,addr]){
         return contract.giveRightToVote(addr.address);
       },vote,accounts[i]));
+    }
+    await ptool.waitingTxs(txs);
+
+    console.log('===========third batch=====================')
+    var txs=new Array();
+    for(i=1;i<=3;i++){
+      txs.push(ptool.generateTx(function([dstoken,from,val]){
+        return dstoken.mint(from.address,val);
+      },dstoken,accounts[i],100+i));
+    }
+
+    for(i=4;i<=6;i++){
+      txs.push(ptool.generateTx(function([bt,from]){
+        return bt.connect(from).visit();
+      },bt,accounts[i]));
+    }
+    for(i=7;i<=10;i++){
+      txs.push(ptool.generateTx(function([coin,addr]){
+        return coin.mint(addr.address,10);
+      },coin,accounts[i]));
+    }
+    await ptool.waitingTxs(txs);
+
+    console.log('===========fourth batch=====================')
+    var txs=new Array();
+    for(i=4;i<=6;i++){
+      txs.push(ptool.generateTx(function([dstoken,from,val]){
+        return dstoken.mint(from.address,val);
+      },dstoken,accounts[i],100+i));
+    }
+
+    for(i=7;i<=10;i++){
+      txs.push(ptool.generateTx(function([bt,from]){
+        return bt.connect(from).visit();
+      },bt,accounts[i]));
+    }
+    for(i=1;i<=3;i++){
+      txs.push(ptool.generateTx(function([coin,addr]){
+        return coin.mint(addr.address,10);
+      },coin,accounts[i]));
     }
     await ptool.waitingTxs(txs);
 

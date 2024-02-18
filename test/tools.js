@@ -10,7 +10,7 @@ async function generateTx(fn,...args){
     })
     .catch((error) => {
         receipt = error.receipt
-        console.log(error)
+        // console.log(error)
     })
 
     return new Promise((resolve, reject) => {  

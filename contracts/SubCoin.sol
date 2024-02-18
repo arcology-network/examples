@@ -6,6 +6,7 @@ contract SubCoin {
     // accessible from other contracts
     address public minter;
     mapping (address => uint) public balances;
+    uint total;
 
     // Events allow clients to react to specific
     // contract changes you declare
@@ -26,6 +27,7 @@ contract SubCoin {
         require(amount < 1e60);
         balances[receiver] += amount;
         emit Mint(receiver, amount);
+        total = total + amount;
     }
 
     // Sends an amount of existing coins
