@@ -14,18 +14,18 @@ async function main() {
 
     console.log('===========bid=====================')
 
-    var txs=new Array();
-    for(i=1;i<=10;i++){
-      txs.push(ptool.generateTx(function([auction,from,bidval]){
-        return auction.connect(from).bid({value:bidval});
-      },auction,accounts[i],100+i));
-    }
-    await ptool.waitingTxs(txs);
+    // var txs=new Array();
+    // for(i=1;i<=10;i++){
+    //   txs.push(ptool.generateTx(function([auction,from,bidval]){
+    //     return auction.connect(from).bid({value:bidval});
+    //   },auction,accounts[i],100+i));
+    // }
+    // await ptool.waitingTxs(txs);
     
     console.log('===========auctionEnd=====================')
     // let receipt ;
     while(true){
-      await ptool.sleep(10000);
+      // await ptool.sleep(10000);
 
       tx = await auction.auctionEnd();
       let receipt

@@ -175,6 +175,7 @@ contract SimpleAuction {
         // 1. Conditions
         if (block.timestamp < auctionEndTime){
             emit AuctionTime(block.timestamp,auctionEndTime);
+            require(false);
             revert AuctionNotYetEnded();
         }
             

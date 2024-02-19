@@ -12,8 +12,6 @@
   },
   "dependencies": {
     "@arcologynetwork/concurrentlib": "^2.0.1",
-    "@eth-optimism/contracts": "^0.5.40",
-    "@eth-optimism/sdk": "^3.0.0",
     "dotenv": "^16.0.0"
   }
 }
