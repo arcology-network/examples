@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-var ptool = require('./tools') 
+var ptool = require('@arcologynetwork/concurrentlib/js/tools') 
 
 async function main() {
 
@@ -15,13 +15,13 @@ async function main() {
 
     console.log('===========mint=====================')
     var txs=new Array();
-    for(i=1;i<=5;i++){
+    for(i=1;i<=1;i++){
       txs.push(ptool.generateTx(function([dstoken,from,val]){
         return dstoken.mint(from.address,val);
       },dstoken,accounts[i],100+i));
     }
     await ptool.waitingTxs(txs);
-
+    /*
     console.log('===========balance=====================')
     tx = await dstoken.balance(accounts[1].address);
     receipt=await tx.wait();
@@ -82,7 +82,7 @@ async function main() {
       },dstoken,accounts[1],accounts[i+5],20));
     }
     await ptool.waitingTxs(txs);
-
+    */
   }
 
   // We recommend this pattern to be able to use async/await everywhere

@@ -1,6 +1,6 @@
 // require("@nomiclabs/hardhat-web3");
 const hre = require("hardhat");
-var ptool = require('./tools'); 
+var ptool = require('@arcologynetwork/concurrentlib/js/tools') 
 
 
 async function main() {
