@@ -15,7 +15,6 @@ async function main() {
 
     for(i=0;i<accounts.length;i++){
       const tx = await bt.connect(accounts[i]).populateTransaction.visit();
-      console.log(tx);
 
       const pk=nets[hre.network.name].accounts[i]
       const RPC_ENDPOINT=nets[hre.network.name].url
@@ -23,10 +22,7 @@ async function main() {
       const signer = new ethers.Wallet(pk, provider);
 
       const fulltx=await signer.populateTransaction(tx)
-      console.log(fulltx);
-
       const rawtx=await signer.signTransaction(fulltx)
-      console.log(rawtx);
 
       ptool.writefile(filename,rawtx+',\n')
     }
