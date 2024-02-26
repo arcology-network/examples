@@ -1,19 +1,22 @@
 const hre = require("hardhat");
-var ptool = require('@arcologynetwork/benchmarktools/tools') 
-
+var benchtools = require('@arcologynetwork/benchmarktools/tools') 
 const nets = require('../network.json');
 
+/**
+ * Creates transactions for minting and transferring tokens using the DSToken contract.
+ * @returns {Promise<void>} A promise that resolves when the transactions are created.
+ */
 async function main() {
-
-    accounts = await ethers.getSigners(); 
-    const filename_mint = 'dstoken-mint.out'
-    const filename_transfer = 'dstoken-transfer.out'
-
-    const token_factory = await ethers.getContractFactory("DSToken");
-    const dstoken = await token_factory.deploy('ACL');
-    await dstoken.deployed();
+    accounts = await ethers.getSigners(); // Get the accounts
+    const filename_mint = 'dstoken-mint.out' // The file to which the mint transactions will be written
+    const filename_transfer = 'dstoken-transfer.out' // The file to which the transfer transactions will be written
+ 
+    const token_factory = await ethers.getContractFactory("DSToken"); // DSToken is the contract name
+    const dstoken = await token_factory.deploy('ACL'); // ACL is the symbol of the token
+    await dstoken.deployed(); // Wait for the contract to be deployed
     console.log(`Deployed DsToken at ${dstoken.address}`)
 
+    // Create the transactions for minting.
     console.time('minttime')
     const pk=nets[hre.network.name].accounts[0]
     for(i=0;i<accounts.length;i++){
@@ -25,15 +28,15 @@ async function main() {
       const fulltx=await signer.populateTransaction(tx)
       const rawtx=await signer.signTransaction(fulltx)
 
-      ptool.writefile(filename_mint,rawtx+',\n')
+      benchtools.writefile(filename_mint,rawtx+',\n') // Write the transaction to the file
     }
     console.timeEnd('minttime')
 
+    // Create the transactions for transferring.
     console.time('transfertime')
     const num_per_bat=200;
     const total_bats = accounts.length % num_per_bat ===0 ? parseInt(accounts.length / num_per_bat) : parseInt(accounts.length / num_per_bat) + 1 ;
     
-
     for(batidx=0;batidx<total_bats;batidx++){
       const totals_per_bat = accounts.length - batidx * num_per_bat>=num_per_bat ? num_per_bat : accounts.length - batidx * num_per_bat ;
       const txs=parseInt(totals_per_bat/2);
@@ -47,7 +50,7 @@ async function main() {
         const fulltx=await signer.populateTransaction(tx)
         const rawtx=await signer.signTransaction(fulltx)
 
-        ptool.writefile(filename_transfer,rawtx+',\n')
+        benchtools.writefile(filename_transfer,rawtx+',\n') // Write the transaction to the file
       }
     }
     console.timeEnd('transfertime')

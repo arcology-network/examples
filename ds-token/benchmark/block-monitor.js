@@ -1,6 +1,13 @@
 var ptool = require('@arcologynetwork/benchmarktools/tools') 
 const hre = require("hardhat");
 
+/**
+ * Calculates the maximum TPS (Transactions Per Second), real TPS, and blocks within one minute.
+ * @param {number} maxTps - The maximum TPS value.
+ * @param {Array} blocks - An array of blocks.
+ * @returns {Object} - An object containing the maximum TPS, real TPS, and blocks within one minute.
+ */
+
 function calculateTps(maxTps,blocks){
   if(blocks.length>1){
     const txsNums=blocks[blocks.length-2].transactions.length;
@@ -27,9 +34,9 @@ function calculateTps(maxTps,blocks){
     seconds=blocks[blocks.length-1].timestamp-blocks[0].timestamp;
   }
 
-  const realTps=parseInt(totalTxs/seconds);
-  const tps=realTps>maxTps?realTps:maxTps;
-  return {"maxTps":tps,"realTps":realTps,"blocksWithInOneMinute":nblocks}
+  const realtimeTps=parseInt(totalTxs/seconds);
+  const tps=realtimeTps>maxTps?realtimeTps:maxTps;
+  return {"maxTps":tps,"realtimeTps":realtimeTps,"blocksWithInOneMinute":nblocks}
 }
 
 //nodejs block-monitor.js http://host:port
@@ -75,9 +82,9 @@ async function main() {
       blocksWithInOneMinute=result.blocksWithInOneMinute;
       
       if(hashes.length>0){
-        console.log(`height = ${parseInt(block.number)}, total = ${hashes.length}, success = ${successful}, fail = ${fail}, timestamp = ${parseInt(block.timestamp)}, maxTps = ${result.maxTps}, realTps(1m) = ${result.realTps}`)
+        console.log(`height = ${parseInt(block.number)}, total = ${hashes.length}, success = ${successful}, fail = ${fail}, timestamp = ${parseInt(block.timestamp)}, maxTps = ${result.maxTps}, realtimeTps(1m) = ${result.realtimeTps}`)
       }else{
-        console.log(`height = ${parseInt(block.number)}, empty block, timestamp = ${parseInt(block.timestamp)}, maxTps = ${result.maxTps}, realTps(1m) = ${result.realTps}`)
+        console.log(`height = ${parseInt(block.number)}, empty block, timestamp = ${parseInt(block.timestamp)}, maxTps = ${result.maxTps}, realtimeTps(1m) = ${result.realtimeTps}`)
       }
       blocknum = blocknum + 1;
     }
