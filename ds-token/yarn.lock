@@ -2,10 +2,15 @@
 # yarn lockfile v1
 
 
-"@arcologynetwork/concurrentlib@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@arcologynetwork/concurrentlib/-/concurrentlib-2.0.3.tgz#636053d51081c391d43ca2c8b65952770199574f"
-  integrity sha512-suZ0eVYbtb0jfCF1B9f+BlPhJckYki93xgruZH7tzPf7GPzSvMo1Q8eya1pa3Eai2pooFtHUfdMCHLRrTTkt0g==
+"@arcologynetwork/benchmarktools@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@arcologynetwork/benchmarktools/-/benchmarktools-1.0.0.tgz#b6bd0a1312febab56f78b05eeb87efafe55fa818"
+  integrity sha512-hb3Q6ZyXNM5Gv/S0qsQRNy9625oL32pONq1gRQFstVlr4Tx/WlDP+8Wf4rZ4ksf92uQO2JB19+mz97bFamm1nA==
+
+"@arcologynetwork/concurrentlib@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@arcologynetwork/concurrentlib/-/concurrentlib-2.0.4.tgz#8b2a6ab475f45701df9932655cfe9cd00231beb4"
+  integrity sha512-hcuv3xPlHFZCBfQeziBl3SSx3rUPXDx54fRX2fDhEmSDKsAp5oY6U9Paq6IBwW04GkuSBFa3CyDZTf9+7Wd7cA==
   dependencies:
     concurrentlib "^2.0.0"
 

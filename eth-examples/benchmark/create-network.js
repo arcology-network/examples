@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-var ptool = require('@arcologynetwork/concurrentlib/js/tools') 
+var ptool = require('@arcologynetwork/benchmarktools/tools') 
 const nets = require('../network.json');
 const fs = require("fs");
 

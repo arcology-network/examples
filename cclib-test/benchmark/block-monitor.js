@@ -1,4 +1,4 @@
-var ptool = require('@arcologynetwork/concurrentlib/js/tools') 
+var ptool = require('@arcologynetwork/benchmarktools/tools') 
 const hre = require("hardhat");
 
 //nodejs block-monitor.js http://host:port
