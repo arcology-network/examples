@@ -1,19 +1,19 @@
 const hre = require("hardhat");
-var benchtools = require('@arcologynetwork/benchmarktools/tools') 
+var frontendUtil = require('@arcologynetwork/frontend-util/utils/util') 
 const nets = require('../network.json');
 
 // This script generates transactions for visiting the Visits contract.
 async function main() {
     accounts = await ethers.getSigners(); 
-    const filename = 'parallel_visits.out' // The file to which the transactions will be written
+    const filename = 'data/parallel_likes.out' // The file to which the transactions will be written
 
-    const bt_factory = await ethers.getContractFactory("Visits"); // Visits is the contract name
-    const bt = await bt_factory.deploy(); // Deploy the contract
-    await bt.deployed();
-    console.log(`Deployed Visits at ${bt.address}`); // Log the address of the deployed contract
+    const li_factory = await ethers.getContractFactory("Like"); // Like is the contract name
+    const li = await li_factory.deploy(); // Deploy the contract
+    await li.deployed();
+    console.log(`Deployed Likes at ${li.address}`); // Log the address of the deployed contract
 
     for(i=0;i<accounts.length;i++){
-      const tx = await bt.connect(accounts[i]).populateTransaction.visit();
+      const tx = await li.connect(accounts[i]).populateTransaction.like();
 
       const pk=nets[hre.network.name].accounts[i]
       const RPC_ENDPOINT=nets[hre.network.name].url
@@ -23,7 +23,7 @@ async function main() {
       const fulltx=await signer.populateTransaction(tx)
       const rawtx=await signer.signTransaction(fulltx)
 
-      benchtools.writefile(filename,rawtx+',\n')
+      frontendUtil.writeFile(filename,rawtx+',\n')
     }
   }
 

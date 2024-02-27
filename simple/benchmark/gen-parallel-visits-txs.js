@@ -1,11 +1,11 @@
 const hre = require("hardhat");
-var benchtools = require('@arcologynetwork/frontend/tools') 
+var frontendUtil = require('@arcologynetwork/frontend-util/utils/util') 
 const nets = require('../network.json');
 
 // This script generates transactions for visiting the Visits contract.
 async function main() {
     accounts = await ethers.getSigners(); 
-    const filename = 'parallel_visits.out' // The file to which the transactions will be written
+    const filename = 'data/parallel_visits.out' // The file to which the transactions will be written
 
     const bt_factory = await ethers.getContractFactory("Visits"); // Visits is the contract name
     const bt = await bt_factory.deploy(); // Deploy the contract
@@ -23,7 +23,7 @@ async function main() {
       const fulltx=await signer.populateTransaction(tx)
       const rawtx=await signer.signTransaction(fulltx)
 
-      benchtools.writefile(filename,rawtx+',\n')
+      frontendUtil.writeFile(filename,rawtx+',\n')
     }
   }
 

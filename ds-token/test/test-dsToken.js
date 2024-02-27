@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-var ptool = require('@arcologynetwork/benchmarktools/tools') 
+var frontendUtil = require('@arcologynetwork/frontend-util/utils/util') 
 
 async function main() {
 
@@ -15,74 +15,74 @@ async function main() {
 
     console.log('===========mint=====================')
     var txs=new Array();
-    for(i=1;i<=1;i++){
-      txs.push(ptool.generateTx(function([dstoken,from,val]){
+    for(i=1;i<=10;i++){
+      txs.push(frontendUtil.generateTx(function([dstoken,from,val]){
         return dstoken.mint(from.address,val);
       },dstoken,accounts[i],100+i));
     }
-    await ptool.waitingTxs(txs);
-    /*
+    await frontendUtil.waitingTxs(txs);
+    
     console.log('===========balance=====================')
     tx = await dstoken.balance(accounts[1].address);
     receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
-    console.log(ptool.parseEvent(receipt,"Balance"))
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    console.log(frontendUtil.parseEvent(receipt,"Balance"))
 
     
     console.log('===========transfer=====================')
     var txs=new Array();
     for(i=1;i<=5;i++){
-      txs.push(ptool.generateTx(function([dstoken,from,to,val]){
+      txs.push(frontendUtil.generateTx(function([dstoken,from,to,val]){
         return dstoken.connect(from).transfer(to.address,val);
       },dstoken,accounts[i],accounts[i+5],100+i));
     }
-    await ptool.waitingTxs(txs);
+    await frontendUtil.waitingTxs(txs);
 
     console.log('===========balance=====================')
     tx = await dstoken.balance(accounts[1].address);
     receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
-    console.log(ptool.parseEvent(receipt,"Balance"))
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    console.log(frontendUtil.parseEvent(receipt,"Balance"))
 
     console.log('===========approve=====================')
 
     var txs=new Array();
     for(i=1;i<=5;i++){
-      txs.push(ptool.generateTx(function([dstoken,from,owner]){
+      txs.push(frontendUtil.generateTx(function([dstoken,from,owner]){
         return dstoken.connect(from).approves(owner.address);
       },dstoken,accounts[i+5],accounts[0]));
     }
-    await ptool.waitingTxs(txs);
+    await frontendUtil.waitingTxs(txs);
 
     console.log('===========burn=====================')
     var txs=new Array();
     for(i=1;i<=5;i++){
-      txs.push(ptool.generateTx(function([dstoken,from,val]){
+      txs.push(frontendUtil.generateTx(function([dstoken,from,val]){
         return dstoken.burn(from.address,val);
       },dstoken,accounts[i+5],100+i));
     }
-    await ptool.waitingTxs(txs);
+    await frontendUtil.waitingTxs(txs);
 
     //transfer from one to five accounts
     console.log('===========mint=====================')
 
     var txs=new Array();
     for(i=1;i<=1;i++){
-      txs.push(ptool.generateTx(function([dstoken,from,val]){
+      txs.push(frontendUtil.generateTx(function([dstoken,from,val]){
         return dstoken.mint(from.address,val);
       },dstoken,accounts[i],80));
     }
-    await ptool.waitingTxs(txs);
+    await frontendUtil.waitingTxs(txs);
 
     console.log('===========transfer=====================')
     var txs=new Array();
     for(i=1;i<=5;i++){
-      txs.push(ptool.generateTx(function([dstoken,from,to,val]){
+      txs.push(frontendUtil.generateTx(function([dstoken,from,to,val]){
         return dstoken.connect(from).transfer(to.address,val);
       },dstoken,accounts[1],accounts[i+5],20));
     }
-    await ptool.waitingTxs(txs);
-    */
+    await frontendUtil.waitingTxs(txs);
+    
   }
 
   // We recommend this pattern to be able to use async/await everywhere

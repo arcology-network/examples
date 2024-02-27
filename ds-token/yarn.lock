@@ -2,17 +2,24 @@
 # yarn lockfile v1
 
 
-"@arcologynetwork/benchmarktools@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@arcologynetwork/benchmarktools/-/benchmarktools-1.0.0.tgz#b6bd0a1312febab56f78b05eeb87efafe55fa818"
-  integrity sha512-hb3Q6ZyXNM5Gv/S0qsQRNy9625oL32pONq1gRQFstVlr4Tx/WlDP+8Wf4rZ4ksf92uQO2JB19+mz97bFamm1nA==
-
 "@arcologynetwork/concurrentlib@^2.0.4":
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/@arcologynetwork/concurrentlib/-/concurrentlib-2.0.4.tgz#8b2a6ab475f45701df9932655cfe9cd00231beb4"
   integrity sha512-hcuv3xPlHFZCBfQeziBl3SSx3rUPXDx54fRX2fDhEmSDKsAp5oY6U9Paq6IBwW04GkuSBFa3CyDZTf9+7Wd7cA==
   dependencies:
     concurrentlib "^2.0.0"
+
+"@arcologynetwork/frontend-tools@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@arcologynetwork/frontend-tools/-/frontend-tools-1.0.0.tgz#e71d7e6b5edd2f9ac06132a3bb13027f630e3ec2"
+  integrity sha512-clcFBKxIYVEc8AxhdfAWNn790Bp3elTU6XOFe8NNI14/5Fj+1Oy5lwQ7XdLHknK9xrgVS2FBkoD78jCIuYCTMw==
+  dependencies:
+    "@arcologynetwork/frontend-util" "^1.0.0"
+
+"@arcologynetwork/frontend-util@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@arcologynetwork/frontend-util/-/frontend-util-1.0.0.tgz#1c0ebfb0af2b9feddcfda03dea1bf6d019001661"
+  integrity sha512-nn2E9TLO35bEMlSbZ3vBTjFDEiUS9tg0Tu+CctLLAhzdN6ED/+aKl7A2jYNpZJJ1iYmzL/gW+nU35xVdtLjgRA==
 
 "@ensdomains/ens@^0.4.4":
   version "0.4.5"

@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-var benchtools = require('@arcologynetwork/benchmarktools/tools') 
+var frontendUtil = require('@arcologynetwork/frontend-util/utils/util') 
 const nets = require('../network.json');
 
 /**
@@ -8,8 +8,8 @@ const nets = require('../network.json');
  */
 async function main() {
     accounts = await ethers.getSigners(); // Get the accounts
-    const filename_mint = 'dstoken-mint.out' // The file to which the mint transactions will be written
-    const filename_transfer = 'dstoken-transfer.out' // The file to which the transfer transactions will be written
+    const filename_mint = 'data/dstoken-mint.out' // The file to which the mint transactions will be written
+    const filename_transfer = 'data/dstoken-transfer.out' // The file to which the transfer transactions will be written
  
     const token_factory = await ethers.getContractFactory("DSToken"); // DSToken is the contract name
     const dstoken = await token_factory.deploy('ACL'); // ACL is the symbol of the token
@@ -28,7 +28,7 @@ async function main() {
       const fulltx=await signer.populateTransaction(tx)
       const rawtx=await signer.signTransaction(fulltx)
 
-      benchtools.writefile(filename_mint,rawtx+',\n') // Write the transaction to the file
+      frontendUtil.writeFile(filename_mint,rawtx+',\n') // Write the transaction to the file
     }
     console.timeEnd('minttime')
 
@@ -50,7 +50,7 @@ async function main() {
         const fulltx=await signer.populateTransaction(tx)
         const rawtx=await signer.signTransaction(fulltx)
 
-        benchtools.writefile(filename_transfer,rawtx+',\n') // Write the transaction to the file
+        frontendUtil.writeFile(filename_transfer,rawtx+',\n') // Write the transaction to the file
       }
     }
     console.timeEnd('transfertime')
