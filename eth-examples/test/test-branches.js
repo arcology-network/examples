@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-var ptool = require('@arcologynetwork/benchmarktools/tools') 
+var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 
 async function main() {
 
@@ -28,42 +28,42 @@ async function main() {
     console.log('===========first batch=====================')
     var txs=new Array();
     for(i=1;i<=3;i++){
-      txs.push(ptool.generateTx(function([contract,addr]){
+      txs.push(frontendUtil.generateTx(function([contract,addr]){
         return contract.giveRightToVote(addr.address);
       },vote,accounts[i]));
     }
 
     for(i=4;i<=6;i++){
-      txs.push(ptool.generateTx(function([visitCounter,from]){
+      txs.push(frontendUtil.generateTx(function([visitCounter,from]){
         return visitCounter.connect(from).visit();
       },visitCounter,accounts[i]));
     }
     for(i=7;i<=10;i++){
-      txs.push(ptool.generateTx(function([coin,addr]){
+      txs.push(frontendUtil.generateTx(function([coin,addr]){
         return coin.mint(addr.address,10);
       },coin,accounts[i]));
     }
-    await ptool.waitingTxs(txs);
+    await frontendUtil.waitingTxs(txs);
 
     console.log('===========second batch=====================')
     var txs=new Array();
     for(i=4;i<=6;i++){
-      txs.push(ptool.generateTx(function([contract,addr]){
+      txs.push(frontendUtil.generateTx(function([contract,addr]){
         return contract.giveRightToVote(addr.address);
       },vote,accounts[i]));
     }
 
     for(i=7;i<=10;i++){
-      txs.push(ptool.generateTx(function([visitCounter,from]){
+      txs.push(frontendUtil.generateTx(function([visitCounter,from]){
         return visitCounter.connect(from).visit();
       },visitCounter,accounts[i]));
     }
     for(i=1;i<=3;i++){
-      txs.push(ptool.generateTx(function([coin,addr]){
+      txs.push(frontendUtil.generateTx(function([coin,addr]){
         return coin.mint(addr.address,10);
       },coin,accounts[i]));
     }
-    await ptool.waitingTxs(txs);
+    await frontendUtil.waitingTxs(txs);
 
   }
 

@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-var ptool = require('@arcologynetwork/benchmarktools/tools') 
+var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 
 async function main() {
 
@@ -16,17 +16,17 @@ async function main() {
 
     let tx = await coin.mint(accounts[1].address,10);
     let receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
 
-    console.log(`Mint Data ${ptool.parseEvent(receipt,"Mint")}`)
+    console.log(`Mint Data ${frontendUtil.parseEvent(receipt,"Mint")}`)
 
     console.log('===========getter=====================')
 
     tx = await coin.getter(accounts[1].address);
     receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
 
-    if(ptool.parseEvent(receipt,"GetBalance")==="0x000000000000000000000000000000000000000000000000000000000000000a"){
+    if(frontendUtil.parseEvent(receipt,"GetBalance")==="0x000000000000000000000000000000000000000000000000000000000000000a"){
       console.log('Mint Successful');
     }else{
       console.log('Mint Failed');
@@ -35,7 +35,7 @@ async function main() {
     console.log('===========send=====================')
     tx = await coin.connect(accounts[1]).send(accounts[2].address,10);
     receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
 
     console.log(`Send to ${accounts[2].address} 10`)
     
@@ -43,9 +43,9 @@ async function main() {
 
     tx = await coin.getter(accounts[1].address);
     receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
 
-    if(ptool.parseEvent(receipt,"GetBalance")==="0x0000000000000000000000000000000000000000000000000000000000000000"){
+    if(frontendUtil.parseEvent(receipt,"GetBalance")==="0x0000000000000000000000000000000000000000000000000000000000000000"){
       console.log('Send Successful');
     }else{
       console.log('Send Failed');

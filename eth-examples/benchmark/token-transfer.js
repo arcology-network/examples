@@ -1,13 +1,13 @@
 const hre = require("hardhat");
-var ptool = require('@arcologynetwork/benchmarktools/tools') 
+var frontendUtil = require('@arcologynetwork/frontend-util/utils/util') 
 
 const nets = require('../network.json');
 
 async function main() {
 
     accounts = await ethers.getSigners(); 
-    const filename_transfer = 'token-transfer.out'
-
+    const filename_transfer = 'data/token-transfer.out'
+    frontendUtil.ensurePath('data');
     console.time('transfertime')
     const num_per_bat=200;
     const total_bats = accounts.length % num_per_bat ===0 ? parseInt(accounts.length / num_per_bat) : parseInt(accounts.length / num_per_bat) + 1 ;
@@ -29,7 +29,7 @@ async function main() {
 
         const rawtx=await signer.signTransaction(fulltx)
 
-        ptool.writefile(filename_transfer,rawtx+',\n')
+        frontendUtil.writeFile(filename_transfer,rawtx+',\n')
       }
     }
     console.timeEnd('transfertime')

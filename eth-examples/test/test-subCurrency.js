@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-var ptool = require('@arcologynetwork/benchmarktools/tools') 
+var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 
 async function main() {
 
@@ -16,21 +16,21 @@ async function main() {
 
     var txs=new Array();
     for(i=1;i<=5;i++){
-      txs.push(ptool.generateTx(function([coin,to,val]){
+      txs.push(frontendUtil.generateTx(function([coin,to,val]){
         return coin.mint(to.address,val);
       },coin,accounts[i],100+i));
     }
-    await ptool.waitingTxs(txs);
+    await frontendUtil.waitingTxs(txs);
     
     
     console.log('===========send=====================')
     var txs=new Array();
     for(i=1;i<=5;i++){
-      txs.push(ptool.generateTx(function([coin,from,to,val]){
+      txs.push(frontendUtil.generateTx(function([coin,from,to,val]){
         return coin.connect(from).send(to.address,val);
       },coin,accounts[i],accounts[i+5],100+i));
     }
-    await ptool.waitingTxs(txs);
+    await frontendUtil.waitingTxs(txs);
   }
 
   // We recommend this pattern to be able to use async/await everywhere

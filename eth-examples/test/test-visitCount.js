@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-var ptool = require('@arcologynetwork/benchmarktools/tools') 
+var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 
 async function main() {
 
@@ -16,18 +16,18 @@ async function main() {
 
     var txs=new Array();
     for(i=1;i<=10;i++){
-      txs.push(ptool.generateTx(function([visitCounter,from]){
+      txs.push(frontendUtil.generateTx(function([visitCounter,from]){
         return visitCounter.connect(from).visit();
       },visitCounter,accounts[i]));
     }
-    await ptool.waitingTxs(txs);
+    await frontendUtil.waitingTxs(txs);
     
     console.log('===========getCounter=====================')
     
     tx = await visitCounter.getCounter();
     const receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
-    if(ptool.parseEvent(receipt,"CounterQuery")==="0x000000000000000000000000000000000000000000000000000000000000000a"){
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x000000000000000000000000000000000000000000000000000000000000000a"){
       console.log('Test Successful');
     }else{
       console.log('Test Failed');

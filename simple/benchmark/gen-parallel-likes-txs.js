@@ -6,7 +6,7 @@ const nets = require('../network.json');
 async function main() {
     accounts = await ethers.getSigners(); 
     const filename = 'data/parallel_likes.out' // The file to which the transactions will be written
-
+    frontendUtil.ensurePath('data');
     const li_factory = await ethers.getContractFactory("Like"); // Like is the contract name
     const li = await li_factory.deploy(); // Deploy the contract
     await li.deployed();

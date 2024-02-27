@@ -10,7 +10,9 @@ async function main() {
     accounts = await ethers.getSigners(); // Get the accounts
     const filename_mint = 'data/dstoken-mint.out' // The file to which the mint transactions will be written
     const filename_transfer = 'data/dstoken-transfer.out' // The file to which the transfer transactions will be written
- 
+
+    frontendUtil.ensurePath('data');
+
     const token_factory = await ethers.getContractFactory("DSToken"); // DSToken is the contract name
     const dstoken = await token_factory.deploy('ACL'); // ACL is the symbol of the token
     await dstoken.deployed(); // Wait for the contract to be deployed

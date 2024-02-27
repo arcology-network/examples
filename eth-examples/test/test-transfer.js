@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-var ptool = require('@arcologynetwork/benchmarktools/tools') 
+var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 
 async function main() {
 
@@ -16,26 +16,26 @@ async function main() {
 
     let tx = await transferTest.getBalance();
     let receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
 
-    console.log(`Balance of contract ${ptool.parseEvent(receipt,"BalanceEvent")}`)
-    console.log(`Balance of sneder ${ptool.parseEvent(receipt,"Balance2Event")}`)
+    console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,"BalanceEvent")}`)
+    console.log(`Balance of sneder ${frontendUtil.parseEvent(receipt,"Balance2Event")}`)
 
     console.log('===========transfer=====================')
     tx = await transferTest.transderToContract({value:10});
     receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
 
-    console.log(`TRnasfer to contract ${ptool.parseEvent(receipt,"TransferEvent")}`)
+    console.log(`TRnasfer to contract ${frontendUtil.parseEvent(receipt,"TransferEvent")}`)
     
     console.log('===========getBalance=====================')
 
     tx = await transferTest.getBalance();
     receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
 
-    console.log(`Balance of contract ${ptool.parseEvent(receipt,"BalanceEvent")}`)
-    console.log(`Balance of sneder ${ptool.parseEvent(receipt,"Balance2Event")}`)
+    console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,"BalanceEvent")}`)
+    console.log(`Balance of sneder ${frontendUtil.parseEvent(receipt,"Balance2Event")}`)
 
     console.log('===========transfer will failed=====================')
     
@@ -49,7 +49,7 @@ async function main() {
         receipt = error.receipt
     })
     // console.log(receipt)
-    ptool.showResult(ptool.parseReceipt(receipt));
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     
       
     
@@ -57,10 +57,10 @@ async function main() {
 
     tx = await transferTest.getBalance();
     receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
 
-    console.log(`Balance of contract ${ptool.parseEvent(receipt,"BalanceEvent")}`)
-    console.log(`Balance of sneder ${ptool.parseEvent(receipt,"Balance2Event")}`)
+    console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,"BalanceEvent")}`)
+    console.log(`Balance of sneder ${frontendUtil.parseEvent(receipt,"Balance2Event")}`)
   }
 
   // We recommend this pattern to be able to use async/await everywhere

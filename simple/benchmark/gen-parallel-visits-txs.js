@@ -6,7 +6,7 @@ const nets = require('../network.json');
 async function main() {
     accounts = await ethers.getSigners(); 
     const filename = 'data/parallel_visits.out' // The file to which the transactions will be written
-
+    frontendUtil.ensurePath('data');
     const bt_factory = await ethers.getContractFactory("Visits"); // Visits is the contract name
     const bt = await bt_factory.deploy(); // Deploy the contract
     await bt.deployed();
