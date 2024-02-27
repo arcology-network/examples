@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-var benchtools = require('@arcologynetwork/benchmarktools/tools') 
+var benchtools = require('@arcologynetwork/frontend/tools') 
 const nets = require('../network.json');
 
 // This script generates transactions for visiting the Visits contract.
