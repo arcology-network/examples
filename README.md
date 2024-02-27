@@ -50,7 +50,7 @@ You can start interacting the network monitor, which can help you check the stat
 
 ## Running the Examples
 
-The package comes with some **pre-generated transactions** that you can use to test the examples. Suppose you want to run the `ParallelLike.sol` example in the `simple` directory. The DevNet container is running at http://192.168.230.131:8545 and you have the transactions in the `data/parallel_likes.out` file. In the project directory, executing the following command:
+The package comes with some **pre-generated transactions** that you can use to test the examples. In the project directory, executing the following command to send the transctions calling `ParallelLike.sol` to the DevNet container at http://192.168.230.131:8545
 
 ```bash
 > nodejs node_modules/@arcologynetwork/frontend-tools/tools/send-txs.js http://192.168.230.131:8545 data/parallel_likes.out
