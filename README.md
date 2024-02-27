@@ -58,11 +58,15 @@ The package comes with some **pre-generated transactions** that you can use to t
 
 Basically, what it does is to load the pre-generated transactions from the `parallel_likes.out` file and send them to the DevNet container.
 
+## Generating Your Own Transactions
 
-### Running Your Own Example
+You can also generate transcations for your own contract and send them to the network in a similar way. To do so, you first need to generate the transactions and save them to a file, which can be then loaded and sent to the network using the `send-txs.js` script. There are some examples you can refer to. 
 
-You can also generate transcations for your own contract and run them. To do so, you need to have the `@arcologynetwork/frontend-tools` package installed. You can install it by running the following command:
-
+| Contract              | Script                         | Description                                                                                       |
+|-----------------------|--------------------------------|---------------------------------------------------------------------------------------------------|
+| Token.sol             | gen-dstoken-txs.js             | Creates transactions for minting and transferring tokens using the DSToken contract.               |
+| ParallelLike .sol     | gen-parallel-likes-txs.js      | This script generates transactions for visiting the `like` contract.                               |
+| ParallelVisits.sol    | gen-parallel-visits-txs.js     | This script generates transactions for visiting the `Visits` contract.                                  |
 
 <h2> Questions <img align="center" height="32" src="./img/chat.svg">  </h2>
 

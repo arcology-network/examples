@@ -2,7 +2,7 @@ const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util') 
 const nets = require('../network.json');
 
-// This script generates transactions for visiting the Visits contract.
+// This script generates transactions for visiting the like contract.
 async function main() {
     accounts = await ethers.getSigners(); 
     const filename = 'data/parallel_likes.out' // The file to which the transactions will be written
