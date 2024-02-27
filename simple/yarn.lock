@@ -9,10 +9,10 @@
   dependencies:
     concurrentlib "^2.0.0"
 
-"@arcologynetwork/frontend-tools@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@arcologynetwork/frontend-tools/-/frontend-tools-1.0.0.tgz#e71d7e6b5edd2f9ac06132a3bb13027f630e3ec2"
-  integrity sha512-clcFBKxIYVEc8AxhdfAWNn790Bp3elTU6XOFe8NNI14/5Fj+1Oy5lwQ7XdLHknK9xrgVS2FBkoD78jCIuYCTMw==
+"@arcologynetwork/frontend-tools@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@arcologynetwork/frontend-tools/-/frontend-tools-1.0.1.tgz#ec6f4311ea8620913b8c134adeb1a30c54305c03"
+  integrity sha512-R4UjgTg1vZYnRAWA99mZYBKH8BZSwd/xG0orgGBuACpckyY5QgymEAouStAvd12FJdL2d0exnZJX2JnIgbNNnA==
   dependencies:
     "@arcologynetwork/frontend-util" "^1.0.0"
 
@@ -20,6 +20,11 @@
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@arcologynetwork/frontend-util/-/frontend-util-1.0.0.tgz#1c0ebfb0af2b9feddcfda03dea1bf6d019001661"
   integrity sha512-nn2E9TLO35bEMlSbZ3vBTjFDEiUS9tg0Tu+CctLLAhzdN6ED/+aKl7A2jYNpZJJ1iYmzL/gW+nU35xVdtLjgRA==
+
+"@arcologynetwork/frontend-util@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@arcologynetwork/frontend-util/-/frontend-util-1.0.1.tgz#fb172f0670e7bd55d8d82c5ca0be19f122417bdb"
+  integrity sha512-HWdIkkAbXJUFKKImz+uVKPp+1N99ifM52GhCSgdk7rDP4BA78Gj5/8Mz9piOGsk3zdyT5i8bJ7mf2MQ9CrQIeQ==
 
 "@ensdomains/ens@^0.4.4":
   version "0.4.5"
