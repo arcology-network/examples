@@ -4,6 +4,7 @@ const nets = require('../network.json');
 
 /**
  * Creates transactions for minting and transferring tokens using the DSToken contract.
+ * The transactions are written to files in the data directory that can be used to submit to the network in batches.
  * @returns {Promise<void>} A promise that resolves when the transactions are created.
  */
 async function main() {
