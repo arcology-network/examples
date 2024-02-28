@@ -2,7 +2,6 @@ const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 
 async function main() {
-
     accounts = await ethers.getSigners(); 
 
     const Auction_factory = await ethers.getContractFactory("SimpleAuction");
@@ -10,10 +9,7 @@ async function main() {
     await auction.deployed();
     console.log(`Deployed SimpleAuction at ${auction.address}`)
 
-    
-
     console.log('===========bid=====================')
-
     var txs=new Array();
     for(i=1;i<=10;i++){
       txs.push(frontendUtil.generateTx(function([auction,from,bidval]){
@@ -23,10 +19,7 @@ async function main() {
     await frontendUtil.waitingTxs(txs);
     
     console.log('===========auctionEnd=====================')
-    // let receipt ;
     while(true){
-      // await frontendUtil.sleep(10000);
-
       tx = await auction.auctionEnd();
       let receipt
       await tx.wait()
@@ -42,7 +35,6 @@ async function main() {
       if(frontendUtil.parseEvent(receipt,"AuctionEndCompleted")==="0x0000000000000000000000000000000000000000000000000000000000000001"){
         break;
       }
-      
     }
     console.log('===========withdraw=====================')
     var txs=new Array();

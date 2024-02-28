@@ -3,22 +3,19 @@ const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 
 
-async function main() {
-
-    const Vote_factory = await ethers.getContractFactory("Ballot");
+async function main() { 
+    accounts = await ethers.getSigners(); 
 
     var proposals= new Array();
     proposals.push(hre.ethers.utils.formatBytes32String("Alice"));
     proposals.push(hre.ethers.utils.formatBytes32String("Bob"));
 
+    const Vote_factory = await ethers.getContractFactory("Ballot");
     const vote = await Vote_factory.deploy(proposals);
     await vote.deployed();
     console.log(`Deployed vote at ${vote.address}`)
 
-    accounts = await ethers.getSigners(); 
-
     console.log('===========giveRightToVote=====================')
-
     var txs=new Array();
     for(i=1;i<=10;i++){
       txs.push(frontendUtil.generateTx(function([contract,addr]){
@@ -45,7 +42,6 @@ async function main() {
       },vote,accounts[i],voteidx));
     }
     await frontendUtil.waitingTxs(txs);
-
 
     console.log('===========winningProposal=====================')
     const tx = await vote.winningProposal();

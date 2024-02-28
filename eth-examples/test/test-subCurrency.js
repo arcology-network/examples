@@ -2,7 +2,6 @@ const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 
 async function main() {
-
     accounts = await ethers.getSigners(); 
 
     const coin_factory = await ethers.getContractFactory("Coin");
@@ -10,10 +9,7 @@ async function main() {
     await coin.deployed();
     console.log(`Deployed SubCurrency at ${coin.address}`)
 
-    
-
     console.log('===========mint=====================')
-
     var txs=new Array();
     for(i=1;i<=5;i++){
       txs.push(frontendUtil.generateTx(function([coin,to,val]){

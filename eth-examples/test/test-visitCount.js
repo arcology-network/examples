@@ -2,7 +2,6 @@ const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 
 async function main() {
-
     accounts = await ethers.getSigners(); 
 
     const visit_factory = await ethers.getContractFactory("VisitCounter");
@@ -10,10 +9,7 @@ async function main() {
     await visitCounter.deployed();
     console.log(`Deployed visitCounter at ${visitCounter.address}`)
 
-    
-
     console.log('===========visit=====================')
-
     var txs=new Array();
     for(i=1;i<=10;i++){
       txs.push(frontendUtil.generateTx(function([visitCounter,from]){
@@ -23,7 +19,6 @@ async function main() {
     await frontendUtil.waitingTxs(txs);
     
     console.log('===========getCounter=====================')
-    
     tx = await visitCounter.getCounter();
     const receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
@@ -32,7 +27,6 @@ async function main() {
     }else{
       console.log('Test Failed');
     } 
-    
   }
 
   // We recommend this pattern to be able to use async/await everywhere

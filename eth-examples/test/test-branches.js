@@ -2,7 +2,6 @@ const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 
 async function main() {
-
     accounts = await ethers.getSigners(); 
 
     const visit_factory = await ethers.getContractFactory("VisitCounter");
@@ -23,7 +22,6 @@ async function main() {
     const coin = await coin_factory.deploy();
     await coin.deployed();
     console.log(`Deployed SubCoin at ${coin.address}`)
-
 
     console.log('===========first batch=====================')
     var txs=new Array();
@@ -64,7 +62,6 @@ async function main() {
       },coin,accounts[i]));
     }
     await frontendUtil.waitingTxs(txs);
-
   }
 
   // We recommend this pattern to be able to use async/await everywhere

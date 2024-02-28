@@ -2,14 +2,12 @@ const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util') 
 
 async function main() {
-
     accounts = await ethers.getSigners(); 
 
     const token_factory = await ethers.getContractFactory("DSToken");
     const dstoken = await token_factory.deploy('ACL');
     await dstoken.deployed();
     console.log(`Deployed DsToken at ${dstoken.address}`)
-
 
     let receipt;
 
@@ -65,7 +63,6 @@ async function main() {
 
     //transfer from one to five accounts
     console.log('===========mint=====================')
-
     var txs=new Array();
     for(i=1;i<=1;i++){
       txs.push(frontendUtil.generateTx(function([dstoken,from,val]){
