@@ -9,22 +9,17 @@
   dependencies:
     concurrentlib "^2.0.0"
 
-"@arcologynetwork/frontend-tools@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@arcologynetwork/frontend-tools/-/frontend-tools-1.0.1.tgz#ec6f4311ea8620913b8c134adeb1a30c54305c03"
-  integrity sha512-R4UjgTg1vZYnRAWA99mZYBKH8BZSwd/xG0orgGBuACpckyY5QgymEAouStAvd12FJdL2d0exnZJX2JnIgbNNnA==
+"@arcologynetwork/frontend-tools@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@arcologynetwork/frontend-tools/-/frontend-tools-1.0.3.tgz#eb865af132815746f47de56404b4727ad63e82a7"
+  integrity sha512-EnUM/Wvbxdch6zk16dqY9hT2JLn8+mbq8nXfrBvuX6FJS4iXjEUSs69ApBJr8rndUzGicvO5BC71h6Vy/d4SKQ==
   dependencies:
-    "@arcologynetwork/frontend-util" "^1.0.0"
+    "@arcologynetwork/frontend-util" "^1.0.3"
 
-"@arcologynetwork/frontend-util@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@arcologynetwork/frontend-util/-/frontend-util-1.0.0.tgz#1c0ebfb0af2b9feddcfda03dea1bf6d019001661"
-  integrity sha512-nn2E9TLO35bEMlSbZ3vBTjFDEiUS9tg0Tu+CctLLAhzdN6ED/+aKl7A2jYNpZJJ1iYmzL/gW+nU35xVdtLjgRA==
-
-"@arcologynetwork/frontend-util@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@arcologynetwork/frontend-util/-/frontend-util-1.0.1.tgz#fb172f0670e7bd55d8d82c5ca0be19f122417bdb"
-  integrity sha512-HWdIkkAbXJUFKKImz+uVKPp+1N99ifM52GhCSgdk7rDP4BA78Gj5/8Mz9piOGsk3zdyT5i8bJ7mf2MQ9CrQIeQ==
+"@arcologynetwork/frontend-util@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@arcologynetwork/frontend-util/-/frontend-util-1.0.3.tgz#9e56a00d8acedbbaa43099531d26be9fb8c5c186"
+  integrity sha512-YIlSz5k2pc/tlM15G21Iq+bQpsv6RASWg8bMMw+zCPZeSYRVsN2ofoUpkhV+c8u+YCsfloMdUZf8WvwMi4J5wQ==
 
 "@ensdomains/ens@^0.4.4":
   version "0.4.5"

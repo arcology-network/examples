@@ -9,6 +9,8 @@ async function main() {
     
     const filename = 'data/parallel_visits.out' // The file to which the transactions will be written
     frontendUtil.ensurePath('data');
+    const handle=frontendUtil.newFile(filename);
+
     const bt_factory = await ethers.getContractFactory("Visits"); // Visits is the contract name
     const bt = await bt_factory.deploy(); // Deploy the contract
     await bt.deployed();
@@ -21,7 +23,7 @@ async function main() {
       const fulltx=await signer.populateTransaction(tx)
       const rawtx=await signer.signTransaction(fulltx)
 
-      frontendUtil.writeFile(filename,rawtx+',\n')
+      frontendUtil.appendTo(handle,rawtx+',\n')
     }
   }
 

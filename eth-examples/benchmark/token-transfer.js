@@ -6,8 +6,8 @@ async function main() {
     accounts = await ethers.getSigners(); 
     const provider = new ethers.providers.JsonRpcProvider(nets[hre.network.name].url);
     
-    const filename_transfer = 'data/token-transfer.out'
     frontendUtil.ensurePath('data');
+    const handle=frontendUtil.newFile('data/token-transfer.out')
 
     console.time('transfertime')
     const num_per_bat=200;
@@ -25,7 +25,8 @@ async function main() {
           value: 1
         });
         const rawtx=await signer.signTransaction(fulltx)
-        frontendUtil.writeFile(filename_transfer,rawtx+',\n')
+        // frontendUtil.writeFile(filename_transfer,rawtx+',\n')
+        frontendUtil.appendTo(handle,rawtx+',\n');
       }
     }
     console.timeEnd('transfertime')

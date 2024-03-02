@@ -24,15 +24,14 @@ async function main() {
     console.time('minttime')
     const pk=nets[hre.network.name].accounts[0];
     const signer = new ethers.Wallet(pk, provider);
-    console.log(accounts.length)
-    for(i=0;i<accounts.length;i++){
-      console.log(accounts[i].address);
-    }
+    
+    const handle_mint=frontendUtil.newFile(filename_mint)
+
     for(i=0;i<accounts.length;i++){
       const tx = await dstoken.populateTransaction.mint(accounts[i].address,10);
       const fulltx=await signer.populateTransaction(tx);
       const rawtx=await signer.signTransaction(fulltx);
-      frontendUtil.writeFile(filename_mint,rawtx+',\n') // Write the transaction to the file
+      frontendUtil.appendTo(handle_mint,rawtx+',\n'); // Write the transaction to the file 
     }
     console.timeEnd('minttime')
 
@@ -40,7 +39,9 @@ async function main() {
     console.time('transfertime')
     const num_per_bat=200;
     const total_bats = accounts.length % num_per_bat ===0 ? parseInt(accounts.length / num_per_bat) : parseInt(accounts.length / num_per_bat) + 1 ;
-
+    
+    const handle_transfer=frontendUtil.newFile(filename_transfer)
+    
     for(batidx=0;batidx<total_bats;batidx++){
       const totals_per_bat = accounts.length - batidx * num_per_bat>=num_per_bat ? num_per_bat : accounts.length - batidx * num_per_bat ;
       const txs=parseInt(totals_per_bat/2);
@@ -53,7 +54,7 @@ async function main() {
         const fulltx=await signer.populateTransaction(tx)
         const rawtx=await signer.signTransaction(fulltx)
 
-        frontendUtil.writeFile(filename_transfer,rawtx+',\n') // Write the transaction to the file
+        frontendUtil.appendTo(handle_transfer,rawtx+',\n'); // Write the transaction to the file
       }
     }
     console.timeEnd('transfertime')

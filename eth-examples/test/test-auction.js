@@ -20,6 +20,7 @@ async function main() {
     
     console.log('===========auctionEnd=====================')
     while(true){
+      await frontendUtil.sleep(60000)
       tx = await auction.auctionEnd();
       let receipt
       await tx.wait()
