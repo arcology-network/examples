@@ -3,10 +3,8 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
 
-contract VisitCounter {
-    
+contract VisitCounter {    
     U256Cumulative visitCount;
-
     event CounterQuery(uint256 value);
 
     constructor()  {
@@ -21,5 +19,4 @@ contract VisitCounter {
         emit CounterQuery(visitCount.get());
         return visitCount.get();
     }
-
 }

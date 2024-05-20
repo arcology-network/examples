@@ -7,7 +7,6 @@
     - [1.3. Why ds-token](#13-why-ds-token)
   - [2. Changes](#2-changes)
   - [3. Benefits](#3-benefits)
-  - [4. Performance](#4-performance)
 
 ## 1. Introduction
 
@@ -41,10 +40,3 @@ Some modifications to the original implementation have been made with tools avai
 ## 3. Benefits
 
 The new implementation allows processing of concurrent calls to the same functions of the contract. For example, the `mint` and the`burn` function can be called by multiple users at the same time without any problem.
-
-## 4. Performance 
-
-<!-- ## 5. Tests
-
-- [Interactive](/doc/parallellized-dstoken-interactive.md)
-- [Benchmarking](/doc/parallellized-dstoken-benchmarking.md) -->
