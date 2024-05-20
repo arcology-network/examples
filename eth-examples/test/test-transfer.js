@@ -15,21 +15,24 @@ async function main() {
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,"BalanceEvent")}`)
     console.log(`Balance of sneder ${frontendUtil.parseEvent(receipt,"Balance2Event")}`)
+    console.log(`GasUsed : ${receipt.gasUsed}`)
 
     console.log('===========transfer=====================')
     tx = await transferTest.transderToContract({value:10});
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(`TRnasfer to contract ${frontendUtil.parseEvent(receipt,"TransferEvent")}`)
-    
+    console.log(`Transfer to contract ${frontendUtil.parseEvent(receipt,"TransferEvent")}`)
+    console.log(`GasUsed : ${receipt.gasUsed}`)
+
     console.log('===========getBalance=====================')
     tx = await transferTest.getBalance();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,"BalanceEvent")}`)
     console.log(`Balance of sneder ${frontendUtil.parseEvent(receipt,"Balance2Event")}`)
+    console.log(`GasUsed : ${receipt.gasUsed}`)
 
-    console.log('===========transfer will failed=====================')
+    console.log('===========transfer will be failed=====================')
     tx = await transferTest.transderToContract({value:20});
     await tx.wait()
     .then((rect) => {
@@ -39,15 +42,16 @@ async function main() {
     .catch((error) => {
         receipt = error.receipt
     })
-    // console.log(receipt)
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    
+    console.log(`GasUsed : ${receipt.gasUsed}`)
+
     console.log('===========getBalance=====================')
     tx = await transferTest.getBalance();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,"BalanceEvent")}`)
     console.log(`Balance of sneder ${frontendUtil.parseEvent(receipt,"Balance2Event")}`)
+    console.log(`GasUsed : ${receipt.gasUsed}`)
   }
 
   // We recommend this pattern to be able to use async/await everywhere

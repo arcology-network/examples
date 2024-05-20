@@ -11,6 +11,7 @@ contract Coin {
     // accessible from other contracts
     address public minter;
     mapping(address => uint) public balances;
+    event Balance(uint256 bal);
 
     // Events allow clients to react to specific
     // contract changes you declare
@@ -49,6 +50,7 @@ contract Coin {
     }
 
     function getter(address sender) public returns(uint256) {
+        emit Balance(balances[sender]);
         return balances[sender];
     }
 }

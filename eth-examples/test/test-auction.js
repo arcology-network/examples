@@ -5,7 +5,7 @@ async function main() {
     accounts = await ethers.getSigners(); 
 
     const Auction_factory = await ethers.getContractFactory("SimpleAuction");
-    const auction = await Auction_factory.deploy(50,accounts[0].address);
+    const auction = await Auction_factory.deploy(30,accounts[0].address);
     await auction.deployed();
     console.log(`Deployed SimpleAuction at ${auction.address}`)
 
@@ -20,7 +20,7 @@ async function main() {
     
     console.log('===========auctionEnd=====================')
     while(true){
-      await frontendUtil.sleep(60000)
+      await frontendUtil.sleep(35000)
       tx = await auction.auctionEnd();
       let receipt
       await tx.wait()

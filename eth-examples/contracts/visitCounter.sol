@@ -13,8 +13,8 @@ contract VisitCounter {
         visitCount = new U256Cumulative(0, 1000000) ;
     }
 
-    function visit() public {
-        visitCount.add(1);
+    function visit(uint256 weight) public {
+        visitCount.add(weight);
     }
 
     function getCounter() public returns(uint256){

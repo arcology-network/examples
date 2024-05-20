@@ -13,7 +13,7 @@ async function main() {
     var txs=new Array();
     for(i=1;i<=5;i++){
       txs.push(frontendUtil.generateTx(function([visitCounter,from]){
-        return visitCounter.connect(from).add();
+        return visitCounter.connect(from).add(i);
       },visitCounter,accounts[i]));
     }
     await frontendUtil.waitingTxs(txs);
@@ -30,7 +30,7 @@ async function main() {
     var txs=new Array();
     for(i=1;i<=5;i++){
       txs.push(frontendUtil.generateTx(function([visitCounter,from]){
-        return visitCounter.connect(from).add();
+        return visitCounter.connect(from).add(i);
       },visitCounter,accounts[i]));
     }
     await frontendUtil.waitingTxs(txs);

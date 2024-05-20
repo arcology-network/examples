@@ -23,8 +23,10 @@ async function main() {
     await coin.deployed();
     console.log(`Deployed SubCoin at ${coin.address}`)
 
+    let receipt,i,txs,tx; 
+
     console.log('===========first batch=====================')
-    var txs=new Array();
+    txs=new Array();
     for(i=1;i<=3;i++){
       txs.push(frontendUtil.generateTx(function([contract,addr]){
         return contract.giveRightToVote(addr.address);
@@ -33,18 +35,41 @@ async function main() {
 
     for(i=4;i<=6;i++){
       txs.push(frontendUtil.generateTx(function([visitCounter,from]){
-        return visitCounter.connect(from).visit();
+        return visitCounter.connect(from).visit(i);
       },visitCounter,accounts[i]));
     }
+
     for(i=7;i<=10;i++){
       txs.push(frontendUtil.generateTx(function([coin,addr]){
         return coin.mint(addr.address,10);
       },coin,accounts[i]));
     }
+    
     await frontendUtil.waitingTxs(txs);
+
+    console.log('===========balance=====================')
+    tx = await vote.winningProposal();
+    receipt = await tx.wait();
+    console.log("Winner Data:"+frontendUtil.parseEvent(receipt,"Winner"));
+
+    tx = await visitCounter.getCounter();
+    receipt=await tx.wait();
+    console.log(`Visit counter Data ${frontendUtil.parseEvent(receipt,"CounterQuery")}`);
+    
+    for(i=1;i<=10;i++){
+      tx = await coin.getter(accounts[i].address);
+      receipt=await tx.wait();
+      console.log(`Mint Coin Data ${frontendUtil.parseEvent(receipt,"GetBalance")}`);
+    }
 
     console.log('===========second batch=====================')
-    var txs=new Array();
+    txs=new Array();
+    for(i=1;i<=3;i++){
+      txs.push(frontendUtil.generateTx(function([coin,addr]){
+        return coin.mint(addr.address,10);
+      },coin,accounts[i]));
+    }
+
     for(i=4;i<=6;i++){
       txs.push(frontendUtil.generateTx(function([contract,addr]){
         return contract.giveRightToVote(addr.address);
@@ -53,15 +78,25 @@ async function main() {
 
     for(i=7;i<=10;i++){
       txs.push(frontendUtil.generateTx(function([visitCounter,from]){
-        return visitCounter.connect(from).visit();
+        return visitCounter.connect(from).visit(i);
       },visitCounter,accounts[i]));
     }
-    for(i=1;i<=3;i++){
-      txs.push(frontendUtil.generateTx(function([coin,addr]){
-        return coin.mint(addr.address,10);
-      },coin,accounts[i]));
-    }
     await frontendUtil.waitingTxs(txs);
+
+    console.log('===========balance=====================')
+    tx = await vote.winningProposal();
+    receipt = await tx.wait();
+    console.log("Winner Data:"+frontendUtil.parseEvent(receipt,"Winner"));
+
+    tx = await visitCounter.getCounter();
+    receipt=await tx.wait();
+    console.log(`Visit counter Data ${frontendUtil.parseEvent(receipt,"CounterQuery")}`);
+    
+    for(i=1;i<=10;i++){
+      tx = await coin.getter(accounts[i].address);
+      receipt=await tx.wait();
+      console.log(`Mint Coin Data ${frontendUtil.parseEvent(receipt,"GetBalance")}`);
+    }
   }
 
   // We recommend this pattern to be able to use async/await everywhere

@@ -9,11 +9,11 @@ async function main() {
     await dstoken.deployed();
     console.log(`Deployed DsToken at ${dstoken.address}`)
 
-    let receipt;
+    let receipt,i,txs; 
 
     console.log('===========mint=====================')
-    var txs=new Array();
-    for(i=1;i<=10;i++){
+    txs=new Array();
+    for(i=1;i<=4;i++){
       txs.push(frontendUtil.generateTx(function([dstoken,from,val]){
         return dstoken.mint(from.address,val);
       },dstoken,accounts[i],100+i));
@@ -21,18 +21,71 @@ async function main() {
     await frontendUtil.waitingTxs(txs);
     
     console.log('===========balance=====================')
+    for(i=1;i<=8;i++){
+      tx = await dstoken.balance(accounts[i].address);
+      receipt=await tx.wait();
+      console.log(frontendUtil.parseEvent(receipt,"Balance"));
+      frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    }
+
+    console.log('===========transfer=====================')
+    txs=new Array();
+    for(i=1;i<=4;i++){
+      txs.push(frontendUtil.generateTx(function([dstoken,from,to,val]){
+        return dstoken.connect(from).transfer(to.address,val);
+      },dstoken,accounts[i],accounts[i+4],100+i));
+    }
+    await frontendUtil.waitingTxs(txs);
+
+    console.log('===========balance=====================')
+    for(i=1;i<=8;i++){
+      tx = await dstoken.balance(accounts[i].address);
+      receipt=await tx.wait();
+      console.log(frontendUtil.parseEvent(receipt,"Balance"));
+      frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    }
+    
+    console.log('===========approve=====================')
+    txs=new Array();
+    for(i=1;i<=4;i++){
+      txs.push(frontendUtil.generateTx(function([dstoken,from,owner]){
+        return dstoken.connect(from).approves(owner.address);
+      },dstoken,accounts[i+4],accounts[0]));
+    }
+    await frontendUtil.waitingTxs(txs);
+
+    console.log('===========burn=====================')
+    txs=new Array();
+    for(i=1;i<=4;i++){
+      txs.push(frontendUtil.generateTx(function([dstoken,from,val]){
+        return dstoken.burn(from.address,val);
+      },dstoken,accounts[i+4],100+i));
+    }
+    await frontendUtil.waitingTxs(txs);
+
+    // // transfer from one to five accounts
+    console.log('===========mint=====================')
+    txs=new Array();
+    for(i=1;i<=1;i++){
+      txs.push(frontendUtil.generateTx(function([dstoken,from,val]){
+        return dstoken.mint(from.address,val);
+      },dstoken,accounts[i],50));
+    }
+    await frontendUtil.waitingTxs(txs);
+    
+
+    console.log('===========balance=====================')
     tx = await dstoken.balance(accounts[1].address);
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(frontendUtil.parseEvent(receipt,"Balance"))
 
-    
     console.log('===========transfer=====================')
-    var txs=new Array();
-    for(i=1;i<=5;i++){
+    txs=new Array();
+    for(i=6;i<=8;i++){
       txs.push(frontendUtil.generateTx(function([dstoken,from,to,val]){
         return dstoken.connect(from).transfer(to.address,val);
-      },dstoken,accounts[i],accounts[i+5],100+i));
+      },dstoken,accounts[1],accounts[i],20));
     }
     await frontendUtil.waitingTxs(txs);
 
@@ -41,44 +94,6 @@ async function main() {
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(frontendUtil.parseEvent(receipt,"Balance"))
-
-    console.log('===========approve=====================')
-
-    var txs=new Array();
-    for(i=1;i<=5;i++){
-      txs.push(frontendUtil.generateTx(function([dstoken,from,owner]){
-        return dstoken.connect(from).approves(owner.address);
-      },dstoken,accounts[i+5],accounts[0]));
-    }
-    await frontendUtil.waitingTxs(txs);
-
-    console.log('===========burn=====================')
-    var txs=new Array();
-    for(i=1;i<=5;i++){
-      txs.push(frontendUtil.generateTx(function([dstoken,from,val]){
-        return dstoken.burn(from.address,val);
-      },dstoken,accounts[i+5],100+i));
-    }
-    await frontendUtil.waitingTxs(txs);
-
-    //transfer from one to five accounts
-    console.log('===========mint=====================')
-    var txs=new Array();
-    for(i=1;i<=1;i++){
-      txs.push(frontendUtil.generateTx(function([dstoken,from,val]){
-        return dstoken.mint(from.address,val);
-      },dstoken,accounts[i],80));
-    }
-    await frontendUtil.waitingTxs(txs);
-
-    console.log('===========transfer=====================')
-    var txs=new Array();
-    for(i=1;i<=5;i++){
-      txs.push(frontendUtil.generateTx(function([dstoken,from,to,val]){
-        return dstoken.connect(from).transfer(to.address,val);
-      },dstoken,accounts[1],accounts[i+5],20));
-    }
-    await frontendUtil.waitingTxs(txs);
     
   }
 

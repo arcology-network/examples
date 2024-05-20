@@ -11,8 +11,8 @@ contract Counter {
         iCount = 0 ;
     }
 
-    function add() public {
-        iCount = iCount + 1 ;
+    function add(uint256 value) public {
+        iCount = iCount + value ;
     }
 
     function getCounter() public returns(uint256){
