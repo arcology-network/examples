@@ -4,7 +4,7 @@ var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 async function main() {
     accounts = await ethers.getSigners(); 
 
-    const transfer_factory = await ethers.getContractFactory("transferTest");
+    const transfer_factory = await ethers.getContractFactory("TransferTest");
     const transferTest = await transfer_factory.deploy();
     await transferTest.deployed();
     console.log(`Deployed transferTest at ${transferTest.address}`)
