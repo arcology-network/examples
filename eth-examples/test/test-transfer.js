@@ -1,44 +1,38 @@
 const hre = require("hardhat");
-var ptool = require('@arcologynetwork/benchmarktools/tools') 
+var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 
 async function main() {
-
     accounts = await ethers.getSigners(); 
 
-    const transfer_factory = await ethers.getContractFactory("transferTest");
+    const transfer_factory = await ethers.getContractFactory("TransferTest");
     const transferTest = await transfer_factory.deploy();
     await transferTest.deployed();
     console.log(`Deployed transferTest at ${transferTest.address}`)
 
-    
-
     console.log('===========getBalance=====================')
-
     let tx = await transferTest.getBalance();
     let receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
-
-    console.log(`Balance of contract ${ptool.parseEvent(receipt,"BalanceEvent")}`)
-    console.log(`Balance of sneder ${ptool.parseEvent(receipt,"Balance2Event")}`)
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,"BalanceEvent")}`)
+    console.log(`Balance of sneder ${frontendUtil.parseEvent(receipt,"Balance2Event")}`)
+    console.log(`GasUsed : ${receipt.gasUsed}`)
 
     console.log('===========transfer=====================')
     tx = await transferTest.transderToContract({value:10});
     receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    console.log(`Transfer to contract ${frontendUtil.parseEvent(receipt,"TransferEvent")}`)
+    console.log(`GasUsed : ${receipt.gasUsed}`)
 
-    console.log(`TRnasfer to contract ${ptool.parseEvent(receipt,"TransferEvent")}`)
-    
     console.log('===========getBalance=====================')
-
     tx = await transferTest.getBalance();
     receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,"BalanceEvent")}`)
+    console.log(`Balance of sneder ${frontendUtil.parseEvent(receipt,"Balance2Event")}`)
+    console.log(`GasUsed : ${receipt.gasUsed}`)
 
-    console.log(`Balance of contract ${ptool.parseEvent(receipt,"BalanceEvent")}`)
-    console.log(`Balance of sneder ${ptool.parseEvent(receipt,"Balance2Event")}`)
-
-    console.log('===========transfer will failed=====================')
-    
+    console.log('===========transfer will be failed=====================')
     tx = await transferTest.transderToContract({value:20});
     await tx.wait()
     .then((rect) => {
@@ -48,19 +42,16 @@ async function main() {
     .catch((error) => {
         receipt = error.receipt
     })
-    // console.log(receipt)
-    ptool.showResult(ptool.parseReceipt(receipt));
-    
-      
-    
-    console.log('===========getBalance=====================')
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    console.log(`GasUsed : ${receipt.gasUsed}`)
 
+    console.log('===========getBalance=====================')
     tx = await transferTest.getBalance();
     receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
-
-    console.log(`Balance of contract ${ptool.parseEvent(receipt,"BalanceEvent")}`)
-    console.log(`Balance of sneder ${ptool.parseEvent(receipt,"Balance2Event")}`)
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,"BalanceEvent")}`)
+    console.log(`Balance of sneder ${frontendUtil.parseEvent(receipt,"Balance2Event")}`)
+    console.log(`GasUsed : ${receipt.gasUsed}`)
   }
 
   // We recommend this pattern to be able to use async/await everywhere

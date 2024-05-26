@@ -5,3 +5,4 @@ ds-math
 ds-auth
 output
 *.bin
+data/

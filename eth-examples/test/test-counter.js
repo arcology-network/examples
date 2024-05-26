@@ -4,52 +4,42 @@ var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 async function main() {
     accounts = await ethers.getSigners(); 
 
-    const visit_factory = await ethers.getContractFactory("VisitCounter");
+    const visit_factory = await ethers.getContractFactory("Counter");
     const visitCounter = await visit_factory.deploy();
     await visitCounter.deployed();
-    console.log(`Deployed visitCounter at ${visitCounter.address}`)
+    console.log(`Deployed Counter at ${visitCounter.address}`)
 
-    let receipt
-    console.log('===========visit=====================')
+    console.log('===========add=====================')
     var txs=new Array();
-    for(i=1;i<=10;i++){
+    for(i=1;i<=5;i++){
       txs.push(frontendUtil.generateTx(function([visitCounter,from]){
-        return visitCounter.connect(from).visit(i);
+        return visitCounter.connect(from).add(i);
       },visitCounter,accounts[i]));
     }
+    await frontendUtil.waitingTxs(txs);
+    
+    console.log('===========getCounter=====================')
+    tx = await visitCounter.getCounter();
+    let receipt=await tx.wait();
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
 
+    console.log(`Counter Data ${frontendUtil.parseEvent(receipt,"CounterQuery")}`)
+    
 
+    console.log('===========add=====================')
+    var txs=new Array();
+    for(i=1;i<=5;i++){
+      txs.push(frontendUtil.generateTx(function([visitCounter,from]){
+        return visitCounter.connect(from).add(i);
+      },visitCounter,accounts[i]));
+    }
     await frontendUtil.waitingTxs(txs);
     
     console.log('===========getCounter=====================')
     tx = await visitCounter.getCounter();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(`Visit counter Data ${frontendUtil.parseEvent(receipt,"CounterQuery")}`);
-    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000037"){
-      console.log('Test Successful');
-    }else{
-      console.log('Test Failed');
-    } 
-
-    console.log('===========second visit=====================')
-    txs=new Array();
-    for(i=1;i<=10;i++){
-      txs.push(frontendUtil.generateTx(function([visitCounter,from]){
-        return visitCounter.connect(from).visit(i);
-      },visitCounter,accounts[i]));
-    }
-    await frontendUtil.waitingTxs(txs);
-    console.log('===========getCounter=====================')
-    tx = await visitCounter.getCounter();
-    receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(`Visit counter Data ${frontendUtil.parseEvent(receipt,"CounterQuery")}`);
-    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x000000000000000000000000000000000000000000000000000000000000006e"){
-      console.log('Test Successful');
-    }else{
-      console.log('Test Failed');
-    }
+    console.log(`Counter Data ${frontendUtil.parseEvent(receipt,"CounterQuery")}`)
   }
 
   // We recommend this pattern to be able to use async/await everywhere

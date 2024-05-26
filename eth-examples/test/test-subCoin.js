@@ -1,8 +1,7 @@
 const hre = require("hardhat");
-var ptool = require('@arcologynetwork/benchmarktools/tools') 
+var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 
 async function main() {
-
     accounts = await ethers.getSigners(); 
 
     const coin_factory = await ethers.getContractFactory("SubCoin");
@@ -10,23 +9,18 @@ async function main() {
     await coin.deployed();
     console.log(`Deployed SubCoin at ${coin.address}`)
 
-    
-
     console.log('===========mint=====================')
-
     let tx = await coin.mint(accounts[1].address,10);
     let receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
-
-    console.log(`Mint Data ${ptool.parseEvent(receipt,"Mint")}`)
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    console.log(`Mint Data ${frontendUtil.parseEvent(receipt,"Mint")}`)
 
     console.log('===========getter=====================')
-
     tx = await coin.getter(accounts[1].address);
     receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
 
-    if(ptool.parseEvent(receipt,"GetBalance")==="0x000000000000000000000000000000000000000000000000000000000000000a"){
+    if(frontendUtil.parseEvent(receipt,"GetBalance")==="0x000000000000000000000000000000000000000000000000000000000000000a"){
       console.log('Mint Successful');
     }else{
       console.log('Mint Failed');
@@ -35,22 +29,18 @@ async function main() {
     console.log('===========send=====================')
     tx = await coin.connect(accounts[1]).send(accounts[2].address,10);
     receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
-
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(`Send to ${accounts[2].address} 10`)
-    
-    console.log('===========getter=====================')
 
+    console.log('===========getter=====================')
     tx = await coin.getter(accounts[1].address);
     receipt=await tx.wait();
-    ptool.showResult(ptool.parseReceipt(receipt));
-
-    if(ptool.parseEvent(receipt,"GetBalance")==="0x0000000000000000000000000000000000000000000000000000000000000000"){
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    if(frontendUtil.parseEvent(receipt,"GetBalance")==="0x0000000000000000000000000000000000000000000000000000000000000000"){
       console.log('Send Successful');
     }else{
       console.log('Send Failed');
     }
-
   }
 
   // We recommend this pattern to be able to use async/await everywhere

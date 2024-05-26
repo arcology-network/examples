@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.0;
+pragma solidity >=0.8.0 <0.9.0;
 
-contract transferTest {
+contract TransferTest {
     uint counter;
     event BalanceEvent(uint256 bal);
     event Balance2Event(uint256 senderbalance);
@@ -29,8 +29,6 @@ contract transferTest {
         // emit DebugEvent(3);
     }
     
-    fallback() external payable {}
-    
+    fallback() external payable {}    
     receive() external payable {}
-
 }

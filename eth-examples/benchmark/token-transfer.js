@@ -1,12 +1,13 @@
 const hre = require("hardhat");
-var ptool = require('@arcologynetwork/benchmarktools/tools') 
-
+var frontendUtil = require('@arcologynetwork/frontend-util/utils/util') 
 const nets = require('../network.json');
 
 async function main() {
-
     accounts = await ethers.getSigners(); 
-    const filename_transfer = 'token-transfer.out'
+    const provider = new ethers.providers.JsonRpcProvider(nets[hre.network.name].url);
+    
+    frontendUtil.ensurePath('data');
+    const handle=frontendUtil.newFile('data/token-transfer.out')
 
     console.time('transfertime')
     const num_per_bat=200;
@@ -18,18 +19,14 @@ async function main() {
 
       for(i=batidx * num_per_bat;i<batidx * num_per_bat+txs;i++){
         const pk=nets[hre.network.name].accounts[i]
-        const RPC_ENDPOINT=nets[hre.network.name].url
-        const provider = new ethers.providers.JsonRpcProvider(RPC_ENDPOINT);
         const signer = new ethers.Wallet(pk, provider);
-
         let fulltx = await signer.populateTransaction({
           to: accounts[i+txs].address,
           value: 1
         });
-
         const rawtx=await signer.signTransaction(fulltx)
-
-        ptool.writefile(filename_transfer,rawtx+',\n')
+        // frontendUtil.writeFile(filename_transfer,rawtx+',\n')
+        frontendUtil.appendTo(handle,rawtx+',\n');
       }
     }
     console.timeEnd('transfertime')
