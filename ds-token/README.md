@@ -16,7 +16,7 @@ Some modifications to the original implementation have been made with tools avai
 - Replace the global variables `totalSupply` and `allowance` with a commutative `uint256` from the `concurrentlib`.  
 - The `mint` and `burn` operate on the `totalSupply` by call `add` and `sub` on the `totalSupply`, instead of directly modifying it.
   
-The new implementation allows processing of concurrent calls to the same functions of the contract. For example, the `mint` and the`burn` function can be called by multiple users at the same time without any problem.
+>> :bulb: The new implementation allows processing of concurrent calls to the same functions of the contract. For example, the `mint` and the`burn` function can be called by multiple users at the same time without any problem.
 
 
 ## Clone the Repository
