@@ -1,0 +1,9 @@
+[submodule "ds-token/ds-token"]
+	path = ds-token/ds-token
+	url = https://github.com/dapphub/ds-token.git
+[submodule "ds-token/ds-auth"]
+	path = ds-token/ds-auth
+	url = https://github.com/dapphub/ds-auth.git
+[submodule "ds-token/ds-math"]
+	path = ds-token/ds-math
+	url = https://github.com/dapphub/ds-math.git
