@@ -1,11 +1,5 @@
 {
-  "L1": {
-     "url": "http://192.168.230.137:7545",
-     "accounts": ["5bb1315c3ffa654c89f1f8b27f93cb4ef6b0474c4797cf2eb40d1bdd98dc26e7"],
-     "addrs": ["0xaB01a3BfC5de6b5Fc481e18F274ADBdbA9B111f0"],
-     "chainId": 100
-   },
-   "L2": {
+  "TestnetInfo": {
      "url": "http://192.168.230.131:8545",
      "accounts": ["5bb1315c3ffa654c89f1f8b27f93cb4ef6b0474c4797cf2eb40d1bdd98dc26e7",
                   "2289ae919f03075448d567c9c4a22846ce3711731c895f1bea572cef25bb346f",
