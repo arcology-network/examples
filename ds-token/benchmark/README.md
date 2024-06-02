@@ -56,8 +56,6 @@ Arcology scales with the resources available. The following table shows the benc
 | **CPU**                         | AMD Ryzen Threadripper 2950X 16-Core Processor |
 | **RAM**                         | 128GB                                      |
 | **Tx/Block**                    | 20000                                      |
-| **4 Threads Max TPS**           | 7452                                       |
-| **8 Threads Max TPS**           | 10510                                      |
 | **16 Threads Max TPS**          | 12042                                      |
 
 
