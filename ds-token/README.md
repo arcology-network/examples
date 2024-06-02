@@ -31,8 +31,15 @@ Some modifications to the original implementation have been made with tools avai
 
 ### Run the Demo
 
-First, [Clone the repository](./docs/prep.md), then run the following command to run the test script: 
+First, [Clone the repository](./docs/prep.md):
 
   ```shell
-   yarn hardhat run test/test-dsToken.js --network TestnetInfo
+    git clone --recurse-submodules https://github.com/arcology-network/examples.git
+    cd examples/ds-token
+  ```
+
+Then run the following command to run the test script:
+
+  ```shell
+    yarn hardhat run test/test-dsToken.js --network TestnetInfo
   ```
