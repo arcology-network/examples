@@ -44,7 +44,7 @@ Start the network monitor to get the real-time status of the network. Assuming y
 ### Send Transactions   
 
 The path `ds-token-mint` contains 200k of the pre-signed transactions for the `mint` function of the contract.
-Assuming your IP address is `192.168.1.103`, Under the **`examples/ds-token`** directory run the following command to send the transactions to the network:
+Navigate  the **`examples/ds-token`** directory. If your IP address is **`192.168.1.103`**, run the following command to send the transactions to the network:
 
   ```shell
     npx arcology.net-tx-sender http://192.168.1.103:8545 benchmark/txs/ds-token-mint
