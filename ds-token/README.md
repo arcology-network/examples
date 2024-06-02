@@ -28,26 +28,11 @@ Some modifications to the original implementation have been made with tools avai
   
 >> :bulb: The new implementation allows processing of concurrent calls to the same functions of the contract. For example, the `mint` and the`burn` function can be called by multiple users at the same time without any problem.
 
-## Benchmarking
 
-For benchmarking, we will deploy the parallelized ds-token contract and send transactions to it. Arcology provides a set of tools to help you send transactions to the deployed contract in batches.
+### Run the Demo
 
-### Deployment
+First, [Clone the repository](./docs/prep.md), then run the following command to run the test script: 
 
   ```shell
-    cd examples/ds-token
-    ds-token> npm install
-    ds-token> yarn hardhat run benchmark/deploy.js --network TestnetInfo
+   yarn hardhat run test/test-dsToken.js --network TestnetInfo
   ```
-
-### Send Transactions  
-
-The directory `examples/ds-token/benchmark/txs/ds-token-mint` contains 200k of pre-generated transactions for the `mint` function of the `DSToken` contract. You can use the following commands to send transactions to the deployed contract. Assuming your IP address is `192.168.1.103`:
-
-  ```shell
-    npm install -g @arcologynetwork/frontend-tools@latest
-    npx arcology.net-monitor http://192.168.1.103:8545
-    npx arcology.network-tx-sender http://192.168.1.103:8545 examples/ds-token/benchmark/txs/ds-token-mint
-  ```  
-
-### Results

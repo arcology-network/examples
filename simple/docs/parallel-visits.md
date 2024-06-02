@@ -20,24 +20,16 @@ This function adds a new entry (true) to the counter array each time it is calle
 
 ### Running the Demo
 
-Check out the repository if you haven't done so and then change directory to it.
-
-```bash 
-    git clone https://github.com/arcology-network/examples.git
-    cd examples
-```
-
-### Running the Demo
-
 Check out the repository if you haven't done so and then change directory to it before installing the dependencies.
 
 ```shell 
-    git clone https://github.com/arcology-network/examples.git
+    git clone --recurse-submodules https://github.com/arcology-network/examples.git
     cd examples/simple    
-    npm install
 ```
 
-Run the example:
+Run the test script:
+
 ```shell 
+    npm install
     yarn hardhat run test/test-bools.js --network TestnetInfo
 ```

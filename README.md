@@ -27,7 +27,7 @@ The project also contains all the necessary files to run the ds-token on Arcolog
 <h2> Installation <img align="center" height="25" src="./img/cloud.svg">  </h2>
 
 ```bash 
-> git clone https://github.com/arcology-network/examples.git
+    git clone --recurse-submodules https://github.com/arcology-network/examples.git
 ```
 <h2> Running the Examples <img align="center" height="25" src="./img/running.svg">  </h2>
 

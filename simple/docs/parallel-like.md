@@ -21,7 +21,7 @@ This function increments the likes counter by 1 each time it is called. The use 
 Check out the repository if you haven't done so and then change directory to it before installing the dependencies.
 
 ```shell 
-    git clone https://github.com/arcology-network/examples.git
+    git clone --recurse-submodules https://github.com/arcology-network/examples.git
     cd examples/simple    
     npm install
 ```
