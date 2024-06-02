@@ -18,8 +18,8 @@ The example package comes with all the necessary scripts and files to run the ex
 First clone the project from GitHub and then change directory to eth-examples.
 
 ```shell
-git clone --recurse-submodules https://github.com/arcology-network/examples.git
-cd examples/eth-examples
+    git clone --recurse-submodules https://github.com/arcology-network/examples.git
+    cd examples/eth-examples
 ```
 
 Under examples/eth-examples/, run the script to install dependencies.
