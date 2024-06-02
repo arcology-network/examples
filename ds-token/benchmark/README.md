@@ -17,7 +17,7 @@ Clone the repository to your local machine and change directory to the `ds-token
   ```
   
 ### Deploy the Contract
-Under the `ds-token` directory, execute the following command to deploy the parallelized `DSToken` contract to the network:
+Under the `ds-token` directory, execute the following commands to deploy the parallelized `DSToken` contract to the network:
 
 ```shell
     npm install
