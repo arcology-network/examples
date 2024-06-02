@@ -20,6 +20,7 @@ Clone the repository to your local machine and change directory to the `ds-token
 Under the `ds-token` directory, execute the following command to deploy the parallelized `DSToken` contract to the network:
 
 ```shell
+    npm install
     yarn hardhat run benchamark/deploy.js --network TestnetInfo
 ```
 
