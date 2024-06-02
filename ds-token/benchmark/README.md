@@ -47,5 +47,15 @@ Assuming your IP address is `192.168.1.103`, Under the **`examples/ds-token`** d
     npx arcology.net-tx-sender http://192.168.1.103:8545 benchmark/txs/ds-token-mint
   ```  
 
+### Benchmark Data 
+
+| English                         | Details                                    |
+|---------------------------------|--------------------------------------------|
+| **CPU**                         | AMD Ryzen Threadripper 2950X 16-Core Processor |
+| **RAM**                         | 128GB                                      |
+| **Tx/Block**                    | 20000                                      |
+| **4 Threads Max TPS**           | 7452                                       |
+| **8 Threads Max TPS**           | 10510                                      |
+| **16 Threads Max TPS**          | 12042                                      |
 
 
