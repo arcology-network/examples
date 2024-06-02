@@ -31,7 +31,7 @@ Some modifications to the original implementation have been made with tools avai
 
 ### Run the Demo
 
-First, [Clone the repository](./docs/prep.md):
+First, Clone the repository:
 
   ```shell
     git clone --recurse-submodules https://github.com/arcology-network/examples.git
