@@ -21,17 +21,23 @@ Clone the repository to your local machine and change directory to the `ds-token
 Arcology provides a set of tools to help you send transactions to the deployed contract in batches.
 The directory `examples/ds-token/benchmark/txs/ds-token-mint` contains 200k of pre-signed transactions for the `mint` function of the contract. You can use the following commands to send transactions to the deployed contract. 
 
-Assuming your IP address is `192.168.1.103`, start the network monitor to get the real-time status of the network:
 
+Install the frontend tools:
+  ```shell
+    npm install -g @arcologynetwork/frontend-tools
+  ```
+
+Start the network monitor to get the real-time status of the network:
   ```shell
     npx arcology.net-monitor http://192.168.1.103:8545
   ```
 
-Install the frontend tools and use the `arcology.net-tx-sender` to send the transactions to the network:
 The path `ds-token-mint` contains 200k of the pre-signed transactions for the `mint` function of the contract.
-**Under the `examples/ds-token` directory** run the following command to send the transactions to the network:
+Assuming your IP address is `192.168.1.103`, Under the **`examples/ds-token`** directory run the following command to send the transactions to the network:
 
   ```shell
-    npm install -g @arcologynetwork/frontend-tools
     npx arcology.net-tx-sender http://192.168.1.103:8545 benchmark/txs/ds-token-mint
   ```  
+
+
+
