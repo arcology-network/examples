@@ -6,7 +6,6 @@ This document provides a step-by-step guide to benchmarking the `DSToken` contra
 
 You will need a high-performance live testnet for benchmarking, as a devNet won't be able to handle the load. For more information on setting up a live testnet, please refer to the [Arcology documentation](https://doc.arcology.network/benchmarking/standalone).
 
-
 ### Clone the Repository
 
 Clone the repository to your local machine and change directory to the `ds-token` directory:
@@ -15,6 +14,7 @@ Clone the repository to your local machine and change directory to the `ds-token
     git clone --recurse-submodules https://github.com/arcology-network/examples.git
     cd examples/ds-token
   ```
+
   
 ### Deploy the Contract
 Under the `ds-token` directory, execute the following commands to deploy the parallelized `DSToken` contract to the network:
@@ -24,21 +24,24 @@ Under the `ds-token` directory, execute the following commands to deploy the par
     yarn hardhat run benchamark/deploy.js --network TestnetInfo
 ```
 
-### Send Transactions   
+>> :warning: TestnetInfo is the network configuration in the `network.json`. Please make sure the info corresponds to the network you are using. You can change it to your network configuration.
+
+### Start the Network Monitor
 
 Arcology provides a set of tools to help you send transactions to the deployed contract in batches.
 The directory `examples/ds-token/benchmark/txs/ds-token-mint` contains 200k of pre-signed transactions for the `mint` function of the contract. You can use the following commands to send transactions to the deployed contract. 
-
 
 Install the frontend tools:
   ```shell
     npm install -g @arcologynetwork/frontend-tools
   ```
 
-Start the network monitor to get the real-time status of the network:
+Start the network monitor to get the real-time status of the network. Assuming your testnet IP is **`192.168.1.103`**:
   ```shell
     npx arcology.net-monitor http://192.168.1.103:8545
   ```
+
+### Send Transactions   
 
 The path `ds-token-mint` contains 200k of the pre-signed transactions for the `mint` function of the contract.
 Assuming your IP address is `192.168.1.103`, Under the **`examples/ds-token`** directory run the following command to send the transactions to the network:
