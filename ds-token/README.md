@@ -28,7 +28,6 @@ Some modifications to the original implementation have been made with tools avai
   
 >> :bulb: The new implementation allows processing of concurrent calls to the same functions of the contract. For example, the `mint` and the`burn` function can be called by multiple users at the same time without any problem.
 
-
 ### Run the Demo
 
 First, Clone the repository:
@@ -43,3 +42,5 @@ Then run the following command to run the test script:
   ```shell
     yarn hardhat run test/test-dsToken.js --network TestnetInfo
   ```
+
+>> 
