@@ -49,6 +49,8 @@ Assuming your IP address is `192.168.1.103`, Under the **`examples/ds-token`** d
 
 ### Benchmark Data 
 
+Arcology scales with the resources available. The following table shows the benchmark data for the `DSToken` contract on a high-performance live testnet with the following configuration:
+
 | English                         | Details                                    |
 |---------------------------------|--------------------------------------------|
 | **CPU**                         | AMD Ryzen Threadripper 2950X 16-Core Processor |
