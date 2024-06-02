@@ -15,6 +15,13 @@ Clone the repository to your local machine and change directory to the `ds-token
     git clone --recurse-submodules https://github.com/arcology-network/examples.git
     cd examples/ds-token
   ```
+  
+### Deploy the Contract
+Under the `ds-token` directory, execute the following command to deploy the parallelized `DSToken` contract to the network:
+
+```shell
+    yarn hardhat run benchamark/deploy.js --network TestnetInfo
+```
 
 ### Send Transactions   
 
