@@ -15,7 +15,11 @@ The ds-token is chosen because it is simple enough for smart contract developers
 
 For 'mint' and 'burn' function, only one account is affected in each transaction—the account whose balance is increased by 'mint' or decreased by 'burn'. Therefore, calling 'mint' or 'burn' on different accounts does not create conflicts. 
 
-For example, mint(addressA, wad) and mint(addressB, wad), burn(addressA, wad) and burn(addressB, wad), and mint(addressA, wad) and burn(addressB, wad) are not conflicting. Although these operations need to update 'totalSupply', this update is done in a deferred function, which does not impact parallelization. However, mint(addressA, wad) and mint(addressA, wad), burn(addressA, wad) and burn(addressA, wad), and mint(addressA, wad) and burn(addressA, wad) are conflicting because they all need to access the same key 'addressA' in the ConcurrentHashMap named 'balanceOf', which is not allowed.
+For example, the following operations are not conflicting:
+
+- `mint(addressA, wad)` and `mint(addressB, wad)`
+- `burn(addressA, wad)` and `burn(addressB, wad)`
+- `mint(addressA, wad)` and `burn(addressB, wad)`
 
 For 'approve', 'transferFrom', and other wrapper functions, two accounts are involved: the token owner and the recipient. Similar to 'mint' and 'burn', if the account pairs in multiple transactions do not intersect, then the transactions are not conflicting and can be processed in parallel.
 
@@ -27,7 +31,6 @@ Some modifications to the original implementation have been made with tools avai
 - The `mint` and `burn` operate on the `totalSupply` by call `add` and `sub` on the `totalSupply`, instead of directly modifying it.
   
 >> :bulb: The new implementation allows processing of concurrent calls to the same functions of the contract. For example, the `mint` and the`burn` function can be called by multiple users at the same time without any problem.
-
 
 ### Run the Demo
 
@@ -43,3 +46,5 @@ Then run the following command to run the test script:
   ```shell
     yarn hardhat run test/test-dsToken.js --network TestnetInfo
   ```
+
+>> 
