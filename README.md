@@ -27,13 +27,13 @@ The examples are written in JavaScript and Solidity. To run the examples, you ne
 - **parallel-kitties:** The directory contains a parallelized version of [original CryptoKitties project](https://github.com/dapperlabs/cryptokitties-bounty).
 
 
-<h2> Running the Presigned Transctions <img align="center" height="25" src="./img/running.svg">  </h2>
+<h2> Presigned Transctions <img align="center" height="25" src="./img/dna.svg">  </h2>
 
-The package comes with some **pre-generated transactions** that you can use to test the examples. In the project directory, executing the following command to send the transctions calling `ParallelLike.sol` to the DevNet container at http://192.168.230.131:8545 to load the pre-generated transactions from the `parallel_likes.out` file and send them to the DevNet container.
+The package comes with some **pre-generated transactions** for benchmarking. In the project directory, executing the following command to send the transctions calling `ParallelLike.sol` to the DevNet container at http://192.168.230.131:8545 to load the pre-generated transactions from the `parallel_likes.out` file and send them to the DevNet container.
 
 The project also contains all the necessary files to run the ds-token on Arcology. Clone the repository to your local machine to get started.
 
-<h2> Run Your Own Transactions <img align="center" height="25" src="">  </h2>
+<h2> Run Your Own Transactions <img align="center" height="25" src="./img/running.svg">  </h2>
 
 You can also generate transcations for your own contract and send them to the network in a similar way. To do so, you first need to generate the transactions and save them to a file, which can be then loaded and sent to the network using the `send-txs.js` script. There are some examples you can refer to. 
 
