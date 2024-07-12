@@ -4,5 +4,6 @@ This repository contains examples related to parallelization and concurrency for
 
 - [Subcurrency](./docs/subcurrency.md)
 - [Voting](./docs/voting.md)
-- [Parallel auction](./docs/concurrentCounter.md)
-- [Parallel counter](./docs/concurrentCounter.md)
+- [Parallel Auction](./docs/concurrent-counter.md)
+- [Parallel Voting](./docs/voting.md)
+- [Parallel Vending Machine](./docs/vending-machine.md)

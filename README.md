@@ -10,30 +10,25 @@ The examples are written in JavaScript and Solidity. To run the examples, you ne
 - A live Arcology Network
 <!-- - An Arcology [DevNet docker container](https://github.com/arcology-network/devnet) running to test the examples. -->
 
-<h2> Package Structure  <img align="center" height="25" src="./img/library.svg">  </h2>
+<h2> Installation <img align="center" height="25" src="./img/cloud.svg">  </h2>
 
-- **simple:** The `simple` directory contains examples showcasing some simple examples to do concurrent programming with Arcology's concurrent library. 
+```bash 
+    git clone --recurse-submodules https://github.com/arcology-network/examples.git
+```
 
-- **eth-examples:** In the `eth-examples` directory, you'll find parallelized examples derived from some of the [original Ethereum examples](https://docs.soliditylang.org/en/v0.8.24/solidity-by-example.html). 
+<h2> Running the Examples  <img align="center" height="25" src="./img/library.svg">  </h2>
 
-- **ds-token:** The `ds-token` directory hosts a parallelized version of the [original ds-token project](https://github.com/dapphub/ds-token). Learn how parallelization techniques have been applied to enhance the performance of ds-token.
+- [**simple:**](./simple/README.md) The `simple` directory contains examples showcasing some simple examples to do concurrent programming with Arcology's concurrent library. 
+
+- [**eth-examples:**](./eth-examples/README.md) In the `eth-examples` directory, you'll find parallelized examples derived from some of the [original Ethereum examples](https://docs.soliditylang.org/en/v0.8.24/solidity-by-example.html). 
+
+- [**ds-token:**](./ds-token/README.md) The `ds-token` directory hosts a parallelized version of the [original ds-token project](https://github.com/dapphub/ds-token). Learn how parallelization techniques have been applied to enhance the performance of ds-token.
   
 - **parallel-kitties:** The directory contains a parallelized version of [original CryptoKitties project](https://github.com/dapperlabs/cryptokitties-bounty).
 
 The package comes with some **pre-generated transactions** that you can use to test the examples. In the project directory, executing the following command to send the transctions calling `ParallelLike.sol` to the DevNet container at http://192.168.230.131:8545 to load the pre-generated transactions from the `parallel_likes.out` file and send them to the DevNet container.
 
 The project also contains all the necessary files to run the ds-token on Arcology. Clone the repository to your local machine to get started.
-
-<h2> Installation <img align="center" height="25" src="./img/cloud.svg">  </h2>
-
-```bash 
-    git clone --recurse-submodules https://github.com/arcology-network/examples.git
-```
-<h2> Running the Examples <img align="center" height="25" src="./img/running.svg">  </h2>
-
-- [Ethereum examples](./eth-examples/README.md)
-- [Simple parallelizations](./simple/README.md)
-- [dstoken](./ds-token/README.md)
 
 <h2> Run Your Own Transactions <img align="center" height="25" src="">  </h2>
 
