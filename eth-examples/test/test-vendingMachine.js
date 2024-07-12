@@ -15,8 +15,8 @@ async function main() {
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
        
-    console.log('===========getCupcakeBalances=====================')
-    tx = await vendingMachine.getCupcakeBalances();
+    console.log('===========getCupcakeStock=====================')
+    tx = await vendingMachine.getCupcakeStock();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(`vendingMachine balance Data ${frontendUtil.parseEvent(receipt,"BalanceQuery")}`);
@@ -35,8 +35,8 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
 
-    console.log('===========getCupcakeBalances=====================')
-    tx = await vendingMachine.getCupcakeBalances();
+    console.log('===========getCupcakeStock=====================')
+    tx = await vendingMachine.getCupcakeStock();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(`vendingMachine balance Data ${frontendUtil.parseEvent(receipt,"BalanceQuery")}`);
@@ -46,9 +46,9 @@ async function main() {
       console.log('Test Failed');
     } 
 
-    console.log('===========getCustomerCupcakeBalances=====================')
+    console.log('===========getCupcakeBalances=====================')
     for(i=1;i<=10;i++){
-      tx = await vendingMachine.getCustomerCupcakeBalances(accounts[i].address);
+      tx = await vendingMachine.getCupcakeBalances(accounts[i].address);
       receipt=await tx.wait();
       console.log(frontendUtil.parseEvent(receipt,"BalanceQuery"));
       frontendUtil.showResult(frontendUtil.parseReceipt(receipt));

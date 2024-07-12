@@ -1,4 +1,4 @@
-pragma solidity >=0.8.0 <0.9.0;
+pragma solidity 0.8.19;
 
 import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
 
@@ -6,8 +6,8 @@ contract VendingMachine {
 
     // Declare state variables of the contract
     address public owner;
-    mapping (address => U256Cumulative) public cupcakeBalances;
-    mapping (address => uint) public customerCupcakeBalances;
+    U256Cumulative cupcakeStock;
+    mapping (address => uint) public cupcakeBalances;
 
     event BalanceQuery(uint256 value);
 
@@ -16,29 +16,29 @@ contract VendingMachine {
     // 2. set the deployed smart contract's cupcake balance to 100
     constructor() {
         owner = msg.sender;
-        cupcakeBalances[address(this)] = new U256Cumulative(0, 5000000);
+        cupcakeStock = new U256Cumulative(0, 5000000);
     }
 
     // Allow the owner to increase the smart contract's cupcake balance
     function refill(uint amount) public {
         require(msg.sender == owner, "Only the owner can refill.");
-        cupcakeBalances[address(this)].add(amount);
+        cupcakeStock.add(amount);
     }
 
     // Allow anyone to purchase cupcakes
     function purchase(uint amount) payable public{
         require(msg.value >= amount * 1 ether, "You must pay at least 1 ETH per cupcake");
-        cupcakeBalances[address(this)].sub(amount);
-        customerCupcakeBalances[msg.sender] += amount;
+        cupcakeStock.sub(amount);
+        cupcakeBalances[msg.sender] += amount;
     }
 
-    function getCupcakeBalances() public returns(uint256){
-        emit BalanceQuery(cupcakeBalances[address(this)].get());
-        return cupcakeBalances[address(this)].get();
+    function getCupcakeStock() public returns(uint256){
+        emit BalanceQuery(cupcakeStock.get());
+        return cupcakeStock.get();
     }
 
-    function getCustomerCupcakeBalances(address addr) public returns(uint256){
-        emit BalanceQuery(customerCupcakeBalances[addr]);
-        return customerCupcakeBalances[addr];
+    function getCupcakeBalances(address addr) public returns(uint256){
+        emit BalanceQuery(cupcakeBalances[addr]);
+        return cupcakeBalances[addr];
     }
 }
