@@ -9,6 +9,9 @@ async function main() {
     await bt.deployed();
     console.log(`Deployed Bool Test at ${bt.address}`)
 
+    // addr="0xB1e0e9e68297aAE01347F6Ce0ff21d5f72D3fa0F"
+    // const bt = await bt_factory.attach(addr) 
+
     console.log('===========visit=====================')
     var txs=new Array();
     for(i=1;i<=10;i++){
