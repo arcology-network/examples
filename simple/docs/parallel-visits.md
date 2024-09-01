@@ -17,7 +17,6 @@ A concurrent array is an arraythat can be added to concurrently by multiple tran
 
 This function adds a new entry (true) to the counter array each time it is called. The use of the Bool data structure allows for concurrent writes to this array, making it safe for multiple users to call this function simultaneously without conflicts.
 
-
 ### Running the Demo
 
 Check out the repository if you haven't done so and then change directory to it before installing the dependencies.
@@ -25,6 +24,16 @@ Check out the repository if you haven't done so and then change directory to it 
 ```shell 
     git clone --recurse-submodules https://github.com/arcology-network/examples.git
     cd examples/simple    
+```
+
+Since the example uses the `hardhat` framework, you need to edit the file `network.json` to replace the `url` with the URL of your running DevNet node. This allows the script to connect to the node.
+
+```json
+{
+    "TestnetInfo": {
+        "url": "your-devnet-rpc-url",
+    }
+}
 ```
 
 Run the test script:
