@@ -36,15 +36,25 @@ Some modifications to the original implementation have been made with tools avai
 
 First, Clone the repository:
 
-  ```shell
+```shell
     git clone --recurse-submodules https://github.com/arcology-network/examples.git
     cd examples/ds-token
-  ```
+```
+
+Since the example uses the hardhat framework, you need to edit the file network.json to replace the url with the URL of your running DevNet node. This allows the script to connect to the node.
+
+```shell
+{
+    "TestnetInfo": {
+        "url": "your-devnet-rpc-url",
+    }
+}
+```
 
 Then run the following command to run the test script:
 
-  ```shell
+```shell
     yarn hardhat run test/test-dsToken.js --network TestnetInfo
-  ```
+```
 
 >> 
