@@ -6,7 +6,7 @@ The provided Solidity code defines a smart contract named Like that utilizes Arc
 
 ###  Analysis
 
-The [contract](./contracts/ParallelLike.sol) imports the `U256Cumulative` library from the Arcology concurrent library. The `U256Cumulative` data structure is used to handle concurrent updates to a counter.
+The [contract](../contracts/ParallelLike.sol) imports the `U256Cumulative` library from the Arcology concurrent library. The `U256Cumulative` data structure is used to handle concurrent updates to a counter.
 
 #### `likes` Counter
 

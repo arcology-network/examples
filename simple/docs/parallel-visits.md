@@ -6,7 +6,7 @@ Commutative data structures aren't the only way to count things concurrently. Th
 
 ### Analysis
 
-This [contract](./contracts/ParallelVisits.sol) imports the Bool data structure is used to handle concurrent updates to an array of boolean values. 
+This [contract](../contracts/ParallelVisits.sol) imports the Bool data structure is used to handle concurrent updates to an array of boolean values. 
 
 #### `counter` Variable
 
