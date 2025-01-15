@@ -23,6 +23,16 @@ Under examples/eth-examples/, run the script to install dependencies.
     npm install
 ``` 
 
+Since the example uses the `hardhat` framework, you need to edit the file `network.json` to replace the `url` with the URL of your running DevNet node. This allows the script to connect to the node.
+
+```json
+{
+    "TestnetInfo": {
+        "url": "your-devnet-rpc-url",
+    }
+}
+```
+
 Run the example: 
 
 ``` shell

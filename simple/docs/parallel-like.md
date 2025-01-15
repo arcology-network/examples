@@ -6,7 +6,7 @@ The provided Solidity code defines a smart contract named Like that utilizes Arc
 
 ###  Analysis
 
-The [contract](./contracts/ParallelLike.sol) imports the `U256Cumulative` library from the Arcology concurrent library. The `U256Cumulative` data structure is used to handle concurrent updates to a counter.
+The [contract](../contracts/ParallelLike.sol) imports the `U256Cumulative` library from the Arcology concurrent library. The `U256Cumulative` data structure is used to handle concurrent updates to a counter.
 
 #### `likes` Counter
 
@@ -16,6 +16,7 @@ The contract initializes a U256Cumulative counter named likes with a starting va
 
 This function increments the likes counter by 1 each time it is called. The use of the U256Cumulative data structure allows for concurrent calls to this function from mutiple transactions without conflicts, making it safe for multiple users to call simultaneously.
 
+
 ### Running the Demo
 
 Check out the repository if you haven't done so and then change directory to it before installing the dependencies.
@@ -24,6 +25,16 @@ Check out the repository if you haven't done so and then change directory to it 
     git clone --recurse-submodules https://github.com/arcology-network/examples.git
     cd examples/simple    
     npm install
+```
+
+Since the example uses the `hardhat` framework, you need to edit the file `network.json` to replace the `url` with the URL of your running DevNet node. This allows the script to connect to the node.
+
+```json
+{
+    "TestnetInfo": {
+        "url": "your-devnet-rpc-url",
+    }
+}
 ```
 
 Run the example:
