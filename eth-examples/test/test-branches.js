@@ -4,7 +4,7 @@ var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 async function main() {
     accounts = await ethers.getSigners(); 
 
-    const visit_factory = await ethers.getContractFactory("VisitCounter");
+    const visit_factory = await ethers.getContractFactory("VisitCount");
     const visitCounter = await visit_factory.deploy();
     await visitCounter.deployed();
     console.log(`Deployed visitCounter at ${visitCounter.address}`)

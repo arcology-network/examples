@@ -4,7 +4,7 @@
 // NO changes were made to the original contract. This is natually a parallel contract.
 
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.8.0 <0.9.0;
+pragma solidity >=0.7.0;
 
 contract Coin {
     // The keyword "public" makes variables
@@ -33,17 +33,17 @@ contract Coin {
     // Errors allow you to provide information about
     // why an operation failed. They are returned
     // to the caller of the function.
-    error InsufficientBalance(uint requested, uint available);
+    // error InsufficientBalance(uint requested, uint available);
 
     // Sends an amount of existing coins
     // from any caller to an address
     function send(address receiver, uint amount) public {
-        if (amount > balances[msg.sender])
-            revert InsufficientBalance({
-                requested: amount,
-                available: balances[msg.sender]
-            });
-
+        // if (amount > balances[msg.sender])
+        //     revert InsufficientBalance({
+        //         requested: amount,
+        //         available: balances[msg.sender]
+        //     });
+        require(amount <= balances[msg.sender],"InsufficientBalance");
         balances[msg.sender] -= amount;
         balances[receiver] += amount;
         emit Sent(msg.sender, receiver, amount);

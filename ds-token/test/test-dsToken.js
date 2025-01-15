@@ -13,13 +13,13 @@ async function main() {
 
     console.log('===========mint=====================')
     txs=new Array();
-    for(i=1;i<=4;i++){
+    for(i=1;i<=10;i++){
       txs.push(frontendUtil.generateTx(function([dstoken,from,val]){
         return dstoken.mint(from.address,val);
       },dstoken,accounts[i],100+i));
     }
     await frontendUtil.waitingTxs(txs);
-    
+
     console.log('===========balance=====================')
     for(i=1;i<=8;i++){
       tx = await dstoken.balance(accounts[i].address);

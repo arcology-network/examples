@@ -21,7 +21,7 @@
 
 
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.8.0 < 0.9.0;
+pragma solidity >=0.7.0;
 
 import "@arcologynetwork/concurrentlib/lib/map/AddressUint256.sol";
 
@@ -59,13 +59,13 @@ contract SimpleAuction {
     // when an error is displayed.
 
     /// The auction has already ended.
-    error AuctionAlreadyEnded();
+    // error AuctionAlreadyEnded();
     /// There is already a higher or equal bid.
-    error BidNotHighEnough(uint highestBid);
+    // error BidNotHighEnough(uint highestBid);
     /// The auction has not ended yet.
-    error AuctionNotYetEnded();
+    // error AuctionNotYetEnded();
     /// The function auctionEnd has already been called.
-    error AuctionEndAlreadyCalled();
+    // error AuctionEndAlreadyCalled();
 
     /// Create a simple auction with `biddingTime`
     /// seconds bidding time on behalf of the
@@ -95,8 +95,9 @@ contract SimpleAuction {
 
         // Revert the call if the bidding
         // period is over.
-        if (block.timestamp > auctionEndTime)
-            revert AuctionAlreadyEnded();
+        // if (block.timestamp > auctionEndTime)
+        //     revert AuctionAlreadyEnded();
+        require(block.timestamp <= auctionEndTime,"AuctionAlreadyEnded");
           
         // If the bid is not higher, send the
         // Ether back (the revert statement
@@ -128,9 +129,10 @@ contract SimpleAuction {
 
     /// Withdraw a bid that was overbid.
     function withdraw() external returns (bool) {
-        if (!ended) {
-            revert AuctionNotYetEnded();
-        }
+        // if (!ended) {
+        //     revert AuctionNotYetEnded();
+        // }
+        require(ended,"AuctionNotYetEnded");
 
         if(msg.sender == highestBidder) {
             return false;
@@ -173,21 +175,24 @@ contract SimpleAuction {
         // external contracts.
 
         // 1. Conditions
-        if (block.timestamp < auctionEndTime){
-            emit AuctionTime(block.timestamp,auctionEndTime);
-            require(false);
-            revert AuctionNotYetEnded();
-        }
-            
-        if (ended){
+        // if (block.timestamp < auctionEndTime){
+        //     emit AuctionTime(block.timestamp,auctionEndTime);
+        //     require(false);
+        //     revert AuctionNotYetEnded();
+        // }
+        
+        require(block.timestamp >= auctionEndTime,"AuctionNotYetEnded");
+        emit AuctionTime(block.timestamp,auctionEndTime);
 
-            revert AuctionEndAlreadyCalled();
-        }
+        // if (ended){
+            require(!ended,"AuctionEndAlreadyCalled");
+            // revert AuctionEndAlreadyCalled();
+        // }
             
-
+        
         // We need to find the highest bidder and the highest bid.
         (highestBidder,, highestBid) = bidders.max();
-
+        
         // 2. Effects
         ended = true;
         emit AuctionEnded(highestBidder, highestBid);

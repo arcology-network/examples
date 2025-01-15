@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.8.0 <0.9.0;
+pragma solidity >=0.7.0;
 
 import "@arcologynetwork/concurrentlib/lib/array/Bool.sol";
 
@@ -10,11 +10,18 @@ contract Visits {
     event CounterQuery(uint256 value);
 
     function visit() public {
-        counter.push(true); // Add a new visit to the counter. Concurrent writes are OK !!.
+        emit CounterQuery(counter.committedLength());
+        if(counter.committedLength()>0){
+            counter.push(true); // Add a new visit to the counter. Concurrent writes are OK !!.
+            emit CounterQuery(counter.nonNilCount());
+        }else{
+            counter.push(true); // Add a new visit to the counter. Concurrent writes are OK !!.
+        }
+            
     }
 
     function getCounter() public returns(uint256){
-        emit CounterQuery(counter.length());
-        return counter.length(); // Return the number of visits to the contract.
+        emit CounterQuery(counter.nonNilCount());
+        return counter.nonNilCount(); // Return the number of visits to the contract.
     }
 }

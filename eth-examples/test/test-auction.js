@@ -31,6 +31,7 @@ async function main() {
       .catch((error) => {
           receipt = error.receipt
       })
+      // console.log(receipt);
       frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
       if(frontendUtil.parseEvent(receipt,"AuctionEndCompleted")==="0x0000000000000000000000000000000000000000000000000000000000000001"){
         break;

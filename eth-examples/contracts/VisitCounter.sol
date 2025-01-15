@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.8.0 <0.9.0;
+pragma solidity >=0.7.0;
 
 import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
 
-contract VisitCounter {    
+contract VisitCount {    
     U256Cumulative visitCount;
     event CounterQuery(uint256 value);
 
