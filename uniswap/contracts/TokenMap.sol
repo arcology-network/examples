@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.7.6;
 import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
-import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
 
 
-contract TokenMap {
+contract Token {
 
-    AddressU256Map private _balances;
+    mapping (address => U256Cumulative) private _balances;
 
-    mapping (address => AddressU256Map) private _allowances;
+    mapping (address => mapping (address => U256Cumulative)) private _allowances;
 
     U256Cumulative private _totalSupply;
 
@@ -37,7 +36,6 @@ contract TokenMap {
         _symbol = symbol_;
         _decimals = 18;
         _totalSupply = new U256Cumulative(0, type(uint256).max);
-        _balances = new AddressU256Map();
         owner = msg.sender;
     }
 
@@ -84,10 +82,10 @@ contract TokenMap {
      * @dev See {IERC20-balanceOf}.
      */
     function balanceOf(address account) external view returns (uint256) {
-        if(!_balances.exist(account)){
+        if(address(_balances[account])==address(0)){
             return 0;
         }
-        return _balances.get(account);
+        return _balances[account].get();
     }
 
     /**
@@ -107,10 +105,10 @@ contract TokenMap {
      * @dev See {IERC20-allowance}.
      */
     function allowance(address owner, address spender) external view returns (uint256) {
-        if(address(_allowances[owner])==address(0)||!_allowances[owner].exist(spender)){
+        if(address(_allowances[owner][spender])==address(0)){
             return 0;
         }
-        return _allowances[owner].get(spender);
+        return _allowances[owner][spender].get();
     }
 
     /**
@@ -140,11 +138,10 @@ contract TokenMap {
      */
     function transferFrom(address sender, address recipient, uint256 amount) external returns (bool) {
         _transfer(sender, recipient, amount);
-        require(address(_allowances[sender]) != address(0), "this operation requires approve");
-        require(_allowances[sender].exist(msg.sender), "this operation requires approve");
-        require(_allowances[sender].get(msg.sender)>= amount, "transfer amount exceeds allowance");
-        _allowances[sender].set(msg.sender,-int256(amount));
-        _approve(sender, msg.sender, _allowances[sender].get(msg.sender));
+        require(address(_allowances[sender][msg.sender]) != address(0), "this operation requires approve");
+        require(_allowances[sender][msg.sender].get()>= amount, "transfer amount exceeds allowance");
+        _allowances[sender][msg.sender].sub(amount);
+        _approve(sender, msg.sender, _allowances[sender][msg.sender].get());
         return true;
     }
 
@@ -166,13 +163,13 @@ contract TokenMap {
         require(sender != address(0), "transfer from the zero address");
         require(recipient != address(0), "transfer to the zero address");
         _beforeTokenTransfer(sender, recipient, amount);
-        require(_balances.exist(sender), "transfer amount exceeds balance");
-        require(_balances.get(sender)>= amount, "transfer amount exceeds balance");
-        _balances.set(sender,-int256(amount));
-        if(!_balances.exist(recipient)){
-            _balances.insert(recipient, 0, 0, type(uint256).max);
+        require(address(_balances[sender]) != address(0), "transfer amount exceeds balance");
+        require(_balances[sender].get()>= amount, "transfer amount exceeds balance");
+        _balances[sender].sub(amount);
+        if(address(_balances[recipient])==address(0)){
+            _balances[recipient]=new U256Cumulative(0, type(uint256).max);
         }
-        _balances.set(recipient, int256(amount));
+        _balances[recipient].add(amount);
         emit Transfer(sender, recipient, amount);
     }
 
@@ -192,10 +189,10 @@ contract TokenMap {
 
         _totalSupply.add(amount);
 
-        if(!_balances.exist(account)){
-            _balances.insert(account, 0, 0, type(uint256).max);
+        if(address(_balances[account])==address(0)){
+            _balances[account]=new U256Cumulative(0, type(uint256).max);
         }
-        _balances.set(account, int256(amount)); 
+        _balances[account].add(amount);
         emit Transfer(address(0), account, amount);
     }
 
@@ -215,9 +212,9 @@ contract TokenMap {
 
         _beforeTokenTransfer(account, address(0), amount);
 
-        require(_balances.exist(account), "burn amount exceeds balance");
-        require(_balances.get(account)>= amount, "burn amount exceeds balance");
-        _balances.set(account,-int256(amount));
+        require(address(_balances[account]) != address(0), "burn amount exceeds balance");
+        require(_balances[account].get()>= amount, "burn amount exceeds balance");
+        _balances[account].sub(amount);
 
         _totalSupply.sub(amount);
         emit Transfer(account, address(0), amount);
@@ -239,15 +236,11 @@ contract TokenMap {
     function _approve(address owner, address spender, uint256 amount) internal virtual {
         require(owner != address(0), "approve from the zero address");
         require(spender != address(0), "approve to the zero address");
-        if(address(_allowances[owner])==address(0)){
-            AddressU256Map _allow = new AddressU256Map();
-            _allowances[owner]=_allow;
+
+        if(address(_allowances[owner][spender])==address(0)){
+            _allowances[owner][spender]=new U256Cumulative(0, type(uint256).max);
         }
-        if(!_allowances[owner].exist(spender)){
-            _allowances[owner].insert(spender, 0, 0, type(uint256).max);
-        }
-        
-        _allowances[owner].set(spender,int256(amount));
+        _allowances[owner][spender].add(amount);
         emit Approval(owner, spender, amount);
     }
 
