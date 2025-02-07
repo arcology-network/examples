@@ -2,13 +2,14 @@
 pragma solidity 0.7.6;
 import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
 import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
+import "./Bytes32U256Map.sol";
 
 
-contract TokenMap {
+contract Token {
 
     AddressU256Map private _balances;
 
-    mapping (address => AddressU256Map) private _allowances;
+    Bytes32U256Map private _allowances;
 
     U256Cumulative private _totalSupply;
 
@@ -38,6 +39,7 @@ contract TokenMap {
         _decimals = 18;
         _totalSupply = new U256Cumulative(0, type(uint256).max);
         _balances = new AddressU256Map();
+        _allowances = new Bytes32U256Map();
         owner = msg.sender;
     }
 
@@ -103,14 +105,18 @@ contract TokenMap {
         return true;
     }
 
+    function _key(address owner, address spender) internal view returns(bytes32){
+        return keccak256(abi.encodePacked(owner, spender));
+    }
     /**
      * @dev See {IERC20-allowance}.
      */
     function allowance(address owner, address spender) external view returns (uint256) {
-        if(address(_allowances[owner])==address(0)||!_allowances[owner].exist(spender)){
+        bytes32 key = _key(owner,spender);
+        if(!_allowances.exist(key)){
             return 0;
         }
-        return _allowances[owner].get(spender);
+        return _allowances.get(key);
     }
 
     /**
@@ -140,11 +146,11 @@ contract TokenMap {
      */
     function transferFrom(address sender, address recipient, uint256 amount) external returns (bool) {
         _transfer(sender, recipient, amount);
-        require(address(_allowances[sender]) != address(0), "this operation requires approve");
-        require(_allowances[sender].exist(msg.sender), "this operation requires approve");
-        require(_allowances[sender].get(msg.sender)>= amount, "transfer amount exceeds allowance");
-        _allowances[sender].set(msg.sender,-int256(amount));
-        _approve(sender, msg.sender, _allowances[sender].get(msg.sender));
+        bytes32 key = _key(sender,msg.sender);
+        require(_allowances.exist(key), "this operation requires approve");
+        require(_allowances.get(key)>= amount, "transfer amount exceeds allowance");
+        _allowances.set(key,-int256(amount));
+        _approve(sender, msg.sender, _allowances.get(key));
         return true;
     }
 
@@ -239,15 +245,11 @@ contract TokenMap {
     function _approve(address owner, address spender, uint256 amount) internal virtual {
         require(owner != address(0), "approve from the zero address");
         require(spender != address(0), "approve to the zero address");
-        if(address(_allowances[owner])==address(0)){
-            AddressU256Map _allow = new AddressU256Map();
-            _allowances[owner]=_allow;
+        bytes32 key = _key(owner,spender);
+        if(!_allowances.exist(key)){
+            _allowances.insert(key, 0, 0, type(uint256).max);
         }
-        if(!_allowances[owner].exist(spender)){
-            _allowances[owner].insert(spender, 0, 0, type(uint256).max);
-        }
-        
-        _allowances[owner].set(spender,int256(amount));
+        _allowances.set(key, int256(amount));
         emit Approval(owner, spender, amount);
     }
 
