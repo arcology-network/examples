@@ -27,7 +27,7 @@ async function main() {
   let i,tx;
 
   console.log('===========start create Token=====================')
-  const tokenFactory = await ethers.getContractFactory("TokenMap");
+  const tokenFactory = await ethers.getContractFactory("Token");
   var tokenInsArray=new Array();
   for(i=0;i<tokenCount;i++){
     const tokenIns = await tokenFactory.deploy("token"+i, "TKN"+i);
@@ -152,26 +152,10 @@ async function main() {
     await getBalance(tokenInsArray[i],accounts[i+4],i);
   }
 
-  // console.log('===========start approve token=====================')
-  
-  // for (i=0;i+1<tokenCount;i=i+poolStyle) {
-  //   var txs=new Array();
-  //   for(j=0;j+1<accounts.length;j=j+2){
-  //     mintAmount=ethers.utils.parseUnits("1", 18).mul(j+1);
-  //     amountA=mintAmount
-  //     amountB=mintAmount.mul(4);
-
-  //     txs.push(frontendUtil.generateTx(function([token,from,routerAdr,amount]){
-  //       return token.connect(from).approve(routerAdr,amount);
-  //     },tokenInsArray[i],accounts[j],accounts[0].address,amountA));
-
-  //     txs.push(frontendUtil.generateTx(function([token,from,routerAdr,amount]){
-  //       return token.connect(from).approve(routerAdr,amount);
-  //     },tokenInsArray[i+1],accounts[j+1],accounts[0].address,amountB));
-  //   }
-  //   await frontendUtil.waitingTxs(txs);
-  // }
-  
+  console.log('===========query allowance=====================')
+  for (i=0;i<tokenCount;i++) {
+    await getAllowance(tokenInsArray[i],accounts[i],accounts[i+4],i);
+  }
 
 
 }

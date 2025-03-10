@@ -12,15 +12,14 @@ async function main() {
   
 
 
-  const tokenCount=4;  //Token number
-  const poolCount=5;    //Pool number
+  const tokenCount=20;  //Token number
   const poolStyle=2;    //Liquidity Pool Organization
                         // 2 - (tokenA tokenB)  (tokenC tokenD)   
                         // 1 - (tokenA tokenB)  (tokenB tokenC)  (tokenC tokenD)
 
   const flag0_poolInit=true;
   const flag1_liquidity_mint=true;
-  const flag2_swap=true;
+  const flag2_swap=false;
 
   const [swapfactory,nonfungiblePositionManager,router] = await deployBaseContract();
 
@@ -44,6 +43,7 @@ async function main() {
   for (i=0;i+1<tokenCount;i=i+poolStyle) {
       tx = await swapfactory.createPool(tokenInsArray[i].address, tokenInsArray[i+1].address, fee);
       receipt = await tx.wait();
+      // console.log(receipt);
       frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
       PoolCreatedDate=frontendUtil.parseEvent(receipt,"PoolCreated");
       strlen=PoolCreatedDate.length;
@@ -68,23 +68,25 @@ async function main() {
   if(flag0_poolInit){
     var txs=new Array();
     for (i=0;i<poolArray.length;i++) {
-      txs.push(frontendUtil.generateTx(function([pool]){
+      txs.push(frontendUtil.generateTx(function([pool,sqrtPriceX96]){
         return pool.initialize(sqrtPriceX96);
-      },poolArray[i]));
+      },poolArray[i],sqrtPriceX96));
     }
     await frontendUtil.waitingTxs(txs);
-  }else{
-    const handle_pool_init=frontendUtil.newFile('data/pool-init.out')
-    for (i=0;i<poolArray.length;i++) {
-      tx = await poolArray[i].populateTransaction.initialize(sqrtPriceX96);
-      await writePreSignedTxFile(handle_pool_init,signerCreator,tx);
-    }
-    return
   }
+  // else{
+  //   const handle_pool_init=frontendUtil.newFile('data/pool-init.out')
+  //   for (i=0;i<poolArray.length;i++) {
+  //     tx = await poolArray[i].populateTransaction.initialize(sqrtPriceX96);
+  //     await writePreSignedTxFile(handle_pool_init,signerCreator,tx);
+  //   }
+  //   return
+  // }
   
   // console.log('===========start mint token for addLiquidity=====================')
   
-  let mintAmount=ethers.utils.parseUnits("800000", 18)
+  let mintAmount=ethers.utils.parseUnits("80000000", 18)
+  // let mintAmount=ethers.utils.parseUnits("8000", 18)
   let amountA ,amountB
   if(flag1_liquidity_mint){
     console.log('===========start mint token=====================')
@@ -117,36 +119,37 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
 
-  }else{
+  }
+  // else{
 
-    frontendUtil.ensurePath('data/token-mint');
-    const handle_token_mint=frontendUtil.newFile('data/token-mint/token-mint.out')
-    frontendUtil.ensurePath('data/token-approve');
-    const handle_token_approve=frontendUtil.newFile('data/token-approve/token-approve.out')
+  //   frontendUtil.ensurePath('data/token-mint');
+  //   const handle_token_mint=frontendUtil.newFile('data/token-mint/token-mint.out')
+  //   frontendUtil.ensurePath('data/token-approve');
+  //   const handle_token_approve=frontendUtil.newFile('data/token-approve/token-approve.out')
 
     
 
-    for (i=0;i+1<tokenCount;i=i+poolStyle) {
-      [amountA ,amountB]=computeMintAmount(tokenInsArray[i].address,tokenInsArray[i+1].address,mintAmount,price);
+  //   for (i=0;i+1<tokenCount;i=i+poolStyle) {
+  //     [amountA ,amountB]=computeMintAmount(tokenInsArray[i].address,tokenInsArray[i+1].address,mintAmount,price);
       
-      tx = await tokenInsArray[i].populateTransaction.mint(accounts[i].address,amountA);
-      await writePreSignedTxFile(handle_token_mint,signerCreator,tx);
+  //     tx = await tokenInsArray[i].populateTransaction.mint(accounts[i].address,amountA);
+  //     await writePreSignedTxFile(handle_token_mint,signerCreator,tx);
 
-      tx = await tokenInsArray[i+1].populateTransaction.mint(accounts[i].address,amountB);
-      await writePreSignedTxFile(handle_token_mint,signerCreator,tx);
+  //     tx = await tokenInsArray[i+1].populateTransaction.mint(accounts[i].address,amountB);
+  //     await writePreSignedTxFile(handle_token_mint,signerCreator,tx);
 
-      //-------------------------------------approve-------------------------------------------------
-      pk=nets[hre.network.name].accounts[i];
-      signer = new ethers.Wallet(pk, provider);
+  //     //-------------------------------------approve-------------------------------------------------
+  //     pk=nets[hre.network.name].accounts[i];
+  //     signer = new ethers.Wallet(pk, provider);
 
-      tx = await tokenInsArray[i].connect(accounts[i]).populateTransaction.approve(nonfungiblePositionManager.address,amountA);
-      await writePreSignedTxFile(handle_token_approve,signer,tx);
+  //     tx = await tokenInsArray[i].connect(accounts[i]).populateTransaction.approve(nonfungiblePositionManager.address,amountA);
+  //     await writePreSignedTxFile(handle_token_approve,signer,tx);
 
-      tx = await tokenInsArray[i+1].connect(accounts[i]).populateTransaction.approve(nonfungiblePositionManager.address,amountB);
-      await writePreSignedTxFile(handle_token_approve,signer,tx);
-    }
-    return
-  }
+  //     tx = await tokenInsArray[i+1].connect(accounts[i]).populateTransaction.approve(nonfungiblePositionManager.address,amountB);
+  //     await writePreSignedTxFile(handle_token_approve,signer,tx);
+  //   }
+  //   return
+  // }
 
   console.log('===========before addLiquidity=====================')
   for (i=0;i+1<tokenCount;i=i+poolStyle) {
@@ -191,15 +194,15 @@ async function main() {
   }
   
   //-------------------------------for swap----------------------------------
-  
+  let accountsLength=accounts.length
   if(flag2_swap){
     console.log('===========start mint token=====================')
     let j;
     for (i=0;i+1<tokenCount;i=i+poolStyle) {
       var txs=new Array();
-      for(j=0;j+1<accounts.length;j=j+2){
+      for(j=0;j+1<accountsLength;j=j+2){
         mintAmount=ethers.utils.parseUnits("1", 18).mul(j+1);
-        //console.log(`mint token for swap: ${mintAmount} at i:${i} j:${j}`);
+        // console.log(`mint token for swap: ${mintAmount} at i:${i} j:${j}`);
         [amountA ,amountB]=computeMintAmount(tokenInsArray[i].address,tokenInsArray[i+1].address,mintAmount,price);
 
         txs.push(frontendUtil.generateTx(function([token,receipt,amount]){
@@ -218,7 +221,7 @@ async function main() {
     
     for (i=0;i+1<tokenCount;i=i+poolStyle) {
       var txs=new Array();
-      for(j=0;j+1<accounts.length;j=j+2){
+      for(j=0;j+1<accountsLength;j=j+2){
         mintAmount=ethers.utils.parseUnits("1", 18).mul(j+1);
         //console.log(`approve token for swap: ${mintAmount} at i:${i} j:${j}`);
         [amountA ,amountB]=computeMintAmount(tokenInsArray[i].address,tokenInsArray[i+1].address,mintAmount,price);
@@ -239,8 +242,8 @@ async function main() {
     
     for (i=0;i+1<tokenCount;i=i+poolStyle) {
       var txs=new Array();
-      // for(j=0;j+1<accounts.length;j=j+2){
-      for(j=0;j+1<4;j=j+2){
+      for(j=0;j+1<accountsLength;j=j+2){
+      // for(j=0;j+1<4;j=j+2){
         mintAmount=ethers.utils.parseUnits("1", 18).mul(j+1);
         // console.log(`swap: ${mintAmount} at i:${i} j:${j}`);
         [amountA ,amountB]=computeMintAmount(tokenInsArray[i].address,tokenInsArray[i+1].address,mintAmount,price);
@@ -259,7 +262,7 @@ async function main() {
     
 
   }else{
-
+    
     frontendUtil.ensurePath('data/swap-mint');
     const handle_swap_token_mint=frontendUtil.newFile('data/swap-mint/swap-token-mint.out')
     frontendUtil.ensurePath('data/swap-approve');
@@ -271,10 +274,10 @@ async function main() {
 
     for (i=0;i+1<tokenCount;i=i+poolStyle) {
       for(j=0;j+1<accounts.length;j=j+2){
-        mintAmount=ethers.utils.parseUnits("1", 18).mul(getRandom(8));
-        console.log(`swap: ${mintAmount} at i:${i} j:${j}`);
+        
+        mintAmount=ethers.utils.parseUnits("1", 18).mul(getRandom(4));
         [amountA ,amountB]=computeMintAmount(tokenInsArray[i].address,tokenInsArray[i+1].address,mintAmount,price);
-        console.log(`amountA: ${amountA}  amountB:${amountB} `);
+        console.log(`swap: ${mintAmount} at i:${i} j:${j} amountA: ${amountA}  amountB:${amountB} `);
         //mint
         tx = await tokenInsArray[i].populateTransaction.mint(accounts[j].address,amountA);
         await writePreSignedTxFile(handle_swap_token_mint,signerCreator,tx);
@@ -302,12 +305,31 @@ async function main() {
         tx = await swap(tokenInsArray[i+1].address,tokenInsArray[i].address,fee,accounts[j+1],amountB,router,false);
         await writePreSignedTxFile(handle_swap,signer1,tx);
       }
+      console.log(`create swap txs : ${(i+1)*accounts.length} `);
     }
+    
   }
-
+  
   
 }
+async function generateTx(fn,...args){
+  const tx = await fn(args);
+  let receipt; //=await tx.wait();
 
+  await tx.wait()
+  .then((rect) => {
+      // console.log("the transaction was successful")
+      receipt=rect;
+  })
+  .catch((error) => {
+      receipt = error.receipt
+      // console.log(error)
+  })
+
+  return new Promise((resolve, reject) => {  
+    resolve(receipt)
+  })
+}
 
 /**
  * Waits for multiple transactions to complete and shows the results.
@@ -380,7 +402,7 @@ async function swap(tokenA,tokenB,fee,from,amountIn,swapRouter,isExecute){
     return swapRouter.connect(from).exactInputSingleDefer(params);
   }else{
     return swapRouter.connect(from).populateTransaction.exactInputSingleDefer(params, {
-      gasLimit: 500000000 
+      gasLimit: 50000000000 
     });
   }
   

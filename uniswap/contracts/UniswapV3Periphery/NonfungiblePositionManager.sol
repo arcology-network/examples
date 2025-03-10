@@ -124,7 +124,7 @@ contract NonfungiblePositionManager is
         }
     }
 
-    
+
 
     /// @inheritdoc INonfungiblePositionManager
     function mint(MintParams calldata params)

@@ -149,16 +149,11 @@ contract SwapRouter is
         uint160 sqrtPriceLimitX96,
         SwapCallbackData memory data) internal {
 
-        // if(pools.committedLength()==0){
+
+        // if(flags.committedLength()==0){
         //     swapDatas.clear();
         //     pools.clear();
-        //     emit Step(100);
         // }
-
-        if(flags.committedLength()==0){
-            swapDatas.clear();
-            pools.clear();
-        }
 
 
         (address tokenIn,address tokenOut , ) = data.path.decodeFirstPool();
@@ -196,7 +191,7 @@ contract SwapRouter is
         
         for(uint i = 0; i < idxes.length; i++){
             uint idx=idxes[i];
-            if(!swapDatas._exists(idx)) continue;
+            // if(!swapDatas._exists(idx)) continue;
             (  ,
             
             address  tokenIn,
@@ -215,7 +210,7 @@ contract SwapRouter is
         uint[] memory idxes=swapDataGroup[abi.encodePacked(pooladr,tokenMin)];
         for(uint i = 0; i < idxes.length; i++){
             uint idx=idxes[i];
-            if(!swapDatas._exists(idx)) continue;
+            // if(!swapDatas._exists(idx)) continue;
             ( ,
               ,
             address  tokenOut,
@@ -237,7 +232,7 @@ contract SwapRouter is
         
         for(uint i = 0; i < idxes.length; i++){
             uint idx=idxes[i];
-            if(!swapDatas._exists(idx)) continue;
+            // if(!swapDatas._exists(idx)) continue;
             ( ,
             address  tokenIn,
             address  tokenOut,
@@ -267,7 +262,7 @@ contract SwapRouter is
         uint[] memory idxes=swapDataGroup[abi.encodePacked(pooladr,tokenMax)];
         for(uint i = 0; i < idxes.length; i++){
             uint idx=idxes[i];
-            if(!swapDatas._exists(idx)) continue;
+            // if(!swapDatas._exists(idx)) continue;
             ( ,
             address  tokenIn,
             address  tokenOut,
@@ -293,7 +288,6 @@ contract SwapRouter is
                 break;
             }
         }
-        
     }
    
     function EmitSwapEvent(uint idx,uint256 amount0,uint256 amount1,uint160 sqrtPriceX96)internal{
@@ -337,7 +331,9 @@ contract SwapRouter is
     }
 
     function getPools() internal{
-        for(uint i = 0; i < pools.fullLength(); i++){
+        uint256 poolSize=pools.fullLength();
+        for(uint i = 0; i < poolSize; i++){
+            // if(!pools._exists(i)) continue;
             (address pooladr,,)=pools.get(i);
             if(poolMp[pooladr]){
                 pools._del(i);
@@ -347,74 +343,69 @@ contract SwapRouter is
         }
     }
 
-    event MyLog(uint256 val);
+    function  parseCalldata()internal{
+        uint256 swapDataSize = swapDatas.fullLength();
+        for(uint i = 0; i < swapDataSize; i++){
+            // if(!pools._exists(i)) continue;
 
-    function parseCalldata()internal{
-        
-        for(uint i = 0; i < swapDatas.fullLength(); i++){
-            // emit Step(17);
             (address pooladr,,)=pools.get(i);
-            // emit Step(18);
+            // if(!swapDatas._exists(i)) continue;
+   
             (,address tokenIn,,,,,uint256 amountIn,,)=swapDatas.get(i);
-            // emit Step(19);
+    
             bytes memory key=abi.encodePacked(pooladr,tokenIn);
-            // emit Step(20);
+
             swapDataGroup[key].push(i);
-            // emit Step(21);
-            amountInSum[key]+=amountIn;
+
+            amountInSum[key]+=amountIn;            
         }
-        // emit Step(22);
     }
     
     event Step(uint256 _step);
 
     function dererProcess() internal {
         if(flags.committedLength()>0){
+            
             flags.clear();
-            // emit Step(0);
-            emit MyLog(1024);
-            emit MyLog(swapDatas.fullLength());
-            emit MyLog(1024);
             
             parseCalldata();
-            emit Step(17);
+            
             getPools();
-            emit Step(18);
-            for(uint i = 0; i < pools.fullLength(); i++){
-                emit Step(19);
+            
+            uint256 poolSize = pools.fullLength();
+            for(uint i = 0; i < poolSize; i++){
                 if(!pools._exists(i)) continue;
-                emit Step(20);
                 (address pooladr,address tokenA,address tokenB)=pools.get(i);
-                emit Step(21);
                 (address tokenMin,address tokenMax,uint256 amountMinCounterPart)=findMax(pooladr,tokenA,tokenB);
-                emit Step(22);
                 uint160 sqrtPriceX96=PriceLibary.getSqrtPricex96(pooladr);
-                emit Step(23);
                 //min deposit
                 minProcessIn(pooladr,tokenMin);
-                emit Step(24);
                 //max deposit 
                 maxProcessIn(pooladr,tokenMax,amountMinCounterPart);
-                emit Step(25);
                 //min withdraw
                 minProcessOut(pooladr,tokenMin,sqrtPriceX96);
-                emit Step(26);
                 //max withdraw 
-                maxProcessOut(pooladr,tokenMax,amountMinCounterPart,sqrtPriceX96);
-                emit Step(27);
-                
+                maxProcessOut(pooladr,tokenMax,amountMinCounterPart,sqrtPriceX96);                
             }
+            
             // transfer from pool
             swapProcess();
-            emit Step(28);
+                        
+            swapDatas.clear();
+            pools.clear();
         }
     } 
 
+    // function exactInputSingleDefer(ExactInputSingleParams calldata params) 
+    //     external 
+    //     payable 
+    //     checkDeadline(params.deadline) 
+    //     returns (uint256 amountOut)
+    // {
 
     function exactInputSingleDefer(ExactInputSingleParams calldata params) 
         external 
         payable 
-        checkDeadline(params.deadline) 
         returns (uint256 amountOut)
     {
         

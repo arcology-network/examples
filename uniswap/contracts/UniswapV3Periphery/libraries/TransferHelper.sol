@@ -16,14 +16,13 @@ library TransferHelper {
         address to,
         uint256 value
     ) internal {
-        
+
         (bool success, bytes memory data) =
             token.call(abi.encodeWithSelector(IERC20.transferFrom.selector, from, to, value));
-        
+
         require(success && (data.length == 0 || abi.decode(data, (bool))), 'STF');
     }
 
-    event TransferStep(uint256 _Step);
     /// @notice Transfers tokens from msg.sender to a recipient
     /// @dev Errors with ST if transfer fails
     /// @param token The contract address of the token which will be transferred
@@ -34,9 +33,7 @@ library TransferHelper {
         address to,
         uint256 value
     ) internal {
-        // emit TransferStep(2);
         (bool success, bytes memory data) = token.call(abi.encodeWithSelector(IERC20.transfer.selector, to, value));
-        // emit TransferStep(3);
         require(success && (data.length == 0 || abi.decode(data, (bool))), 'ST');
     }
 

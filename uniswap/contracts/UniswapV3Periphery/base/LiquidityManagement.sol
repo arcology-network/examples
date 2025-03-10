@@ -49,7 +49,7 @@ abstract contract LiquidityManagement is IUniswapV3MintCallback, PeripheryImmuta
         uint256 amount0Min;
         uint256 amount1Min;
     }
-    
+
     /// @notice Add liquidity to an initialized pool
     function addLiquidity(AddLiquidityParams memory params)
         internal
@@ -60,19 +60,19 @@ abstract contract LiquidityManagement is IUniswapV3MintCallback, PeripheryImmuta
             IUniswapV3Pool pool
         )
     {
-        
+
         PoolAddress.PoolKey memory poolKey =
             PoolAddress.PoolKey({token0: params.token0, token1: params.token1, fee: params.fee});
-        
+
         address pooladr=PoolAddress.computeAddress(factory, poolKey);
         pool = IUniswapV3Pool(pooladr);
-        
+
         // compute the liquidity amount
         {
             (uint160 sqrtPriceX96, , , , , , ) = pool.slot0();
             uint160 sqrtRatioAX96 = TickMath.getSqrtRatioAtTick(params.tickLower);
             uint160 sqrtRatioBX96 = TickMath.getSqrtRatioAtTick(params.tickUpper);
-            
+
             liquidity = LiquidityAmounts.getLiquidityForAmounts(
                 sqrtPriceX96,
                 sqrtRatioAX96,
@@ -81,7 +81,7 @@ abstract contract LiquidityManagement is IUniswapV3MintCallback, PeripheryImmuta
                 params.amount1Desired
             );
         }
-        
+
         (amount0, amount1) = pool.mint(
             params.recipient,
             params.tickLower,
@@ -89,7 +89,7 @@ abstract contract LiquidityManagement is IUniswapV3MintCallback, PeripheryImmuta
             liquidity,
             abi.encode(MintCallbackData({poolKey: poolKey, payer: msg.sender}))
         );
-        
+
         require(amount0 >= params.amount0Min && amount1 >= params.amount1Min, 'Price slippage check');
     }
 }

@@ -3,7 +3,7 @@ pragma solidity 0.7.6;
 import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
 
 
-contract Token {
+contract TokenMap {
 
     mapping (address => U256Cumulative) private _balances;
 

@@ -44,7 +44,7 @@ abstract contract PeripheryPayments is IPeripheryPayments, PeripheryImmutableSta
     function refundETH() external payable override {
         if (address(this).balance > 0) TransferHelper.safeTransferETH(msg.sender, address(this).balance);
     }
-    
+
     /// @param token The token to pay
     /// @param payer The entity that must pay
     /// @param recipient The entity that will receive payment

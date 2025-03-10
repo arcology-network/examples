@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@arcologynetwork/concurrentlib/-/concurrentlib-2.1.0.tgz#00951ce68805ce9c3b12172a9fa2405da84158c0"
   integrity sha512-h3iI+lU7qtN87t90QtjBoPGvwlimZ/m59bUmcIaMvXMmdvwP1VU3hGvI+vtv/7KbZ9f0lDnwO+jgTIwWYgvBdQ==
 
-"@arcologynetwork/frontend-tools@^1.0.3":
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/@arcologynetwork/frontend-tools/-/frontend-tools-1.0.8.tgz#f381799236ead45c9c699291475bb375c10c15cd"
-  integrity sha512-Bw20xXlQ9mgO04OW6mK/5OuzwGaEUW0VYlVF5XCLoRAsJIhkKO8OjqXLeFX8P8vBjcIThP0JxchErXt8or764A==
+"@arcologynetwork/frontend-tools@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@arcologynetwork/frontend-tools/-/frontend-tools-1.0.9.tgz#4aabb3b575239b15e84d4549632600e45e423911"
+  integrity sha512-18vXjdfkatydbyn5rabn3KPzQ3GPVLvDuV9OSpza9oz3eDNSxO1xK33u63nZiPfKHj3enBTNXP8UCpDnm8yXfA==
   dependencies:
     "@arcologynetwork/frontend-util" "^1.0.6"
     "@mahsumurebe/jrpc-client" "^2.2.0"
