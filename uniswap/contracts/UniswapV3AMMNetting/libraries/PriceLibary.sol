@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 pragma solidity >=0.6.0;
 import '@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol';
-import './Path.sol';
+// import '../../UniswapV3Periphery/libraries/Path.sol';
 
 
 library PriceLibary {
-    using Path for bytes;
+    // using Path for bytes;
 
     uint256 internal constant Q96 = 0x1000000000000000000000000;
 
@@ -27,10 +27,7 @@ library PriceLibary {
     }
 
     function getAmountOut(address pooladr,address tokenIn, address tokenOut,uint256 _amountIn) internal view returns (uint256) {
-        // (uint160 sqrtPriceX96,,,,,,) = IUniswapV3Pool(pooladr).slot0();
-        //compute another amount
         uint256 pricex96=PriceLibary.computePrice(getSqrtPricex96(pooladr));
-        
         return  tokenIn < tokenOut ? PriceLibary.getTokenBAmount(pricex96, _amountIn):PriceLibary.getTokenAAmount(pricex96, _amountIn);
     }
 }

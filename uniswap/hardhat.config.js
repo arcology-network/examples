@@ -23,17 +23,26 @@ module.exports = {
     compilers: [
       {
         version: "0.7.6",
-        settings: { optimizer: { enabled: true, runs: 200 } },
+        settings: { 
+          optimizer: { enabled: true, runs: 100 } ,
+          debug: { revertStrings: "strip" }
+        },
       },
       {
         version: "0.4.18",
-        settings: { optimizer: { enabled: true, runs: 200 } },
+        settings: { 
+          optimizer: { enabled: true, runs: 100 } ,
+          debug: { revertStrings: "strip" }
+        },
       }
     ],
     overrides: {
       "contracts/WETH9.sol": {
         version: "0.4.18",
-        settings: { optimizer: { enabled: true, runs: 200 } },
+        settings: { 
+          optimizer: { enabled: true, runs: 100 } ,
+          debug: { revertStrings: "strip" }
+        },
       }
     }
   },

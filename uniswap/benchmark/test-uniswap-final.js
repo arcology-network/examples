@@ -2,8 +2,7 @@ const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 const nets = require('../network.json');
 
-async function main() {
-  
+async function main() {  
   accounts = await ethers.getSigners(); 
   const provider = new ethers.providers.JsonRpcProvider(nets[hre.network.name].url);
   const pkCreator=nets[hre.network.name].accounts[0]
@@ -21,7 +20,7 @@ async function main() {
   const flag1_liquidity_mint=true;
   const flag2_swap=false;
 
-  const [swapfactory,nonfungiblePositionManager,router] = await deployBaseContract();
+  const [swapfactory,nonfungiblePositionManager,router,amm,swapLogic] = await deployBaseContract();
 
   
   let i,tx;
@@ -50,6 +49,14 @@ async function main() {
       poolAddress='0x'+PoolCreatedDate.substring(strlen-40,strlen);
       console.log(`UniswapV3Pool created at ${poolAddress}, token${i}<--->>token${i+1} fee:${fee}`);
       poolAdrArray.push(poolAddress); 
+  }
+
+  console.log('===========start init UniswapV3Pool in amm=====================')
+  for (i=0;i+1<tokenCount;i=i+poolStyle) {
+      tx = await amm.initPool(tokenInsArray[i].address, tokenInsArray[i+1].address, fee);
+      receipt = await tx.wait();
+      frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+      console.log(frontendUtil.parseEvent(receipt,"createPoolInited"));
   }
 
   console.log('===========start initialize UniswapV3Pool=====================')
@@ -192,7 +199,7 @@ async function main() {
     await getBalance(tokenInsArray[i],accounts[i],i);
     await getBalance(tokenInsArray[i+1],accounts[i],i+1);
   }
-  /*
+  
   //-------------------------------for swap----------------------------------
   let accountsLength=accounts.length
   if(flag2_swap){
@@ -250,11 +257,11 @@ async function main() {
 
         txs.push(frontendUtil.generateTx(function([swapRouter,from,tokenA,tokenB,fee,amountIn]){
           return swap(tokenA,tokenB,fee,from,amountIn,swapRouter,true);
-        },router,accounts[j],tokenInsArray[i].address,tokenInsArray[i+1].address,fee,amountA));
+        },amm,accounts[j],tokenInsArray[i].address,tokenInsArray[i+1].address,fee,amountA));
 
         txs.push(frontendUtil.generateTx(function([swapRouter,from,tokenA,tokenB,fee,amountIn]){
           return swap(tokenA,tokenB,fee,from,amountIn,swapRouter,true);
-        },router,accounts[j+1],tokenInsArray[i+1].address,tokenInsArray[i].address,fee,amountB));
+        },amm,accounts[j+1],tokenInsArray[i+1].address,tokenInsArray[i].address,fee,amountB));
 
       }
       await frontendUtil.waitingTxs(txs);
@@ -292,17 +299,21 @@ async function main() {
         tx = await tokenInsArray[i].connect(accounts[j]).populateTransaction.approve(router.address,amountA);
         await writePreSignedTxFile(handle_swap_token_approve,signer,tx);
 
+        // console.log(`approve from : ${accounts[j].address} to: ${router.address}`);
+
         pk1=nets[hre.network.name].accounts[j+1];
         signer1 = new ethers.Wallet(pk1, provider);
 
         tx = await tokenInsArray[i+1].connect(accounts[j+1]).populateTransaction.approve(router.address,amountB);
         await writePreSignedTxFile(handle_swap_token_approve,signer1,tx);
 
+        // console.log(`approve from : ${accounts[j+1].address} to: ${router.address}`);
+
         
-        tx = await swap(tokenInsArray[i].address,tokenInsArray[i+1].address,fee,accounts[j],amountA,router,false);
+        tx = await swap(tokenInsArray[i].address,tokenInsArray[i+1].address,fee,accounts[j],amountA,amm,false);
         await writePreSignedTxFile(handle_swap,signer,tx);
 
-        tx = await swap(tokenInsArray[i+1].address,tokenInsArray[i].address,fee,accounts[j+1],amountB,router,false);
+        tx = await swap(tokenInsArray[i+1].address,tokenInsArray[i].address,fee,accounts[j+1],amountB,amm,false);
         await writePreSignedTxFile(handle_swap,signer1,tx);
       }
       console.log(`create swap txs : ${(i+1)*accounts.length} `);
@@ -310,7 +321,7 @@ async function main() {
     
   }
   
-  */
+  
 }
 async function generateTx(fn,...args){
   const tx = await fn(args);
@@ -413,14 +424,15 @@ function getRandom(seed){
   return Math.floor(Math.random() * seed) + 1;
 }
 function getLiquidityParams(tokenInsA,tokenInsB,amountA,amountB){
-  const tokenA=tokenInsA.address;
-  const tokenB=tokenInsB.address;
+  const tokenA=tokenInsA.address.toLowerCase();
+  const tokenB=tokenInsB.address.toLowerCase();
+
 
   let amount0Desired=amountA;
   let amount1Desired=amountB;
   let token0,token1;
 
-  if(tokenA.toLowerCase() < tokenB.toLowerCase()){
+  if(tokenA < tokenB){
     token0=tokenA;
     token1=tokenB;
   }else{
@@ -429,6 +441,7 @@ function getLiquidityParams(tokenInsA,tokenInsB,amountA,amountB){
 
     amount0Desired=amountB;
     amount1Desired=amountA;
+
   }
 
   return [token0,token1,amount0Desired,amount1Desired]
@@ -441,7 +454,7 @@ async function getBalance(token,account,tokenIdx){
   console.log(`Balance of account ${account.address}: ${formattedBalance} token${tokenIdx}`);
 }
 
-async function  deployBaseContract(){
+async function deployBaseContract(){
   console.log('===========start UniswapV3Factory=====================')
   const UniswapV3Factory = await hre.ethers.getContractFactory("UniswapV3Factory");
   const swapfactory = await UniswapV3Factory.deploy();
@@ -493,18 +506,38 @@ async function  deployBaseContract(){
     swapfactory.address,   
     weth9.address            
   );
-  const receipt = await router.deployed();
-  // frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-  // console.log(receipt);
+  await router.deployed();
   console.log("SwapRouter deployed to:", router.address);
 
-  // console.log('===========init poolFactory]=====================');
-  // let tx = await router.inituniswapFactory();
-  // receipt = await tx.wait();
-  // // console.log(receipt);
-  // frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+  // console.log('===========start deploy PoolLibary=====================');
+  // const pool_Libary = await hre.ethers.getContractFactory("PoolLibary");
+  // const poolLibary = await pool_Libary.deploy();
+  // await poolLibary.deployed();
+  // console.log("poolLibary deployed to:", poolLibary.address);
   
-  return [swapfactory,nonfungiblePositionManager,router]
+  console.log('===========start deploy SwapLogic=====================');
+  const swap_logic = await hre.ethers.getContractFactory("SwapLogic");
+  const swapLogic = await swap_logic.deploy(router.address);
+  await swapLogic.deployed();
+  console.log("SwapLogic deployed to:", swapLogic.address);
+  
+  console.log('===========start deploy SwapAmmNetting=====================');
+  // const amm_factory = await hre.ethers.getContractFactory("SwapAmmNetting", {
+  //   libraries: {
+  //     PoolLibary: poolLibary.address, 
+  //   },
+  // });
+  const amm_factory = await hre.ethers.getContractFactory("SwapAmmNetting");
+  const amm = await amm_factory.deploy();
+  console.log("SwapAmmNetting deployed to:", amm.address);
+
+  console.log('===========initialization for SwapAmmNetting=====================');
+  tx = await amm.init(swapfactory.address,swapLogic.address);
+  receipt = await tx.wait();
+  // console.log(receipt);
+  frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+  
+  return [swapfactory,nonfungiblePositionManager,router,amm,swapLogic]
 }
 
 

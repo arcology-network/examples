@@ -487,7 +487,7 @@ contract UniswapV3Pool is IUniswapV3Pool, NoDelegateCall {
         if (amount1 > 0) balance1Before = balance1();
 
         IUniswapV3MintCallback(msg.sender).uniswapV3MintCallback(amount0, amount1, data);
-
+        
         if (amount0 > 0) require(balance0Before.add(amount0) <= balance0(), 'M0');
         if (amount1 > 0) require(balance1Before.add(amount1) <= balance1(), 'M1');
         emit Mint(msg.sender, recipient, tickLower, tickUpper, amount, amount0, amount1);
@@ -608,18 +608,14 @@ contract UniswapV3Pool is IUniswapV3Pool, NoDelegateCall {
         bytes calldata data
     ) external override noDelegateCall returns (int256 amount0, int256 amount1) {
         require(amountSpecified != 0, 'AS');
-        
         Slot0 memory slot0Start = slot0;
-        
         require(slot0Start.unlocked, 'LOK');
-        
         require(
             zeroForOne
                 ? sqrtPriceLimitX96 < slot0Start.sqrtPriceX96 && sqrtPriceLimitX96 > TickMath.MIN_SQRT_RATIO
                 : sqrtPriceLimitX96 > slot0Start.sqrtPriceX96 && sqrtPriceLimitX96 < TickMath.MAX_SQRT_RATIO,
             'SPL'
         );
-        
         slot0.unlocked = false;
         
         SwapCache memory cache =
@@ -644,10 +640,9 @@ contract UniswapV3Pool is IUniswapV3Pool, NoDelegateCall {
                 protocolFee: 0,
                 liquidity: cache.liquidityStart
             });
-        
+
         // continue swapping as long as we haven't used the entire input/output and haven't reached the price limit
         while (state.amountSpecifiedRemaining != 0 && state.sqrtPriceX96 != sqrtPriceLimitX96) {
-            
             StepComputations memory step;
 
             step.sqrtPriceStartX96 = state.sqrtPriceX96;
@@ -664,7 +659,7 @@ contract UniswapV3Pool is IUniswapV3Pool, NoDelegateCall {
             } else if (step.tickNext > TickMath.MAX_TICK) {
                 step.tickNext = TickMath.MAX_TICK;
             }
-            
+
             // get the price for the next tick
             step.sqrtPriceNextX96 = TickMath.getSqrtRatioAtTick(step.tickNext);
             
@@ -678,7 +673,7 @@ contract UniswapV3Pool is IUniswapV3Pool, NoDelegateCall {
                 state.amountSpecifiedRemaining,
                 fee
             );
-            
+
             if (exactInput) {
                 state.amountSpecifiedRemaining -= (step.amountIn + step.feeAmount).toInt256();
                 state.amountCalculated = state.amountCalculated.sub(step.amountOut.toInt256());
@@ -737,7 +732,7 @@ contract UniswapV3Pool is IUniswapV3Pool, NoDelegateCall {
                 state.tick = TickMath.getTickAtSqrtRatio(state.sqrtPriceX96);
             }
         }
-        
+
         // update tick and write an oracle entry if the tick change
         if (state.tick != slot0Start.tick) {
             (uint16 observationIndex, uint16 observationCardinality) =
@@ -759,7 +754,7 @@ contract UniswapV3Pool is IUniswapV3Pool, NoDelegateCall {
             // otherwise just update the price
             slot0.sqrtPriceX96 = state.sqrtPriceX96;
         }
-        
+
         // update liquidity if it changed
         if (cache.liquidityStart != state.liquidity) liquidity = state.liquidity;
         
@@ -780,11 +775,14 @@ contract UniswapV3Pool is IUniswapV3Pool, NoDelegateCall {
         // do the transfers and collect payment
         if (zeroForOne) {
             if (amount1 < 0) TransferHelper.safeTransfer(token1, recipient, uint256(-amount1));
+
+              
             uint256 balance0Before = balance0();
-            IUniswapV3SwapCallback(msg.sender).uniswapV3SwapCallback(amount0, amount1, data);
+            IUniswapV3SwapCallback(msg.sender).uniswapV3SwapCallback(amount0, amount1, data); 
             require(balance0Before.add(uint256(amount0)) <= balance0(), 'IIA');
         } else {
             if (amount0 < 0) TransferHelper.safeTransfer(token0, recipient, uint256(-amount0));
+
             uint256 balance1Before = balance1();
             IUniswapV3SwapCallback(msg.sender).uniswapV3SwapCallback(amount0, amount1, data);
             require(balance1Before.add(uint256(amount1)) <= balance1(), 'IIA');

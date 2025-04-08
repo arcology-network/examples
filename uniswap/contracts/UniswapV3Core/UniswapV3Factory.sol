@@ -30,7 +30,7 @@ contract UniswapV3Factory is IUniswapV3Factory, UniswapV3PoolDeployer, NoDelegat
         feeAmountTickSpacing[10000] = 200;
         emit FeeAmountEnabled(10000, 200);
     }
-
+    
     /// @inheritdoc IUniswapV3Factory
     function createPool(
         address tokenA,
@@ -49,10 +49,6 @@ contract UniswapV3Factory is IUniswapV3Factory, UniswapV3PoolDeployer, NoDelegat
         // populate mapping in the reverse direction, deliberate choice to avoid the cost of comparing addresses
         getPool[token1][token0][fee] = pool;
 
-        // emit createPoolParamAddr(token0);
-        // emit createPoolParamAddr(token1);
-        // emit createPoolParamTick(tickSpacing);
-        // emit createPoolParamPoolAddr(pool);
         emit PoolCreated(token0, token1, fee, tickSpacing, pool);
     }
 

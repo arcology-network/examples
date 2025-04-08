@@ -59,14 +59,13 @@ abstract contract LiquidityManagement is IUniswapV3MintCallback, PeripheryImmuta
             uint256 amount1,
             IUniswapV3Pool pool
         )
-    {
-
+    {        
         PoolAddress.PoolKey memory poolKey =
             PoolAddress.PoolKey({token0: params.token0, token1: params.token1, fee: params.fee});
 
         address pooladr=PoolAddress.computeAddress(factory, poolKey);
         pool = IUniswapV3Pool(pooladr);
-
+    
         // compute the liquidity amount
         {
             (uint160 sqrtPriceX96, , , , , , ) = pool.slot0();

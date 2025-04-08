@@ -179,7 +179,7 @@ contract Token {
             _balances.insert(recipient, 0, 0, type(uint256).max);
         }
         _balances.set(recipient, int256(amount));
-        emit Transfer(sender, recipient, amount);
+        // emit Transfer(sender, recipient, amount);
     }
 
     /** @dev Creates `amount` tokens and assigns them to `account`, increasing
@@ -250,7 +250,7 @@ contract Token {
             _allowances.insert(key, 0, 0, type(uint256).max);
         }
         _allowances.set(key, int256(amount));
-        emit Approval(owner, spender, amount);
+        // emit Approval(owner, spender, amount);
     }
 
     /**
