@@ -52,11 +52,12 @@ async function main() {
   }
 
   console.log('===========start init UniswapV3Pool in amm=====================')
-  for (i=0;i+1<tokenCount;i=i+poolStyle) {
-      tx = await amm.initPool(tokenInsArray[i].address, tokenInsArray[i+1].address, fee);
+  for (i=0;i<poolAdrArray.length;i++)  {
+      tx = await amm.initPool(poolAdrArray[i],tokenInsArray[i*2].address, tokenInsArray[i*2+1].address);
       receipt = await tx.wait();
       frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-      console.log(frontendUtil.parseEvent(receipt,"createPoolInited"));
+      console.log(`Init UniswapV3Pool at ${poolAdrArray[i]} in AMM`);
+      // console.log(frontendUtil.parseEvent(receipt,"createPoolInited"));
   }
 
   console.log('===========start initialize UniswapV3Pool=====================')
@@ -81,14 +82,6 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
   }
-  // else{
-  //   const handle_pool_init=frontendUtil.newFile('data/pool-init.out')
-  //   for (i=0;i<poolArray.length;i++) {
-  //     tx = await poolArray[i].populateTransaction.initialize(sqrtPriceX96);
-  //     await writePreSignedTxFile(handle_pool_init,signerCreator,tx);
-  //   }
-  //   return
-  // }
   
   // console.log('===========start mint token for addLiquidity=====================')
   
@@ -127,36 +120,7 @@ async function main() {
     await frontendUtil.waitingTxs(txs);
 
   }
-  // else{
-
-  //   frontendUtil.ensurePath('data/token-mint');
-  //   const handle_token_mint=frontendUtil.newFile('data/token-mint/token-mint.out')
-  //   frontendUtil.ensurePath('data/token-approve');
-  //   const handle_token_approve=frontendUtil.newFile('data/token-approve/token-approve.out')
-
-    
-
-  //   for (i=0;i+1<tokenCount;i=i+poolStyle) {
-  //     [amountA ,amountB]=computeMintAmount(tokenInsArray[i].address,tokenInsArray[i+1].address,mintAmount,price);
-      
-  //     tx = await tokenInsArray[i].populateTransaction.mint(accounts[i].address,amountA);
-  //     await writePreSignedTxFile(handle_token_mint,signerCreator,tx);
-
-  //     tx = await tokenInsArray[i+1].populateTransaction.mint(accounts[i].address,amountB);
-  //     await writePreSignedTxFile(handle_token_mint,signerCreator,tx);
-
-  //     //-------------------------------------approve-------------------------------------------------
-  //     pk=nets[hre.network.name].accounts[i];
-  //     signer = new ethers.Wallet(pk, provider);
-
-  //     tx = await tokenInsArray[i].connect(accounts[i]).populateTransaction.approve(nonfungiblePositionManager.address,amountA);
-  //     await writePreSignedTxFile(handle_token_approve,signer,tx);
-
-  //     tx = await tokenInsArray[i+1].connect(accounts[i]).populateTransaction.approve(nonfungiblePositionManager.address,amountB);
-  //     await writePreSignedTxFile(handle_token_approve,signer,tx);
-  //   }
-  //   return
-  // }
+  
 
   console.log('===========before addLiquidity=====================')
   for (i=0;i+1<tokenCount;i=i+poolStyle) {
@@ -222,7 +186,7 @@ async function main() {
       }
       await frontendUtil.waitingTxs(txs);
     }
-    
+
 
     console.log('===========start approve token=====================')
     
@@ -235,15 +199,23 @@ async function main() {
 
         txs.push(frontendUtil.generateTx(function([token,from,routerAdr,amount]){
           return token.connect(from).approve(routerAdr,amount);
-        },tokenInsArray[i],accounts[j],router.address,amountA));
+        },tokenInsArray[i],accounts[j],router.address,amountA.mul(2)));
 
         txs.push(frontendUtil.generateTx(function([token,from,routerAdr,amount]){
           return token.connect(from).approve(routerAdr,amount);
-        },tokenInsArray[i+1],accounts[j+1],router.address,amountB));
+        },tokenInsArray[i+1],accounts[j+1],router.address,amountB.mul(2)));
       }
       await frontendUtil.waitingTxs(txs);
     }
     
+    console.log('===========before swap=====================')
+    for (i=0;i+1<tokenCount;i=i+poolStyle) {
+      await getBalance(tokenInsArray[i],accounts[i],i);
+      await getBalance(tokenInsArray[i+1],accounts[i],i+1);
+
+      await getBalance(tokenInsArray[i],accounts[i+1],i);
+      await getBalance(tokenInsArray[i+1],accounts[i+1],i+1);
+    }
 
     console.log('===========start swap=====================')
     
@@ -266,7 +238,15 @@ async function main() {
       }
       await frontendUtil.waitingTxs(txs);
     }
-    
+
+    console.log('===========after swap=====================')
+    for (i=0;i+1<tokenCount;i=i+poolStyle) {
+      await getBalance(tokenInsArray[i],accounts[i],i);
+      await getBalance(tokenInsArray[i+1],accounts[i],i+1);
+
+      await getBalance(tokenInsArray[i],accounts[i+1],i);
+      await getBalance(tokenInsArray[i+1],accounts[i+1],i+1);
+    }
 
   }else{
     
@@ -296,7 +276,7 @@ async function main() {
         pk=nets[hre.network.name].accounts[j];
         signer = new ethers.Wallet(pk, provider);
 
-        tx = await tokenInsArray[i].connect(accounts[j]).populateTransaction.approve(router.address,amountA);
+        tx = await tokenInsArray[i].connect(accounts[j]).populateTransaction.approve(router.address,amountA.mul(2));
         await writePreSignedTxFile(handle_swap_token_approve,signer,tx);
 
         // console.log(`approve from : ${accounts[j].address} to: ${router.address}`);
@@ -304,7 +284,7 @@ async function main() {
         pk1=nets[hre.network.name].accounts[j+1];
         signer1 = new ethers.Wallet(pk1, provider);
 
-        tx = await tokenInsArray[i+1].connect(accounts[j+1]).populateTransaction.approve(router.address,amountB);
+        tx = await tokenInsArray[i+1].connect(accounts[j+1]).populateTransaction.approve(router.address,amountB.mul(2));
         await writePreSignedTxFile(handle_swap_token_approve,signer1,tx);
 
         // console.log(`approve from : ${accounts[j+1].address} to: ${router.address}`);

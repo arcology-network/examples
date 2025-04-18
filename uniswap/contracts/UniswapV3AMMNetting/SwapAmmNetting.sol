@@ -1,15 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 pragma solidity =0.7.6;
 pragma abicoder v2;
-
 import '../UniswapV3Periphery/libraries/Path.sol';
 import "@arcologynetwork/concurrentlib/lib/runtime/Runtime.sol";
 import "@arcologynetwork/concurrentlib/lib/array/U256.sol";
 import "@arcologynetwork/concurrentlib/lib/map/HashU256Cum.sol";
-import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
-
+// import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
+import "@arcologynetwork/concurrentlib/lib/multiprocess/Multiprocess.sol";
 import "./interfaces/ISwapLogic.sol";
-import "./interfaces/IPoolFactory.sol";
 
 import "./libraries/PoolLibary.sol";
 import "./libraries/PriceLibary.sol";
@@ -34,7 +32,8 @@ contract SwapAmmNetting
 
     mapping (bytes32 => SwapCallDataArray) private swapDataMap;
     HashU256Map private swapDataSum ;
-    AddressU256Map private curPools ;
+
+    uint256 poolSize;
     
     bytes4 constant funcSign=0xc6678321;  //bytes4(keccak256(bytes("exactInputSingleDefer((address,address,uint24,address,uint256,uint256,uint256,uint160))")));
 
@@ -48,73 +47,23 @@ contract SwapAmmNetting
         flags = new U256();
         pools = new PoolDataMap();
         swapDataSum= new HashU256Map();
-        curPools=new AddressU256Map();
     }
 
     function initPool(
+        address pool,
         address tokenA,
-        address tokenB,
-        uint24 fee
-    ) external returns (address pool){
-        pool=PoolLibary.computePoolAdr(factory, tokenA, tokenB, fee);
-        emit createPoolInited(pool);
+        address tokenB
+    ) external {
         pools.set(pool, tokenA, tokenB);
-        curPools.insert(pool, 0, 0, type(uint256).max);
-
         initEnvs(pool,tokenA);
         initEnvs(pool,tokenB);
+        poolSize++;
     }
-    event createPoolInited(address pooladr);
 
     function initEnvs(address pool,address token)internal{
-        bytes32 key=PoolLibary.GetKey(pool,token);
-        swapDataMap[key]=new SwapCallDataArray();
-        swapDataSum.insert(key, 0, 0, type(uint256).max);
-    }
-
-    function parallelProcess(uint256 amountIn,address recipient,uint160 sqrtPriceLimitX96,bytes memory data) internal {
-        bytes32 pid=abi.decode(Runtime.pid(), (bytes32));
-        (address tokenIn, address tokenOut, uint24 fee) = data.decodeFirstPool();
-        address pooladr=PoolLibary.computePoolAdr(factory, tokenIn, tokenOut, fee);
-        bytes32 keyIn=PoolLibary.GetKey(pooladr,tokenIn);
-        
-        swapDataMap[keyIn].push(pid,data,msg.sender,recipient,amountIn,sqrtPriceLimitX96,pooladr);
-        swapDataSum.set(keyIn, int256(amountIn));
-        curPools.set(pooladr, int256(1));
-        flags.push(1);
-    }
-
-
-    function dererProcess() internal {
-        uint256 poolSize = curPools.fullLength();
-        uint256 curpoolVal;
-        address pooladr;
-        for(uint i=0;i<poolSize;i++){         
-            curpoolVal=curPools.valueAt(i);
-            if(curpoolVal==0) continue;
-            
-            pooladr = curPools.keyAt(i);
-            (bool canswap,uint256 amountMinCounterPart,bytes32 keyMin,bytes32 keyMax)=ISwapLogic(swapLogic).findMax(pooladr, pools, swapDataSum);
-            if(canswap){
-                ISwapLogic(swapLogic).swapProcess(swapDataMap[keyMin],swapDataMap[keyMax],pooladr,amountMinCounterPart,PriceLibary.getSqrtPricex96(pooladr));
-            }else{
-                ISwapLogic(swapLogic).swapWithPools(swapDataMap[keyMin],swapDataMap[keyMax]);
-            }
-
-            //clear pool environments
-            curPools.set(pooladr, -int256(curpoolVal));
-            clearEnvs(keyMin);
-            clearEnvs(keyMax);
-        }
-    }
-
-    function clearEnvs(bytes32 key)internal{
-        swapDataMap[key].clear();
-        swapDataSum.set(key, -int256(swapDataSum.get(key)));
+        swapDataMap[PoolLibary.GetKey(pool,token)]=new SwapCallDataArray();
     }
     
-    event Step(uint256 _step);
-    event StepAdr(address _step);
     
     struct ExactInputSingleParams {
         address tokenIn;
@@ -132,18 +81,47 @@ contract SwapAmmNetting
         payable 
         returns (uint256 amountOut)
     {
-        parallelProcess(
-            params.amountIn,
-            params.recipient,
-            params.sqrtPriceLimitX96,
-            abi.encodePacked(params.tokenIn, params.fee, params.tokenOut)
-        );
-        
+        bytes32 pid=abi.decode(Runtime.pid(), (bytes32));
+        address pooladr=PoolLibary.computePoolAdr(factory, params.tokenIn, params.tokenOut, params.fee);
+        bytes32 keyIn=PoolLibary.GetKey(pooladr,params.tokenIn);
+
+        swapDataMap[keyIn].push(pid,abi.encodePacked(params.tokenIn, params.fee, params.tokenOut),msg.sender,params.recipient,params.amountIn,params.sqrtPriceLimitX96,pooladr);
+        swapDataSum.insert(keyIn, params.amountIn, 0, type(uint256).max);
+        ISwapLogic(swapLogic).depositSingle(params.tokenIn,msg.sender,params.amountIn);
+        flags.push(1);
+
         if(flags.committedLength()>0){
-            dererProcess();
+            Multiprocess mp = new Multiprocess(poolSize);
+            for(uint i=0;i<poolSize;i++){         
+                mp.push(1000000000, address(this), abi.encodeWithSignature("poolProcess(address)", pools.keyAt(i)));
+            }
+            mp.run();
+        
             flags.clear();
         }
         emit Step(2000);
         amountOut=0;
+    }
+
+    
+
+
+    event Step(uint256 _step);
+
+
+    function poolProcess(address pooladr) public {
+        (bool canswap,uint256 amountMinCounterPart,bytes32 keyMin,bytes32 keyMax)=ISwapLogic(swapLogic).findMax(pooladr, pools, swapDataSum);
+        SwapCallDataArray listMin = swapDataMap[keyMin];
+        SwapCallDataArray listMax = swapDataMap[keyMax];
+        if(listMin.fullLength()==0 && listMax.fullLength()==0) return;
+        ISwapLogic(swapLogic).swap(canswap, listMin, listMax, pooladr, amountMinCounterPart);
+        //clear pool environments
+        clearEnvs(keyMin);
+        clearEnvs(keyMax);
+    }
+
+    function clearEnvs(bytes32 key)internal{
+        swapDataMap[key].clear();
+        swapDataSum.set(key, -int256(swapDataSum.get(key)));
     }
 }

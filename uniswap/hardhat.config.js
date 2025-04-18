@@ -25,13 +25,16 @@ module.exports = {
         version: "0.7.6",
         settings: { 
           optimizer: { enabled: true, runs: 100 } ,
+          metadata: {
+            bytecodeHash: "none"
+          },
           debug: { revertStrings: "strip" }
         },
       },
       {
         version: "0.4.18",
         settings: { 
-          optimizer: { enabled: true, runs: 100 } ,
+          optimizer: { enabled: true, runs: 200 } ,
           debug: { revertStrings: "strip" }
         },
       }
@@ -40,7 +43,7 @@ module.exports = {
       "contracts/WETH9.sol": {
         version: "0.4.18",
         settings: { 
-          optimizer: { enabled: true, runs: 100 } ,
+          optimizer: { enabled: true, runs: 200 } ,
           debug: { revertStrings: "strip" }
         },
       }

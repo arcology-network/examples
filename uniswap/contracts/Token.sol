@@ -175,10 +175,8 @@ contract Token {
         require(_balances.exist(sender), "transfer amount exceeds balance");
         require(_balances.get(sender)>= amount, "transfer amount exceeds balance");
         _balances.set(sender,-int256(amount));
-        if(!_balances.exist(recipient)){
-            _balances.insert(recipient, 0, 0, type(uint256).max);
-        }
-        _balances.set(recipient, int256(amount));
+        _balances.insert(recipient, amount, 0, type(uint256).max);
+
         // emit Transfer(sender, recipient, amount);
     }
 
@@ -198,10 +196,8 @@ contract Token {
 
         _totalSupply.add(amount);
 
-        if(!_balances.exist(account)){
-            _balances.insert(account, 0, 0, type(uint256).max);
-        }
-        _balances.set(account, int256(amount)); 
+        _balances.insert(account, amount, 0, type(uint256).max);
+
         emit Transfer(address(0), account, amount);
     }
 
@@ -246,10 +242,8 @@ contract Token {
         require(owner != address(0), "approve from the zero address");
         require(spender != address(0), "approve to the zero address");
         bytes32 key = _key(owner,spender);
-        if(!_allowances.exist(key)){
-            _allowances.insert(key, 0, 0, type(uint256).max);
-        }
-        _allowances.set(key, int256(amount));
+        _allowances.insert(key, amount, 0, type(uint256).max);
+
         // emit Approval(owner, spender, amount);
     }
 
