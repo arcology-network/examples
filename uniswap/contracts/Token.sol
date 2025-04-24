@@ -2,14 +2,13 @@
 pragma solidity 0.7.6;
 import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
 import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
-import "./Bytes32U256Map.sol";
-
+import "@arcologynetwork/concurrentlib/lib/map/HashU256Cum.sol";
 
 contract Token {
 
-    AddressU256Map private _balances;
+    AddressU256CumMap private _balances;
 
-    Bytes32U256Map private _allowances;
+    HashU256Map private _allowances;
 
     U256Cumulative private _totalSupply;
 
@@ -38,8 +37,8 @@ contract Token {
         _symbol = symbol_;
         _decimals = 18;
         _totalSupply = new U256Cumulative(0, type(uint256).max);
-        _balances = new AddressU256Map();
-        _allowances = new Bytes32U256Map();
+        _balances = new AddressU256CumMap();
+        _allowances = new HashU256Map();
         owner = msg.sender;
     }
 
@@ -175,7 +174,7 @@ contract Token {
         require(_balances.exist(sender), "transfer amount exceeds balance");
         require(_balances.get(sender)>= amount, "transfer amount exceeds balance");
         _balances.set(sender,-int256(amount));
-        _balances.insert(recipient, amount, 0, type(uint256).max);
+        _balances.set(recipient, int256(amount), 0, type(uint256).max);
 
         // emit Transfer(sender, recipient, amount);
     }
@@ -190,17 +189,18 @@ contract Token {
      * - `to` cannot be the zero address.
      */
     function mint(address account, uint256 amount) public virtual {
+        emit Step(0);
         require(account != address(0), "mint to the zero address");
-
+        emit Step(1);
         _beforeTokenTransfer(address(0), account, amount);
-
+        emit Step(2);
         _totalSupply.add(amount);
-
-        _balances.insert(account, amount, 0, type(uint256).max);
-
+        emit Step(3);
+        _balances.set(account, int(amount), 0, type(uint256).max);
+        
         emit Transfer(address(0), account, amount);
     }
-
+    event Step(uint256 _step);
     /**
      * @dev Destroys `amount` tokens from `account`, reducing the
      * total supply.
@@ -242,7 +242,7 @@ contract Token {
         require(owner != address(0), "approve from the zero address");
         require(spender != address(0), "approve to the zero address");
         bytes32 key = _key(owner,spender);
-        _allowances.insert(key, amount, 0, type(uint256).max);
+        _allowances.set(key, amount, 0, type(uint256).max);
 
         // emit Approval(owner, spender, amount);
     }

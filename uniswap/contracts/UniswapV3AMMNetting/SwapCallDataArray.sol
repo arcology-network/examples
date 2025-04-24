@@ -2,7 +2,8 @@
 pragma solidity =0.7.6;
 pragma abicoder v2;
 
-import "@arcologynetwork/concurrentlib/lib/base/Base.sol";
+import "@arcologynetwork/concurrentlib/lib/shared/Base.sol";
+import "@arcologynetwork/concurrentlib/lib/shared/Const.sol";
 import '../UniswapV3Periphery/libraries/Path.sol';
 import "./libraries/PriceLibary.sol";
 
@@ -22,7 +23,7 @@ contract SwapCallDataArray is Base{
         uint256 amountOut;
     }
 
-    constructor() Base(Base.BYTES) {}
+    constructor() Base(Const.BYTES) {}
 
 
     function push(bytes32 txhash,
@@ -49,25 +50,12 @@ contract SwapCallDataArray is Base{
     }    
 
     function update(uint256 idx,uint256 amountIn) public {
-        SwapCallData memory callback=abi.decode(Base._get(idx), (SwapCallData));
+        (,bytes memory data)=Base._get(idx);
+        SwapCallData memory callback=abi.decode(data, (SwapCallData));
         callback.amountIn=amountIn;
         Base._set(idx, abi.encode(callback));
     }
     
-    // event printE(bytes32 txhash,address tokenA,address tokenB,uint24 fee,address sender,address receipt,uint256 amountIn,uint160 sqrtPrice,uint256 amountOut);
-    // function print(uint256 idx) public {
-    //     (bytes32 txhash,
-    //     address tokenA,
-    //     address tokenB,
-    //     uint24 fee,
-    //     address sender,
-    //     address receipt,
-    //     uint256 amountIn,
-    //     uint160 sqrtPrice,
-    //     uint256 amountOut) = get(idx);
-
-    //     emit printE(txhash,tokenA,tokenB,fee,sender,receipt,amountIn,sqrtPrice,amountOut);
-    // }
 
     function get(uint256 idx) public virtual returns(
         bytes32,
@@ -79,7 +67,8 @@ contract SwapCallDataArray is Base{
         uint256,
         uint160,
         uint256)  {
-        SwapCallData memory callback=abi.decode(Base._get(idx), (SwapCallData));
+        (,bytes memory data)=Base._get(idx);
+        SwapCallData memory callback=abi.decode(data, (SwapCallData));
         return (callback.txhash,
                 callback.tokenIn,
                 callback.tokenOut,

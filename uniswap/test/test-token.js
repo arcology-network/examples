@@ -14,7 +14,7 @@ async function main() {
   const tokenFactory = await ethers.getContractFactory("Token");  
   const tokenIns = await tokenFactory.deploy("token", "TKN");
   await tokenIns.deployed();
-  console.log(`Deployed token${i} at ${tokenIns.address}`);
+  console.log(`Deployed token at ${tokenIns.address}`);
   
   var txs=new Array();
   console.log('===========start mint token=====================')
@@ -50,9 +50,13 @@ async function main() {
   await frontendUtil.waitingTxs(txs);
 
   console.log('===========query balance=====================')
+  let balances=[300,0,0,0]
   for(i=0;i<=tokenCount;i++){
     balance = await tokenIns.balanceOf(accounts[i].address);
-    console.log(`Balance of account ${accounts[i].address}: ${balance} token`);
+    if(balances[i]==balance)
+      console.log(`Balance of account ${accounts[i].address}: ${balance} token , Successful`);
+    else
+      console.log(`Balance of account ${accounts[i].address}: ${balance} token , Failed`);
   }
   
 }

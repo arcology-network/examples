@@ -2,7 +2,8 @@
 pragma solidity =0.7.6;
 pragma abicoder v2;
 
-import "@arcologynetwork/concurrentlib/lib/base/Base.sol";
+import "@arcologynetwork/concurrentlib/lib/shared/Base.sol";
+import "@arcologynetwork/concurrentlib/lib/shared/Const.sol";
 
 contract PoolDataMap is Base{
     struct PoolData {
@@ -10,7 +11,7 @@ contract PoolDataMap is Base{
         address tokenB;
     }
 
-    constructor() Base(Base.BYTES) {}
+    constructor() Base(Const.BYTES) {}
 
     /**
      * @notice Check if a given key exists in the map.
@@ -40,7 +41,8 @@ contract PoolDataMap is Base{
      * @return tokenB address value associated with the key.
      */
     function get(address k) public virtual view returns(address tokenA,address tokenB){ 
-        PoolData memory pd = abi.decode(Base._get(abi.encodePacked(k)), (PoolData));  
+        (,bytes memory data)=Base._get(abi.encodePacked(k));
+        PoolData memory pd = abi.decode(data, (PoolData));  
         tokenA = pd.tokenA;
         tokenB = pd.tokenB;
     }   
@@ -57,7 +59,8 @@ contract PoolDataMap is Base{
 
   
     function valueAt(uint256 idx) public virtual view returns(address tokenA,address tokenB){ 
-        PoolData memory pd = abi.decode(Base._get(idx), (PoolData));  
+        (,bytes memory data)=Base._get(idx);
+        PoolData memory pd = abi.decode(data, (PoolData));  
         tokenA = pd.tokenA;
         tokenB = pd.tokenB; 
     }    

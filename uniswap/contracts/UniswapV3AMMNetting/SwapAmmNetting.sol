@@ -8,10 +8,7 @@ import "@arcologynetwork/concurrentlib/lib/map/HashU256Cum.sol";
 // import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
 import "@arcologynetwork/concurrentlib/lib/multiprocess/Multiprocess.sol";
 import "./interfaces/ISwapLogic.sol";
-
 import "./libraries/PoolLibary.sol";
-import "./libraries/PriceLibary.sol";
-
 import "./SwapCallDataArray.sol";
 
 
@@ -24,7 +21,7 @@ contract SwapAmmNetting
 
     address private factory;
     address private  swapLogic;
-    event PoolCreated(address indexed token0,address indexed token1,uint24 indexed fee,int24 tickSpacing,address pool);
+    // event PoolCreated(address indexed token0,address indexed token1,uint24 indexed fee,int24 tickSpacing,address pool);
     event WriteBackEvent(bytes32 indexed pid,bytes32 indexed eventSigner,bytes eventContext);
     U256 private flags ;
     
@@ -34,6 +31,7 @@ contract SwapAmmNetting
     HashU256Map private swapDataSum ;
 
     uint256 poolSize;
+    
     
     bytes4 constant funcSign=0xc6678321;  //bytes4(keccak256(bytes("exactInputSingleDefer((address,address,uint24,address,uint256,uint256,uint256,uint160))")));
 
@@ -86,28 +84,25 @@ contract SwapAmmNetting
         bytes32 keyIn=PoolLibary.GetKey(pooladr,params.tokenIn);
 
         swapDataMap[keyIn].push(pid,abi.encodePacked(params.tokenIn, params.fee, params.tokenOut),msg.sender,params.recipient,params.amountIn,params.sqrtPriceLimitX96,pooladr);
-        swapDataSum.insert(keyIn, params.amountIn, 0, type(uint256).max);
+        swapDataSum.set(keyIn, params.amountIn, 0, type(uint256).max);
         ISwapLogic(swapLogic).depositSingle(params.tokenIn,msg.sender,params.amountIn);
         flags.push(1);
 
         if(flags.committedLength()>0){
             Multiprocess mp = new Multiprocess(poolSize);
             for(uint i=0;i<poolSize;i++){         
-                mp.push(1000000000, address(this), abi.encodeWithSignature("poolProcess(address)", pools.keyAt(i)));
+                mp.addJob(1000000000, address(this), abi.encodeWithSignature("poolProcess(address)", pools.keyAt(i)));
             }
             mp.run();
         
             flags.clear();
+            mp.clear();
         }
         emit Step(2000);
         amountOut=0;
     }
 
-    
-
-
     event Step(uint256 _step);
-
 
     function poolProcess(address pooladr) public {
         (bool canswap,uint256 amountMinCounterPart,bytes32 keyMin,bytes32 keyMax)=ISwapLogic(swapLogic).findMax(pooladr, pools, swapDataSum);
