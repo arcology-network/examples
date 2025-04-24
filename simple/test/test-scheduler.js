@@ -9,8 +9,9 @@ async function main() {
     await bt.deployed();
     console.log(`Deployed ArrayClear Test at ${bt.address}`)
 
+    let tx,receipt;
 
-    console.log('===========visit first bat=====================')
+    console.log('========== first bat,Failed one ,two generations =====================')
     var txs=new Array();
     for(i=1;i<=4;i++){
       txs.push(frontendUtil.generateTx(function([bt,from,val]){
@@ -19,15 +20,27 @@ async function main() {
           sd: 1                 
         };
         return bt.connect(from).pvisit(params);
-      },bt,accounts[i],i));
+      },bt,accounts[i],1));
 
       txs.push(frontendUtil.generateTx(function([bt,from,val]){
         return bt.connect(from).add(val);
-      },bt,accounts[i],i));
+      },bt,accounts[i],1));
     }
     await frontendUtil.waitingTxs(txs);
 
-    console.log('===========visit second bat=====================')
+    console.log('===========getCounter=====================')
+    tx = await bt.getCounter();
+    receipt=await tx.wait();
+    // console.log(receipt);
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
+    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000004"){
+      console.log('Test Successful');
+    }else{
+      console.log('Test Failed');
+    } 
+
+    console.log('=========== second bat,Failed tow ,four generations =====================')
     txs=new Array();
     for(i=5;i<=8;i++){
       txs.push(frontendUtil.generateTx(function([bt,from,val]){
@@ -36,15 +49,27 @@ async function main() {
           sd: 1                 
         };
         return bt.connect(from).pvisit(params);
-      },bt,accounts[i],i));
+      },bt,accounts[i],1));
 
       txs.push(frontendUtil.generateTx(function([bt,from,val]){
         return bt.connect(from).add(val);
-      },bt,accounts[i],i));
+      },bt,accounts[i],1));
     }
     await frontendUtil.waitingTxs(txs);
 
-    console.log('===========visit third bat=====================')
+    console.log('===========getCounter=====================')
+    tx = await bt.getCounter();
+    receipt=await tx.wait();
+    // console.log(receipt);
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
+    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x000000000000000000000000000000000000000000000000000000000000000c"){
+      console.log('Test Successful');
+    }else{
+      console.log('Test Failed');
+    } 
+
+    console.log('=========== third bat,four generations =====================')
     txs=new Array();
     for(i=9;i<=10;i++){
       txs.push(frontendUtil.generateTx(function([bt,from,val]){
@@ -53,25 +78,25 @@ async function main() {
           sd: 1                 
         };
         return bt.connect(from).pvisit(params);
-      },bt,accounts[i],i));
+      },bt,accounts[i],1));
 
       txs.push(frontendUtil.generateTx(function([bt,from,val]){
         return bt.connect(from).add(val);
-      },bt,accounts[i],i));
+      },bt,accounts[i],1));
     }
     await frontendUtil.waitingTxs(txs);
     
-    // console.log('===========getCounter=====================')
-    // tx = await bt.getCounter();
-    // const receipt=await tx.wait();
-    // // console.log(receipt);
-    // frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    // console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
-    // if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000004"){
-    //   console.log('Test Successful');
-    // }else{
-    //   console.log('Test Failed');
-    // } 
+    console.log('===========getCounter=====================')
+    tx = await bt.getCounter();
+    receipt=await tx.wait();
+    // console.log(receipt);
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
+    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000011"){
+      console.log('Test Successful');
+    }else{
+      console.log('Test Failed');
+    } 
   }
 
 

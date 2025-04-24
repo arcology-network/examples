@@ -10,14 +10,40 @@ async function main() {
     await mmp.deployed();
     console.log(`Deployed MyMultiProcess Test at ${mmp.address}`)
 
-    
+    let tx,receipt
 
     console.log('===========add =====================')
-    tx = await mmp.add(3,2);
+    tx = await mmp.add(5,2);
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(frontendUtil.parseEvent(receipt,"QueryBalance"))
+    if(frontendUtil.parseEvent(receipt,"QueryBalance")==="0x000000000000000000000000000000000000000000000000000000000000000a"){
+      console.log('Test Successful');
+    }else{
+      console.log('Test Failed');
+    } 
 
+    console.log('===========reset=====================')
+    tx = await mmp.reset();
+    receipt=await tx.wait();
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    console.log(frontendUtil.parseEvent(receipt,"QueryBalance"))
+    if(frontendUtil.parseEvent(receipt,"QueryBalance")==="0x0000000000000000000000000000000000000000000000000000000000000000"){
+      console.log('Test Successful');
+    }else{
+      console.log('Test Failed');
+    } 
+
+    console.log('===========add =====================')
+    tx = await mmp.add(4,3);
+    receipt=await tx.wait();
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    console.log(frontendUtil.parseEvent(receipt,"QueryBalance"))
+    if(frontendUtil.parseEvent(receipt,"QueryBalance")==="0x000000000000000000000000000000000000000000000000000000000000000c"){
+      console.log('Test Successful');
+    }else{
+      console.log('Test Failed');
+    } 
 }
 
   // We recommend this pattern to be able to use async/await everywhere

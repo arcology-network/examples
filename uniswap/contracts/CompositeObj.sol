@@ -11,6 +11,7 @@ contract CompositeObj {
         U256Cumulative sum;
     }
 
+    uint256 total=0;  
     mapping (address => InterData) private swapDataGroup;
     U256 flags = new U256();
 
@@ -31,8 +32,7 @@ contract CompositeObj {
         }
     }
 
-    event CounterQuery(address key,uint256 value);
-    event Step(uint256 _Step);
+    event CounterQuery(uint256 value);
 
     function addU256(address adr,uint256 val)public {
         flags.push(1);
@@ -42,11 +42,17 @@ contract CompositeObj {
 
         if(flags.committedLength()>0){
             for(uint i=0;i<4;i++){
-                emit Step(swapDataGroup[adrs[i]].sum.get());
+                uint256 sum=1;
                 for(uint ii=0;ii<swapDataGroup[adrs[i]].list.fullLength();ii++){
-                    emit CounterQuery(adrs[i],swapDataGroup[adrs[i]].list.get(ii));
+                    sum=sum*swapDataGroup[adrs[i]].list.get(ii);
                 }
+                total=total+sum;
             }
         }
+    }
+
+    function getTotal() public returns(uint256){
+        emit CounterQuery(total);
+        return total;
     }
 }

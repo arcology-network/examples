@@ -4,6 +4,7 @@ pragma abicoder v2;
 
 import "@arcologynetwork/concurrentlib/lib/array/U256.sol";
 import "@arcologynetwork/concurrentlib/lib/runtime/Runtime.sol";
+import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
 
 
 // This simple contract counts the number of visits to the contract. It uses the Bool contract provided by the concurrentlib
@@ -21,58 +22,57 @@ contract ArrayClear {
     U256 flagsAdd = new U256(); 
     event CounterQuery(uint256 value);
 
+    U256Cumulative sum=new U256Cumulative(0, 100); 
+
     constructor()  {
         Runtime.defer(bytes4(keccak256(bytes("pvisit((uint256,uint256))")))); 
         Runtime.defer(bytes4(keccak256(bytes("add(uint256)"))));                                                                                    
     }
 
     function pvisit(ExactInputSingleParams calldata params) public {
-        if(flags.committedLength()==0){
-            counter.clear();
-            // emit CounterQuery(counter.fullLength());
-        }
-        counter.push(params.seed); // Add a new visit to the counter. Concurrent writes are OK !!.
+        // if(flags.committedLength()==0){
+        //     counter.clear();
+        // }
+        counter.push(params.seed); 
         flags.push(1);
 
         if(flags.committedLength()>0){
-            flags.clear();
 
-            emit CounterQuery(counter.nonNilCount());
-            emit CounterQuery(counter.committedLength());
-            emit CounterQuery(counter.fullLength());
-
-            uint256 total=0;
             for(uint i=0;i<counter.fullLength();i++){
                 if(!counter._exists(i)) continue;
-                total=total+counter.get(i);
+                sum.add(counter.get(i));
             }
-            emit CounterQuery(total);
+
+            counter.clear();
+            flags.clear();
         }
     }
     function add(uint256 val)public {
-        if(flagsAdd.committedLength()==0){
-            counterAdd.clear();
-        }
+        //g1:3 t g2:1 t g3:3 2c 1t g4:1 t
         counterAdd.push(val); 
         flagsAdd.push(1);
 
+        emit CounterQuery(flagsAdd.committedLength());
         if(flagsAdd.committedLength()>0){
-            flagsAdd.clear();
-            emit CounterQuery(counterAdd.nonNilCount());
 
-            uint256 total=0;
+            emit CounterQuery(counterAdd.fullLength());
+            emit CounterQuery(counterAdd.nonNilCount());
+            emit CounterQuery(counterAdd.committedLength());
+
             for(uint i=0;i<counterAdd.fullLength();i++){
                 if(!counterAdd._exists(i)) continue;
-                total=total+counterAdd.get(i);
+                sum.add(counterAdd.get(i));
             }
-            emit CounterQuery(total);
 
             emit CounterQuery(counter.fullLength());
+
+            counterAdd.clear();
+            flagsAdd.clear();
         }
     }
 
     function getCounter() public returns(uint256){
-        emit CounterQuery(counter.nonNilCount());
-        return counter.nonNilCount(); // Return the number of visits to the contract.
+        emit CounterQuery(sum.get());
+        return sum.get();
     }
 }

@@ -17,24 +17,33 @@ async function main() {
     
 
     console.log('===========add first bat=====================')
+    var txs=new Array();
+    for(i=1;i<=4;i++){
+      txs.push(frontendUtil.generateTx(function([bt,from,val]){
+        return bt.connect(from).addU256(from.address,val, {
+          gasLimit: 500000000,
+        });
+      },bt,accounts[i],i));
+    }
+    for(i=1;i<=2;i=i+2){
+      txs.push(frontendUtil.generateTx(function([bt,from,val]){
+        return bt.connect(from).addU256(from.address,val, {
+          gasLimit: 500000000,
+        });
+      },bt,accounts[i],6));
+    }
+    await frontendUtil.waitingTxs(txs);
 
-    
-      var txs=new Array();
-      for(i=1;i<=4;i++){
-        txs.push(frontendUtil.generateTx(function([bt,from,val]){
-          return bt.connect(from).addU256(from.address,val, {
-            gasLimit: 500000000,
-          });
-        },bt,accounts[i],i));
-      }
-      for(i=1;i<=2;i=i+2){
-        txs.push(frontendUtil.generateTx(function([bt,from,val]){
-          return bt.connect(from).addU256(from.address,val, {
-            gasLimit: 500000000,
-          });
-        },bt,accounts[i],6));
-      }
-      await frontendUtil.waitingTxs(txs);
+    console.log('===========get totals=====================')
+    tx = await bt.getTotal();
+    const receipt=await tx.wait();
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
+    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x000000000000000000000000000000000000000000000000000000000000000f"){
+      console.log('Test Successful');
+    }else{
+      console.log('Test Failed');
+    } 
   }
 
 

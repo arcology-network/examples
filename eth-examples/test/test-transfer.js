@@ -9,19 +9,27 @@ async function main() {
     await transferTest.deployed();
     console.log(`Deployed transferTest at ${transferTest.address}`)
 
+    let gasprice=BigInt(255);
+
     console.log('===========getBalance=====================')
     let tx = await transferTest.getBalance();
     let receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,"BalanceEvent")}`)
-    console.log(`Balance of sneder ${frontendUtil.parseEvent(receipt,"Balance2Event")}`)
+    let hexStr=frontendUtil.parseEvent(receipt,"Balance2Event")
+    console.log(`Balance of sneder ${hexStr}`)
+    let first = BigInt(hexStr); 
+    let gasused0=BigInt(receipt.gasUsed)*gasprice;
     console.log(`GasUsed : ${receipt.gasUsed}`)
 
     console.log('===========transfer=====================')
     tx = await transferTest.transderToContract({value:10});
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(`Transfer to contract ${frontendUtil.parseEvent(receipt,"TransferEvent")}`)
+    hexStr=frontendUtil.parseEvent(receipt,"TransferEvent");
+    let transamt=BigInt(hexStr);
+    console.log(`Transfer to contract ${hexStr}`)
+    let gasused1=BigInt(receipt.gasUsed)*gasprice;
     console.log(`GasUsed : ${receipt.gasUsed}`)
 
     console.log('===========getBalance=====================')
@@ -29,8 +37,18 @@ async function main() {
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,"BalanceEvent")}`)
-    console.log(`Balance of sneder ${frontendUtil.parseEvent(receipt,"Balance2Event")}`)
+    hexStr=frontendUtil.parseEvent(receipt,"Balance2Event");
+    console.log(`Balance of sneder ${hexStr}`)
+    let balance=BigInt(hexStr);
     console.log(`GasUsed : ${receipt.gasUsed}`)
+
+    console.log('===========transfer checkSum=====================')
+    if(first-gasused0-transamt-gasused1==balance){
+      console.log("Transfer Successful");
+    }else{
+      console.log("Transfer Failed");
+    }
+
 
     console.log('===========transfer will be failed=====================')
     tx = await transferTest.transderToContract({value:20});

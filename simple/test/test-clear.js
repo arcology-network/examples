@@ -23,6 +23,18 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
 
+    console.log('===========getCounter=====================')
+    tx = await bt.getCounter();
+    receipt=await tx.wait();
+    // console.log(receipt);
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
+    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x000000000000000000000000000000000000000000000000000000000000000a"){
+      console.log('Test Successful');
+    }else{
+      console.log('Test Failed');
+    } 
+
     console.log('===========visit second bat=====================')
     txs=new Array();
     for(i=5;i<=8;i++){
@@ -36,17 +48,17 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
     
-    // console.log('===========getCounter=====================')
-    // tx = await bt.getCounter();
-    // const receipt=await tx.wait();
-    // // console.log(receipt);
-    // frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    // console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
-    // if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000004"){
-    //   console.log('Test Successful');
-    // }else{
-    //   console.log('Test Failed');
-    // } 
+    console.log('===========getCounter=====================')
+    tx = await bt.getCounter();
+    receipt=await tx.wait();
+    // console.log(receipt);
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
+    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000024"){
+      console.log('Test Successful');
+    }else{
+      console.log('Test Failed');
+    } 
   }
 
 

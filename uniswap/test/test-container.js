@@ -20,7 +20,7 @@ async function main() {
 
     
     let accountLength=accounts.length;
-    let flag_execute=false;
+    let flag_execute=true;
     if(flag_execute){
       var txs=new Array();
       for(i=1;i<=4;i++){
@@ -30,9 +30,20 @@ async function main() {
           });
         },bt,accounts[i],i));
       }
-      await frontendUtil.waitingTxs(txs);
+      await frontendUtil.waitingTxs(txs);  
+      
+      console.log('===========get totals=====================')
+      tx = await bt.getTotal();
+      const receipt=await tx.wait();
+      frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+      console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
+      if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000008"){
+        console.log('Test Successful');
+      }else{
+        console.log('Test Failed');
+      } 
     }else{
-      let pk,signer,pk1,signer1,params
+      let pk,signer
       frontendUtil.ensurePath('data/container-add');
       const handle_container_add=frontendUtil.newFile('data/container-add/container-add.out')
       for(i=0;i<accountLength;i++){
