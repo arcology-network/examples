@@ -25,6 +25,9 @@ async function main() {
       },cum,accounts[i],i));
     }
     await frontendUtil.waitingTxs(txs);
+
+    
+
     
     console.log('===========query bat=====================')
     for(i=1;i<=3;i++){
