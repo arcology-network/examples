@@ -25,9 +25,6 @@ contract SwapLogic {
         router=_router;
     }
 
-    // function GetPid()external returns (bytes32 pid){
-    //     pid=abi.decode(Runtime.pid(), (bytes32));
-    // }
     
     function findMax(address pooladr,PoolDataMap pools,HashU256Map swapDataSum) external 
         returns(bool canswap,uint256 amountMinCounterPart,bytes32 keyMin,bytes32 keyMax){
@@ -69,7 +66,7 @@ contract SwapLogic {
         if(canswap){
             swapNetting(listMin,listMax,pooladr,amountMinCounterPart,PriceLibary.getSqrtPricex96(pooladr));
         }else{
-            swapWithPools(listMin,listMax);
+            swapWithPools(listMin,listMax,PriceLibary.getSqrtPricex96(pooladr));
         }
     }
 
@@ -120,19 +117,19 @@ contract SwapLogic {
                     EmitSwapEvent(listMax,i,amountMinCounterPart,amountPart,sqrtPriceX96);
                     listMax.update(i,amountIn-amountMinCounterPart);
                     amm=false;
-                    swapWithPool(listMax,i);
+                    swapWithPool(listMax,i,sqrtPriceX96);
                 }
             }else{
-                swapWithPool(listMax,i);
+                swapWithPool(listMax,i,sqrtPriceX96);
             }
         }
     }
-    function swapWithPools(SwapCallDataArray listMin,SwapCallDataArray listMax) internal {
+    function swapWithPools(SwapCallDataArray listMin,SwapCallDataArray listMax,uint160 sqrtPriceX96) internal {
         if(address(listMin)!=address(0)){
             uint256 dataSize=listMin.fullLength();
             for(uint i=0;i<dataSize;i++){
                 if(!listMin._exists(i)) continue;
-                swapWithPool(listMin,i);
+                swapWithPool(listMin,i,sqrtPriceX96);
             }
         }
         
@@ -140,11 +137,11 @@ contract SwapLogic {
             uint256 dataSize=listMax.fullLength();
             for(uint i=0;i<dataSize;i++){
                 if(!listMax._exists(i)) continue;
-                swapWithPool(listMax,i);
+                swapWithPool(listMax,i,sqrtPriceX96);
             }
         }
     }
-    function swapWithPool(SwapCallDataArray list,uint idx) internal {
+    function swapWithPool(SwapCallDataArray list,uint idx,uint160 sqrtPriceX96) internal {
         ( ,
             address  tokenIn,
             address  tokenOut,
@@ -156,7 +153,8 @@ contract SwapLogic {
               
         )=list.get(idx);
         ISwapRouter(router).safeTransfer(tokenIn, sender, amountIn);   //refund from common account
-        ISwapRouter(router).exactInputExternal(amountIn,recipient,sqrtPriceLimitX96,tokenIn,tokenOut,fee,sender);
+        uint256 amountout=ISwapRouter(router).exactInputExternal(amountIn,recipient,sqrtPriceLimitX96,tokenIn,tokenOut,fee,sender);
+        EmitSwapEvent(list,idx,amountIn,amountout,sqrtPriceX96);
     }
     function EmitSwapEvent(SwapCallDataArray list,uint idx,uint256 amount0,uint256 amount1,uint160 sqrtPriceX96)internal{
         (bytes32 txhash ,

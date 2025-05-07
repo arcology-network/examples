@@ -189,18 +189,12 @@ contract Token {
      * - `to` cannot be the zero address.
      */
     function mint(address account, uint256 amount) public virtual {
-        emit Step(0);
         require(account != address(0), "mint to the zero address");
-        emit Step(1);
         _beforeTokenTransfer(address(0), account, amount);
-        emit Step(2);
         _totalSupply.add(amount);
-        emit Step(3);
         _balances.set(account, int(amount), 0, type(uint256).max);
-        
         emit Transfer(address(0), account, amount);
     }
-    event Step(uint256 _step);
     /**
      * @dev Destroys `amount` tokens from `account`, reducing the
      * total supply.

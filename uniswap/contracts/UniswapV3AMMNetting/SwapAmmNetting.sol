@@ -21,15 +21,14 @@ contract SwapAmmNetting
 
     address private factory;
     address private  swapLogic;
-    // event PoolCreated(address indexed token0,address indexed token1,uint24 indexed fee,int24 tickSpacing,address pool);
     event WriteBackEvent(bytes32 indexed pid,bytes32 indexed eventSigner,bytes eventContext);
     U256 private flags ;
     
     PoolDataMap private pools ;
-
+    Multiprocess mp = new Multiprocess(10);
     mapping (bytes32 => SwapCallDataArray) private swapDataMap;
     HashU256Map private swapDataSum ;
-
+    
     uint256 poolSize;
     
     
@@ -89,8 +88,8 @@ contract SwapAmmNetting
         flags.push(1);
 
         if(flags.committedLength()>0){
-            Multiprocess mp = new Multiprocess(poolSize);
-            for(uint i=0;i<poolSize;i++){         
+            
+            for(uint i=0;i<poolSize;i++){  
                 mp.addJob(1000000000, address(this), abi.encodeWithSignature("poolProcess(address)", pools.keyAt(i)));
             }
             mp.run();
@@ -98,7 +97,7 @@ contract SwapAmmNetting
             flags.clear();
             mp.clear();
         }
-        emit Step(2000);
+        // emit Step(2000);
         amountOut=0;
     }
 

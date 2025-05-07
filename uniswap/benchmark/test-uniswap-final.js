@@ -279,15 +279,12 @@ async function main() {
         tx = await tokenInsArray[i].connect(accounts[j]).populateTransaction.approve(router.address,amountA.mul(2));
         await writePreSignedTxFile(handle_swap_token_approve,signer,tx);
 
-        // console.log(`approve from : ${accounts[j].address} to: ${router.address}`);
 
         pk1=nets[hre.network.name].accounts[j+1];
         signer1 = new ethers.Wallet(pk1, provider);
 
         tx = await tokenInsArray[i+1].connect(accounts[j+1]).populateTransaction.approve(router.address,amountB.mul(2));
         await writePreSignedTxFile(handle_swap_token_approve,signer1,tx);
-
-        // console.log(`approve from : ${accounts[j+1].address} to: ${router.address}`);
 
         
         tx = await swap(tokenInsArray[i].address,tokenInsArray[i+1].address,fee,accounts[j],amountA,amm,false);
