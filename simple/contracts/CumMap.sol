@@ -22,6 +22,10 @@ contract CumMap {
         cummap.set(adr, int256(val));
     }
 
+    function reset(address adr)public {  
+        cummap._resetByKey(abi.encodePacked(adr));
+    }
+
     function del(address adr)public {  
         cummap.del(adr);
     }
