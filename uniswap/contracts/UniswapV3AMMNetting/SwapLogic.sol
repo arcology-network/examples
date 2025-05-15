@@ -29,17 +29,21 @@ contract SwapLogic {
     function findMax(address pooladr,PoolDataMap pools,HashU256Map swapDataSum) external 
         returns(bool canswap,uint256 amountMinCounterPart,bytes32 keyMin,bytes32 keyMax){
         (address tokenA,address tokenB) = pools.get(pooladr);
-        
-        (canswap,amountMinCounterPart,keyMin,keyMax)=find(pooladr,tokenA,tokenB,swapDataSum);
-        
+        bytes32 keyA=PoolLibary.GetKey(pooladr,tokenA);
+        bytes32 keyB=PoolLibary.GetKey(pooladr,tokenB);
+        bool minIsA=false;
+        (canswap,amountMinCounterPart,minIsA)=find(pooladr,tokenA,tokenB,keyA,keyB,swapDataSum);
+        if(minIsA)
+            (keyMin,keyMax)=(keyA,keyB);
+        else
+            (keyMin,keyMax)=(keyB,keyA);            
     }
-    function find(address pooladr,address tokenA,address tokenB,HashU256Map swapDataSum) internal 
-        returns(bool canswap,uint256 amountMinCounterPart,bytes32 keyMin,bytes32 keyMax){
-        keyMin=PoolLibary.GetKey(pooladr,tokenA);
-        uint256 amountA=swapDataSum.get(PoolLibary.GetKey(pooladr,tokenA));
+    function find(address pooladr,address tokenA,address tokenB,bytes32 keyA,bytes32 keyB,HashU256Map swapDataSum) internal 
+        returns(bool canswap,uint256 amountMinCounterPart,bool minIsA){
+        uint256 amountA=swapDataSum.get(keyA);
         uint256 amountAB=PriceLibary.getAmountOut(pooladr, tokenA, tokenB, amountA);
-        keyMax=PoolLibary.GetKey(pooladr,tokenB);
-        uint256 amountB=swapDataSum.get(PoolLibary.GetKey(pooladr,tokenB));  
+        uint256 amountB=swapDataSum.get(keyB);  
+        minIsA=false;
         if(amountA>0&&amountB>0){
             canswap=true; 
             uint256 amountMin=amountB;
@@ -48,11 +52,10 @@ contract SwapLogic {
                 amountMin=amountA;
                 (tokenMin,tokenMax)=(tokenA,tokenB);
                 amountMinCounterPart=amountAB;
+                minIsA=true;
             }else{
                 amountMinCounterPart=PriceLibary.getAmountOut(pooladr, tokenMin, tokenMax, amountMin);
             }
-            keyMin=PoolLibary.GetKey(pooladr,tokenMin);
-            keyMax=PoolLibary.GetKey(pooladr,tokenMax);
         }else{
             canswap=false;
         }
