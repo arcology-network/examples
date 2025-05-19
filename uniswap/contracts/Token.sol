@@ -17,6 +17,7 @@ contract Token {
     uint8 private _decimals;
     address public immutable owner;
 
+    event BalanceQuery(uint256 val);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "not owner");
@@ -84,11 +85,15 @@ contract Token {
     /**
      * @dev See {IERC20-balanceOf}.
      */
-    function balanceOf(address account) external view returns (uint256) {
+    function balanceOf(address account) external returns (uint256) {
+        uint256 balance=0;
         if(!_balances.exist(account)){
+            emit BalanceQuery(0);
             return 0;
         }
-        return _balances.get(account);
+        balance=_balances.get(account);
+        emit BalanceQuery(balance);
+        return balance;
     }
 
     /**
@@ -110,7 +115,7 @@ contract Token {
     /**
      * @dev See {IERC20-allowance}.
      */
-    function allowance(address owner, address spender) external view returns (uint256) {
+    function allowance(address owner, address spender) external returns (uint256) {
         bytes32 key = _key(owner,spender);
         if(!_allowances.exist(key)){
             return 0;

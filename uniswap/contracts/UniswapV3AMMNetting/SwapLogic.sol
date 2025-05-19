@@ -76,7 +76,7 @@ contract SwapLogic {
     function swapNetting(SwapCallDataArray listMin,SwapCallDataArray listMax,address pooladr,uint256 amountMinCounterPart,uint160 sqrtPriceX96) internal {
         uint256 dataSize=listMin.fullLength();
         for(uint i=0;i<dataSize;i++){
-            if(!listMin._exists(i)) continue;
+            if(!listMin.exists(i)) continue;
             ( ,
               ,
             address  tokenOut,
@@ -94,7 +94,7 @@ contract SwapLogic {
         dataSize=listMax.fullLength();
         bool amm = true;
         for(uint i=0;i<dataSize;i++){
-            if(!listMax._exists(i)) continue;
+            if(!listMax.exists(i)) continue;
             ( ,
             address  tokenIn,
             address  tokenOut,
@@ -131,7 +131,7 @@ contract SwapLogic {
         if(address(listMin)!=address(0)){
             uint256 dataSize=listMin.fullLength();
             for(uint i=0;i<dataSize;i++){
-                if(!listMin._exists(i)) continue;
+                if(!listMin.exists(i)) continue;
                 swapWithPool(listMin,i,sqrtPriceX96);
             }
         }
@@ -139,7 +139,7 @@ contract SwapLogic {
         if(address(listMax)!=address(0)){
             uint256 dataSize=listMax.fullLength();
             for(uint i=0;i<dataSize;i++){
-                if(!listMax._exists(i)) continue;
+                if(!listMax.exists(i)) continue;
                 swapWithPool(listMax,i,sqrtPriceX96);
             }
         }

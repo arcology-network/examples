@@ -7,7 +7,7 @@ async function main() {
   accounts = await ethers.getSigners(); 
  
   
-  let i,tx;
+  let i,tx,receipt;
   let tokenCount = 3 ;
 
   console.log('===========start create Token=====================')
@@ -27,8 +27,12 @@ async function main() {
 
   console.log('===========query balance=====================')
   for(i=0;i<=tokenCount;i++){
-    balance = await tokenIns.balanceOf(accounts[i].address);
-    console.log(`Balance of account ${accounts[i].address}: ${balance} token`);
+    // balance = await tokenIns.balanceOf(accounts[i].address);
+    // console.log(`Balance of account ${accounts[i].address}: ${balance} token`);
+
+    tx = await tokenIns.balanceOf(accounts[i].address);
+    receipt=await tx.wait();
+    console.log(`Balance of account ${accounts[i].address}: ${BalanceOf(receipt)} token`);
   }
 
   console.log('===========start approve token=====================')
@@ -52,7 +56,12 @@ async function main() {
   console.log('===========query balance=====================')
   let balances=[300,0,0,0]
   for(i=0;i<=tokenCount;i++){
-    balance = await tokenIns.balanceOf(accounts[i].address);
+    // balance = await tokenIns.balanceOf(accounts[i].address);
+
+    tx = await tokenIns.balanceOf(accounts[i].address);
+    receipt=await tx.wait();
+    balance=BalanceOf(receipt);
+
     if(balances[i]==balance)
       console.log(`Balance of account ${accounts[i].address}: ${balance} token , Successful`);
     else
@@ -61,7 +70,11 @@ async function main() {
   
 }
 
-
+function BalanceOf(receipt){
+  let hexStr=frontendUtil.parseEvent(receipt,"BalanceQuery")
+  console.log(`Balance of sneder ${hexStr}`)
+  return BigInt(hexStr); 
+}
 
 main()
   .then(() => process.exit(0))

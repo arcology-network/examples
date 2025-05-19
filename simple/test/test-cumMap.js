@@ -15,7 +15,7 @@ async function main() {
     let i,tx,receipt;
 
     
-    /*
+    
     console.log('===========insert bat=====================')
     for(i=1;i<=3;i++){
       txs.push(frontendUtil.generateTx(function([cum,from,val]){
@@ -154,7 +154,7 @@ async function main() {
     })
 
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    */
+    
     console.log('===========insert for reset test=====================')
     tx = await cum.insert(accounts[0].address,1);
     receipt=await tx.wait();

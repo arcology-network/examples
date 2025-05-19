@@ -18,8 +18,8 @@ contract PoolDataMap is Base{
      * @param k The address key to check for existence.
      * @return true if the key exists, false otherwise.
      */
-    function exist(address k) public view returns(bool) { 
-        return Base._exists(abi.encodePacked(k));
+    function exist(address k) public returns(bool) { 
+        return Base.exists(abi.encodePacked(k));
     }
 
     /**
@@ -40,7 +40,7 @@ contract PoolDataMap is Base{
      * @return tokenA address value associated with the key.
      * @return tokenB address value associated with the key.
      */
-    function get(address k) public virtual view returns(address tokenA,address tokenB){ 
+    function get(address k) public virtual returns(address tokenA,address tokenB){ 
         (,bytes memory data)=Base._get(abi.encodePacked(k));
         PoolData memory pd = abi.decode(data, (PoolData));  
         tokenA = pd.tokenA;
@@ -58,7 +58,7 @@ contract PoolDataMap is Base{
     }   
 
   
-    function valueAt(uint256 idx) public virtual view returns(address tokenA,address tokenB){ 
+    function valueAt(uint256 idx) public virtual returns(address tokenA,address tokenB){ 
         (,bytes memory data)=Base._get(idx);
         PoolData memory pd = abi.decode(data, (PoolData));  
         tokenA = pd.tokenA;

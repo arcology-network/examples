@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.7.6;
-import "./HashU256Cum.sol";
+import "@arcologynetwork/concurrentlib/lib/map/HashU256Cum.sol";
 import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
 
 contract HashCum {
-    HashU256Map1 private cummap=new HashU256Map1();
+    HashU256Map private cummap=new HashU256Map();
     AddressU256CumMap private cummapadr=new AddressU256CumMap();
     constructor() {
     }

@@ -90,14 +90,13 @@ contract SwapAmmNetting
         if(flags.committedLength()>0){
             
             for(uint i=0;i<poolSize;i++){  
-                mp.addJob(1000000000, address(this), abi.encodeWithSignature("poolProcess(address)", pools.keyAt(i)));
+                mp.addJob(1000000000,0, address(this), abi.encodeWithSignature("poolProcess(address)", pools.keyAt(i)));
             }
             mp.run();
         
             flags.clear();
-            mp.clear();
         }
-        // emit Step(2000);
+        emit Step(2000);
         amountOut=0;
     }
 
@@ -116,6 +115,6 @@ contract SwapAmmNetting
 
     function clearEnvs(bytes32 key)internal{
         swapDataMap[key].clear();
-        swapDataSum.set(key, -int256(swapDataSum.get(key)));
+        swapDataSum._resetByKey(abi.encodePacked(key));
     }
 }

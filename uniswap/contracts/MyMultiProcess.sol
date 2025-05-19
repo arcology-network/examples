@@ -12,11 +12,10 @@ contract MyMultiProcess {
 
     function add(uint256 rows,uint256 cols)public {
         for(uint i=0;i<rows;i++)
-            mp.addJob(1000000000, address(this), abi.encodeWithSignature("getSum(uint256)", cols)); // Will require about 1.5M gas
+            mp.addJob(1000000000,0, address(this), abi.encodeWithSignature("getSum(uint256)", cols)); // Will require about 1.5M gas
         mp.run();
 
         emit QueryBalance(sum.get());
-        mp.clear();
     }
 
     function reset()public {

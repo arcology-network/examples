@@ -39,7 +39,7 @@ contract ArrayClear {
         if(flags.committedLength()>0){
 
             for(uint i=0;i<counter.fullLength();i++){
-                if(!counter._exists(i)) continue;
+                if(!counter.exists(i)) continue;
                 sum.add(counter.get(i));
             }
 
@@ -60,7 +60,7 @@ contract ArrayClear {
             emit CounterQuery(counterAdd.committedLength());
 
             for(uint i=0;i<counterAdd.fullLength();i++){
-                if(!counterAdd._exists(i)) continue;
+                if(!counterAdd.exists(i)) continue;
                 sum.add(counterAdd.get(i));
             }
 

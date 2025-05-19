@@ -423,10 +423,16 @@ function getLiquidityParams(tokenInsA,tokenInsB,amountA,amountB){
 
   return [token0,token1,amount0Desired,amount1Desired]
 }
+function BalanceOf(receipt){
+  let hexStr=frontendUtil.parseEvent(receipt,"BalanceQuery")
+  return BigInt(hexStr); 
+}
 
 async function getBalance(token,account,tokenIdx){
   const decimals=18;
-  balance = await token.balanceOf(account.address);
+  let tx = await token.balanceOf(account.address);
+  let receipt=await tx.wait();
+  let balance=BalanceOf(receipt);
   formattedBalance = ethers.utils.formatUnits(balance, decimals);
   console.log(`Balance of account ${account.address}: ${formattedBalance} token${tokenIdx}`);
 }
