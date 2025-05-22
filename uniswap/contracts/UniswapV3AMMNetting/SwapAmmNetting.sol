@@ -5,11 +5,11 @@ import '../UniswapV3Periphery/libraries/Path.sol';
 import "@arcologynetwork/concurrentlib/lib/runtime/Runtime.sol";
 import "@arcologynetwork/concurrentlib/lib/array/U256.sol";
 import "@arcologynetwork/concurrentlib/lib/map/HashU256Cum.sol";
-// import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
 import "@arcologynetwork/concurrentlib/lib/multiprocess/Multiprocess.sol";
 import "./interfaces/ISwapLogic.sol";
 import "./libraries/PoolLibary.sol";
 import "./SwapCallDataArray.sol";
+import "@arcologynetwork/concurrentlib/lib/shared/OrderedSet.sol";
 
 
 
@@ -31,7 +31,7 @@ contract SwapAmmNetting
     
     uint256 poolSize;
     
-    
+    BytesOrderedSet poolSet = new BytesOrderedSet();  
     bytes4 constant funcSign=0xc6678321;  //bytes4(keccak256(bytes("exactInputSingleDefer((address,address,uint24,address,uint256,uint256,uint256,uint160))")));
 
     constructor() {  
@@ -82,22 +82,33 @@ contract SwapAmmNetting
         address pooladr=PoolLibary.computePoolAdr(factory, params.tokenIn, params.tokenOut, params.fee);
         bytes32 keyIn=PoolLibary.GetKey(pooladr,params.tokenIn);
 
+        poolSet.set(abi.encodePacked(pooladr));
+
         swapDataMap[keyIn].push(pid,abi.encodePacked(params.tokenIn, params.fee, params.tokenOut),msg.sender,params.recipient,params.amountIn,params.sqrtPriceLimitX96,pooladr);
         swapDataSum.set(keyIn, params.amountIn, 0, type(uint256).max);
         ISwapLogic(swapLogic).depositSingle(params.tokenIn,msg.sender,params.amountIn);
         flags.push(1);
 
         if(flags.committedLength()>0){
-            
-            for(uint i=0;i<poolSize;i++){  
-                mp.addJob(1000000000,0, address(this), abi.encodeWithSignature("poolProcess(address)", pools.keyAt(i)));
+            uint256 length=poolSet.Length();
+            for(uint idx=0;idx<length;idx++){
+                mp.addJob(1000000000,0, address(this), abi.encodeWithSignature("poolProcess(address)", parseAddr(poolSet.get(idx))));
             }
             mp.run();
         
             flags.clear();
+            poolSet.clear();
         }
         emit Step(2000);
         amountOut=0;
+    }
+
+    function parseAddr(bytes memory rawdata) internal returns(address){
+        bytes20 resultAdr;
+        for (uint i = 0; i < 20; i++) {
+            resultAdr |= bytes20(rawdata[i]) >> (i * 8); 
+        }
+        return address(uint160(resultAdr));
     }
 
     event Step(uint256 _step);

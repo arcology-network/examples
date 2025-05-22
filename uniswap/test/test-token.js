@@ -72,7 +72,7 @@ async function main() {
 
 function BalanceOf(receipt){
   let hexStr=frontendUtil.parseEvent(receipt,"BalanceQuery")
-  console.log(`Balance of sneder ${hexStr}`)
+  // console.log(`Balance of sneder ${hexStr}`)
   return BigInt(hexStr); 
 }
 
