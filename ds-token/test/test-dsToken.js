@@ -78,7 +78,12 @@ async function main() {
     tx = await dstoken.balance(accounts[1].address);
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(frontendUtil.parseEvent(receipt,"Balance"))
+    // console.log(frontendUtil.parseEvent(receipt,"Balance"))
+    if(frontendUtil.parseEvent(receipt,"Balance")==="0x0000000000000000000000000000000000000000000000000000000000000032"){
+      console.log('Test Successful');
+    }else{
+      console.log('Test Failed');
+    }
 
     console.log('===========transfer=====================')
     txs=new Array();
@@ -93,8 +98,12 @@ async function main() {
     tx = await dstoken.balance(accounts[1].address);
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(frontendUtil.parseEvent(receipt,"Balance"))
-    
+    // console.log(frontendUtil.parseEvent(receipt,"Balance"))
+    if(frontendUtil.parseEvent(receipt,"Balance")==="0x000000000000000000000000000000000000000000000000000000000000001e"){
+      console.log('Test Successful');
+    }else{
+      console.log('Test Failed');
+    }
   }
 
   // We recommend this pattern to be able to use async/await everywhere

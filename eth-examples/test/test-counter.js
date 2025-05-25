@@ -22,9 +22,9 @@ async function main() {
     tx = await visitCounter.getCounter();
     let receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-
-    console.log(`Counter Data ${frontendUtil.parseEvent(receipt,"CounterQuery")}`)
-    
+    let hexStr=frontendUtil.parseEvent(receipt,"CounterQuery")
+    console.log(`Counter Data ${hexStr}`)
+    let transamt=BigInt(hexStr);
 
     console.log('===========add=====================')
     var txs=new Array();
@@ -39,7 +39,13 @@ async function main() {
     tx = await visitCounter.getCounter();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(`Counter Data ${frontendUtil.parseEvent(receipt,"CounterQuery")}`)
+    hexStr=frontendUtil.parseEvent(receipt,"CounterQuery")
+    console.log(`Counter Data ${hexStr}`)
+    if(transamt+BigInt(15)==BigInt(hexStr)){
+      console.log("Transaction is Successful");
+    }else{
+      console.log("Transaction is Failed");
+    }
   }
 
   // We recommend this pattern to be able to use async/await everywhere
