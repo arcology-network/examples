@@ -25,7 +25,7 @@ contract SwapAmmNetting
     U256 private flags ;
     
     PoolDataMap private pools ;
-    Multiprocess mp = new Multiprocess(10);
+    Multiprocess mp = new Multiprocess(20);
     mapping (bytes32 => SwapCallDataArray) private swapDataMap;
     HashU256Map private swapDataSum ;
     
