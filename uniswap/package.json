@@ -10,7 +10,7 @@
     "hardhat": "^2.9.9"
   },
   "dependencies": {
-    "@arcologynetwork/concurrentlib": "^2.1.20",
+    "@arcologynetwork/concurrentlib": "^2.1.22",
     "@arcologynetwork/frontend-tools": "^1.0.9",
     "@arcologynetwork/frontend-util": "^1.0.3",
     "@ethereumjs/common": "^4.4.0",

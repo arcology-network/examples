@@ -266,24 +266,24 @@ async function main() {
         [amountA ,amountB]=computeMintAmount(tokenInsArray[i].address,tokenInsArray[i+1].address,mintAmount,price);
         console.log(`swap: ${mintAmount} at i:${i} j:${j} amountA: ${amountA}  amountB:${amountB} `);
         //mint
-        tx = await tokenInsArray[i].populateTransaction.mint(accounts[j].address,amountA);
+        tx = await tokenInsArray[i].populateTransaction.mint(accounts[j].address,amountA,{gasPrice:255,});
         await writePreSignedTxFile(handle_swap_token_mint,signerCreator,tx);
 
-        tx = await tokenInsArray[i+1].populateTransaction.mint(accounts[j+1].address,amountB);
+        tx = await tokenInsArray[i+1].populateTransaction.mint(accounts[j+1].address,amountB,{gasPrice:255,});
         await writePreSignedTxFile(handle_swap_token_mint,signerCreator,tx);
 
         //approve
         pk=nets[hre.network.name].accounts[j];
         signer = new ethers.Wallet(pk, provider);
 
-        tx = await tokenInsArray[i].connect(accounts[j]).populateTransaction.approve(router.address,amountA.mul(2));
+        tx = await tokenInsArray[i].connect(accounts[j]).populateTransaction.approve(router.address,amountA.mul(2),{gasPrice:255,});
         await writePreSignedTxFile(handle_swap_token_approve,signer,tx);
 
 
         pk1=nets[hre.network.name].accounts[j+1];
         signer1 = new ethers.Wallet(pk1, provider);
 
-        tx = await tokenInsArray[i+1].connect(accounts[j+1]).populateTransaction.approve(router.address,amountB.mul(2));
+        tx = await tokenInsArray[i+1].connect(accounts[j+1]).populateTransaction.approve(router.address,amountB.mul(2),{gasPrice:255,});
         await writePreSignedTxFile(handle_swap_token_approve,signer1,tx);
 
         
@@ -387,10 +387,16 @@ async function swap(tokenA,tokenB,fee,from,amountIn,swapRouter,isExecute){
     // return swapRouter.connect(from).exactInputSingleDefer(params, {
     //   gasLimit: 500000000 
     // });
-    return swapRouter.connect(from).exactInputSingleDefer(params);
+    return swapRouter.connect(from).exactInputSingleDefer(params, {
+      // gasLimit: 50000000000 ,
+      gasPrice:255,
+      value:25501,
+    });
   }else{
     return swapRouter.connect(from).populateTransaction.exactInputSingleDefer(params, {
-      gasLimit: 50000000000 
+      // gasLimit: 50000000000 ,
+      gasPrice:255,
+      value:25501,
     });
   }
   

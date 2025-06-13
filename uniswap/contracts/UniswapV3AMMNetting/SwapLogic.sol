@@ -41,10 +41,10 @@ contract SwapLogic {
     function find(address pooladr,address tokenA,address tokenB,bytes32 keyA,bytes32 keyB,HashU256Map swapDataSum) internal 
         returns(bool canswap,uint256 amountMinCounterPart,bool minIsA){
         uint256 amountA=swapDataSum.get(keyA);
-        uint256 amountAB=PriceLibary.getAmountOut(pooladr, tokenA, tokenB, amountA);
         uint256 amountB=swapDataSum.get(keyB);  
         minIsA=false;
         if(amountA>0&&amountB>0){
+            uint256 amountAB=PriceLibary.getAmountOut(pooladr, tokenA, tokenB, amountA);
             canswap=true; 
             uint256 amountMin=amountB;
             (address tokenMin,address tokenMax)=(tokenB,tokenA); 
@@ -75,75 +75,86 @@ contract SwapLogic {
 
     function swapNetting(SwapCallDataArray listMin,SwapCallDataArray listMax,address pooladr,uint256 amountMinCounterPart,uint160 sqrtPriceX96) internal {
         uint256 dataSize=listMin.fullLength();
-        for(uint i=0;i<dataSize;i++){
-            if(!listMin.exists(i)) continue;
-            ( ,
-              ,
-            address  tokenOut,
-              ,
-              ,
-            address  recipient,
-            uint256  amountIn,
-              ,
-            uint256  amountOut
-            )=listMin.get(i);
-            ISwapRouter(router).safeTransfer(tokenOut, recipient, amountOut);
-            EmitSwapEvent(listMin,i,amountIn,amountOut,sqrtPriceX96);
+        if(dataSize>0){
+            for(uint i=0;i<dataSize;i++){
+                if(!listMin.exists(i)) continue;
+                
+                ( ,
+                ,
+                address  tokenOut,
+                ,
+                ,
+                address  recipient,
+                uint256  amountIn,
+                ,
+                uint256  amountOut
+                )=listMin.get(i);
+                ISwapRouter(router).safeTransfer(tokenOut, recipient, amountOut);
+                EmitSwapEvent(listMin,i,amountIn,amountOut,sqrtPriceX96);
+            }
         }
-
+        
         dataSize=listMax.fullLength();
-        bool amm = true;
-        for(uint i=0;i<dataSize;i++){
-            if(!listMax.exists(i)) continue;
-            ( ,
-            address  tokenIn,
-            address  tokenOut,
-             ,
-             ,
-            address  recipient,
-            uint256  amountIn,
-            ,
-            uint256  amountOut
-            )=listMax.get(i);
+        if(dataSize>0){
+            bool amm = true;
+            for(uint i=0;i<dataSize;i++){
+                if(!listMax.exists(i)) continue;
+    
+                ( ,
+                address  tokenIn,
+                address  tokenOut,
+                ,
+                ,
+                address  recipient,
+                uint256  amountIn,
+                ,
+                uint256  amountOut
+                )=listMax.get(i);
 
-            if(amm){
-                if(amountMinCounterPart>=amountIn){
-                    amountMinCounterPart=amountMinCounterPart-amountIn;
-                    ISwapRouter(router).safeTransfer(tokenOut, recipient, amountOut);
-                    EmitSwapEvent(listMax,i,amountIn,amountOut,sqrtPriceX96);
-                    if(amountMinCounterPart==0){
+                if(amm){
+                    if(amountMinCounterPart>=amountIn){
+                        amountMinCounterPart=amountMinCounterPart-amountIn;
+                        ISwapRouter(router).safeTransfer(tokenOut, recipient, amountOut);
+                        EmitSwapEvent(listMax,i,amountIn,amountOut,sqrtPriceX96);
+                        if(amountMinCounterPart==0){
+                            amm=false;
+                        }
+                    }else{
+                        uint256 amountPart=PriceLibary.getAmountOut(pooladr, tokenIn, tokenOut, amountMinCounterPart);
+                        ISwapRouter(router).safeTransfer(tokenOut, recipient, amountPart);
+                        EmitSwapEvent(listMax,i,amountMinCounterPart,amountPart,sqrtPriceX96);
+                        listMax.update(i,amountIn-amountMinCounterPart);
                         amm=false;
+                        swapWithPool(listMax,i,sqrtPriceX96);
                     }
                 }else{
-                    uint256 amountPart=PriceLibary.getAmountOut(pooladr, tokenIn, tokenOut, amountMinCounterPart);
-                    ISwapRouter(router).safeTransfer(tokenOut, recipient, amountPart);
-                    EmitSwapEvent(listMax,i,amountMinCounterPart,amountPart,sqrtPriceX96);
-                    listMax.update(i,amountIn-amountMinCounterPart);
-                    amm=false;
                     swapWithPool(listMax,i,sqrtPriceX96);
                 }
-            }else{
-                swapWithPool(listMax,i,sqrtPriceX96);
             }
         }
     }
     function swapWithPools(SwapCallDataArray listMin,SwapCallDataArray listMax,uint160 sqrtPriceX96) internal {
         if(address(listMin)!=address(0)){
             uint256 dataSize=listMin.fullLength();
-            for(uint i=0;i<dataSize;i++){
-                if(!listMin.exists(i)) continue;
-                swapWithPool(listMin,i,sqrtPriceX96);
+            if(dataSize>0) {
+                for(uint i=0;i<dataSize;i++){
+                    if(!listMin.exists(i)) continue;
+                    swapWithPool(listMin,i,sqrtPriceX96);
+                }
             }
         }
         
         if(address(listMax)!=address(0)){
             uint256 dataSize=listMax.fullLength();
-            for(uint i=0;i<dataSize;i++){
-                if(!listMax.exists(i)) continue;
-                swapWithPool(listMax,i,sqrtPriceX96);
+            if(dataSize>0) {
+                for(uint i=0;i<dataSize;i++){
+                    if(!listMax.exists(i)) continue;
+                    swapWithPool(listMax,i,sqrtPriceX96);
+                }
             }
         }
     }
+
     function swapWithPool(SwapCallDataArray list,uint idx,uint160 sqrtPriceX96) internal {
         ( ,
             address  tokenIn,

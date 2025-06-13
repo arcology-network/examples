@@ -9,9 +9,11 @@ async function main() {
     await coin.deployed();
     console.log(`Deployed SubCoin at ${coin.address}`)
 
+    let i,tx,txs,receipt
+    
     console.log('===========mint=====================')
-    let tx = await coin.mint(accounts[1].address,10);
-    let receipt=await tx.wait();
+    tx = await coin.mint(accounts[1].address,10);
+    receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(`Mint Data ${frontendUtil.parseEvent(receipt,"Mint")}`)
 
@@ -41,6 +43,26 @@ async function main() {
     }else{
       console.log('Send Failed');
     }
+
+    
+    
+    
+    console.log('===========parallel=====================')
+    txs=new Array();
+    for(i=3;i<=10;i++){
+      txs.push(frontendUtil.generateTx(function([coin,addr]){
+        return coin.mint(addr.address,10);
+      },coin,accounts[i]));
+    }
+    await frontendUtil.waitingTxs(txs);
+
+    console.log('===========balance=====================')
+    for(i=3;i<=10;i++){
+      tx = await coin.getter(accounts[i].address);
+      receipt=await tx.wait();
+      console.log(`Mint Coin Data ${frontendUtil.parseEvent(receipt,"GetBalance")}`);
+    }
+
   }
 
   // We recommend this pattern to be able to use async/await everywhere
