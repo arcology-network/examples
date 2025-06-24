@@ -384,19 +384,14 @@ async function swap(tokenA,tokenB,fee,from,amountIn,swapRouter,isExecute){
       sqrtPriceLimitX96: 0                     
   };
   if(isExecute){
-    // return swapRouter.connect(from).exactInputSingleDefer(params, {
-    //   gasLimit: 500000000 
-    // });
     return swapRouter.connect(from).exactInputSingleDefer(params, {
       // gasLimit: 50000000000 ,
       gasPrice:255,
-      value:25501,
     });
   }else{
     return swapRouter.connect(from).populateTransaction.exactInputSingleDefer(params, {
       // gasLimit: 50000000000 ,
       gasPrice:255,
-      value:25501,
     });
   }
   

@@ -5,8 +5,7 @@ import '../UniswapV3Periphery/libraries/Path.sol';
 import "@arcologynetwork/concurrentlib/lib/runtime/Runtime.sol";
 import "@arcologynetwork/concurrentlib/lib/array/U256.sol";
 import "@arcologynetwork/concurrentlib/lib/map/HashU256Cum.sol";
-// import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
-import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
+
 import "@arcologynetwork/concurrentlib/lib/multiprocess/Multiprocess.sol";
 import "./interfaces/ISwapLogic.sol";
 import "./libraries/PoolLibary.sol";
@@ -37,8 +36,7 @@ contract SwapAmmNetting
     bytes4 constant funcSign=0xc6678321;  //bytes4(keccak256(bytes("exactInputSingleDefer((address,address,uint24,address,uint256,uint256,uint256,uint160))")));
 
 
-    U256Cumulative private depositSum ;
-    uint256 gasused=100;
+    uint64 gasused=50000;
 
     constructor() {  
         Runtime.defer(funcSign);
@@ -50,8 +48,6 @@ contract SwapAmmNetting
         flags = new U256();
         pools = new PoolDataMap();
         swapDataSum= new HashU256Map();
-        
-        depositSum = new U256Cumulative(0, type(uint256).max);  
     }
 
     function initPool(
@@ -86,15 +82,7 @@ contract SwapAmmNetting
         payable 
         returns (uint256 amountOut)
     {
-        uint256 requiredVal=gasused*tx.gasprice;
-        if(msg.value<requiredVal){
-            revert("Insufficient deposit amount");
-        }else if(msg.value>requiredVal){
-            payable(msg.sender).transfer(msg.value-requiredVal);
-        }        
-        depositSum.add(requiredVal);
-
-
+        Runtime.sponsorGas(gasused);
         bytes32 pid=abi.decode(Runtime.pid(), (bytes32));
         address pooladr=PoolLibary.computePoolAdr(factory, params.tokenIn, params.tokenOut, params.fee);
         bytes32 keyIn=PoolLibary.GetKey(pooladr,params.tokenIn);
@@ -107,8 +95,6 @@ contract SwapAmmNetting
         flags.push(1);
 
         if(flags.committedLength()>0){
-            Runtime.topupGas(depositSum.get(),flags.fullLength()*gasused);             
-
             uint256 length=poolSet.Length();
             for(uint idx=0;idx<length;idx++){
                 mp.addJob(1000000000,0, address(this), abi.encodeWithSignature("poolProcess(address)", parseAddr(poolSet.get(idx))));
@@ -117,16 +103,10 @@ contract SwapAmmNetting
 
             flags.clear();
             poolSet.clear();
-            
-            clearDepositBook();
 
         }
         emit Step(2000);
         amountOut=0;
-    }
-
-    function clearDepositBook() internal {
-        depositSum.sub(depositSum.get());
     }
 
     function parseAddr(bytes memory rawdata) internal returns(address){

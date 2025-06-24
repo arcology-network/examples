@@ -24,15 +24,16 @@ contract ArrayClear {
 
     U256Cumulative sum=new U256Cumulative(0, 100); 
 
+    uint64 gasused=50000;
+
     constructor()  {
         Runtime.defer(bytes4(keccak256(bytes("pvisit((uint256,uint256))")))); 
         Runtime.defer(bytes4(keccak256(bytes("add(uint256)"))));                                                                                    
     }
 
     function pvisit(ExactInputSingleParams calldata params) public {
-        // if(flags.committedLength()==0){
-        //     counter.clear();
-        // }
+        
+        Runtime.sponsorGas(gasused);
         counter.push(params.seed); 
         flags.push(1);
 
