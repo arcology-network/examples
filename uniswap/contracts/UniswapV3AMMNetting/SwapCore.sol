@@ -2,17 +2,17 @@
 pragma solidity >=0.6.0;
 import "./libraries/PriceLibary.sol";
 import "./libraries/PoolLibary.sol";
-import "./SwapCallDataArray.sol";
+import "./SwapCallDatas.sol";
 import "@arcologynetwork/concurrentlib/lib/map/HashU256Cum.sol";
 import "../UniswapV3Periphery/libraries/TransferHelper.sol";
 import "./interfaces/ISwapRouter.sol";
 import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
-import "./PoolDatasMap.sol";
+import "./PoolDatas.sol";
 
 
 
 
-contract SwapLogic {
+contract SwapCore {
     // using Path for bytes;
     bytes32 constant eventSigner=keccak256(bytes("Swap(address,address,int256,int256,uint160,uint128,int24)"));    
     event WriteBackEvent(bytes32 indexed pid,bytes32 indexed eventSigner,bytes eventContext);
@@ -26,7 +26,7 @@ contract SwapLogic {
     }
 
     
-    function findMax(address pooladr,PoolDataMap pools,HashU256Map swapDataSum) external 
+    function findMax(address pooladr,PoolDatas pools,HashU256Map swapDataSum) external 
         returns(bool canswap,uint256 amountMinCounterPart,bytes32 keyMin,bytes32 keyMax){
         (address tokenA,address tokenB) = pools.get(pooladr);
         bytes32 keyA=PoolLibary.GetKey(pooladr,tokenA);
@@ -65,7 +65,7 @@ contract SwapLogic {
         ISwapRouter(router).safeTransferFrom(tokenIn, sender, amountIn);
     }
 
-    function swap(bool canswap,SwapCallDataArray listMin,SwapCallDataArray listMax,address pooladr,uint256 amountMinCounterPart) external{
+    function swap(bool canswap,SwapCallDatas listMin,SwapCallDatas listMax,address pooladr,uint256 amountMinCounterPart) external{
         if(canswap){
             swapNetting(listMin,listMax,pooladr,amountMinCounterPart,PriceLibary.getSqrtPricex96(pooladr));
         }else{
@@ -73,7 +73,7 @@ contract SwapLogic {
         }
     }
 
-    function swapNetting(SwapCallDataArray listMin,SwapCallDataArray listMax,address pooladr,uint256 amountMinCounterPart,uint160 sqrtPriceX96) internal {
+    function swapNetting(SwapCallDatas listMin,SwapCallDatas listMax,address pooladr,uint256 amountMinCounterPart,uint160 sqrtPriceX96) internal {
         uint256 dataSize=listMin.fullLength();
         if(dataSize>0){
             for(uint i=0;i<dataSize;i++){
@@ -133,7 +133,7 @@ contract SwapLogic {
             }
         }
     }
-    function swapWithPools(SwapCallDataArray listMin,SwapCallDataArray listMax,uint160 sqrtPriceX96) internal {
+    function swapWithPools(SwapCallDatas listMin,SwapCallDatas listMax,uint160 sqrtPriceX96) internal {
         if(address(listMin)!=address(0)){
             uint256 dataSize=listMin.fullLength();
             if(dataSize>0) {
@@ -155,7 +155,7 @@ contract SwapLogic {
         }
     }
 
-    function swapWithPool(SwapCallDataArray list,uint idx,uint160 sqrtPriceX96) internal {
+    function swapWithPool(SwapCallDatas list,uint idx,uint160 sqrtPriceX96) internal {
         ( ,
             address  tokenIn,
             address  tokenOut,
@@ -170,7 +170,7 @@ contract SwapLogic {
         uint256 amountout=ISwapRouter(router).exactInputExternal(amountIn,recipient,sqrtPriceLimitX96,tokenIn,tokenOut,fee,sender);
         EmitSwapEvent(list,idx,amountIn,amountout,sqrtPriceX96);
     }
-    function EmitSwapEvent(SwapCallDataArray list,uint idx,uint256 amount0,uint256 amount1,uint160 sqrtPriceX96)internal{
+    function EmitSwapEvent(SwapCallDatas list,uint idx,uint256 amount0,uint256 amount1,uint160 sqrtPriceX96)internal{
         (bytes32 txhash ,
             ,
             ,

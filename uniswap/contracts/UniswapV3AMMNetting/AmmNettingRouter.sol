@@ -3,31 +3,31 @@ pragma solidity =0.7.6;
 pragma abicoder v2;
 import '../UniswapV3Periphery/libraries/Path.sol';
 import "@arcologynetwork/concurrentlib/lib/runtime/Runtime.sol";
-import "@arcologynetwork/concurrentlib/lib/array/U256.sol";
+// import "@arcologynetwork/concurrentlib/lib/array/U256.sol";
 import "@arcologynetwork/concurrentlib/lib/map/HashU256Cum.sol";
 
 import "@arcologynetwork/concurrentlib/lib/multiprocess/Multiprocess.sol";
-import "./interfaces/ISwapLogic.sol";
+import "./interfaces/ISwapCore.sol";
 import "./libraries/PoolLibary.sol";
-import "./SwapCallDataArray.sol";
+import "./SwapCallDatas.sol";
 import "@arcologynetwork/concurrentlib/lib/shared/OrderedSet.sol";
 
 
 
 /// @title Uniswap V3 Swap Router
 /// @notice Router for stateless execution of swaps against Uniswap V3
-contract SwapAmmNetting 
+contract AmmNettingRouter 
 {
     using Path for bytes;
 
     address private factory;
-    address private  swapLogic;
+    address private  swapCore;
     event WriteBackEvent(bytes32 indexed pid,bytes32 indexed eventSigner,bytes eventContext);
-    U256 private flags ;
+    // U256 private flags ;
     
-    PoolDataMap private pools ;
+    PoolDatas private pools ;
     Multiprocess mp = new Multiprocess(20);
-    mapping (bytes32 => SwapCallDataArray) private swapDataMap;
+    mapping (bytes32 => SwapCallDatas) private swapDataMap;
     HashU256Map private swapDataSum ;
     
     uint256 poolSize;
@@ -39,14 +39,14 @@ contract SwapAmmNetting
     uint64 gasused=50000;
 
     constructor() {  
-        Runtime.defer(funcSign);
+        Runtime.defer(funcSign,300000);
     }
     
-    function init(address _factory,address _swapLogic) external {
+    function init(address _factory,address _swapCore) external {
         factory=_factory;
-        swapLogic=_swapLogic;
-        flags = new U256();
-        pools = new PoolDataMap();
+        swapCore=_swapCore;
+        // flags = new U256();
+        pools = new PoolDatas();
         swapDataSum= new HashU256Map();
     }
 
@@ -62,7 +62,7 @@ contract SwapAmmNetting
     }
 
     function initEnvs(address pool,address token)internal{
-        swapDataMap[PoolLibary.GetKey(pool,token)]=new SwapCallDataArray();
+        swapDataMap[PoolLibary.GetKey(pool,token)]=new SwapCallDatas();
     }
     
     
@@ -82,7 +82,7 @@ contract SwapAmmNetting
         payable 
         returns (uint256 amountOut)
     {
-        Runtime.sponsorGas(gasused);
+        // Runtime.sponsorGas(gasused);
         bytes32 pid=abi.decode(Runtime.pid(), (bytes32));
         address pooladr=PoolLibary.computePoolAdr(factory, params.tokenIn, params.tokenOut, params.fee);
         bytes32 keyIn=PoolLibary.GetKey(pooladr,params.tokenIn);
@@ -91,17 +91,17 @@ contract SwapAmmNetting
 
         swapDataMap[keyIn].push(pid,abi.encodePacked(params.tokenIn, params.fee, params.tokenOut),msg.sender,params.recipient,params.amountIn,params.sqrtPriceLimitX96,pooladr);
         swapDataSum.set(keyIn, params.amountIn, 0, type(uint256).max);
-        ISwapLogic(swapLogic).depositSingle(params.tokenIn,msg.sender,params.amountIn);
-        flags.push(1);
+        ISwapCore(swapCore).depositSingle(params.tokenIn,msg.sender,params.amountIn);
+        // flags.push(1);
 
-        if(flags.committedLength()>0){
+        if(Runtime.isInDeferred()){
             uint256 length=poolSet.Length();
             for(uint idx=0;idx<length;idx++){
                 mp.addJob(1000000000,0, address(this), abi.encodeWithSignature("poolProcess(address)", parseAddr(poolSet.get(idx))));
             }
             mp.run();
 
-            flags.clear();
+            // flags.clear();
             poolSet.clear();
 
         }
@@ -120,8 +120,8 @@ contract SwapAmmNetting
     event Step(uint256 _step);
 
     function poolProcess(address pooladr) public {
-        (bool canswap,uint256 amountMinCounterPart,bytes32 keyMin,bytes32 keyMax)=ISwapLogic(swapLogic).findMax(pooladr, pools, swapDataSum);
-        ISwapLogic(swapLogic).swap(canswap, swapDataMap[keyMin], swapDataMap[keyMax], pooladr, amountMinCounterPart);
+        (bool canswap,uint256 amountMinCounterPart,bytes32 keyMin,bytes32 keyMax)=ISwapCore(swapCore).findMax(pooladr, pools, swapDataSum);
+        ISwapCore(swapCore).swap(canswap, swapDataMap[keyMin], swapDataMap[keyMax], pooladr, amountMinCounterPart);
         //clear pool environments
         clearEnvs(keyMin);
         clearEnvs(keyMax);

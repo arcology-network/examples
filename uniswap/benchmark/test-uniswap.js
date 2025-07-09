@@ -20,7 +20,7 @@ async function main() {
   const flag1_liquidity_mint=true;
   const flag2_swap=false;
 
-  const [swapfactory,nonfungiblePositionManager,router,amm,swapLogic] = await deployBaseContract();
+  const [swapfactory,nonfungiblePositionManager,router,amm] = await deployBaseContract();
 
   
   let i,tx;
@@ -227,12 +227,12 @@ async function main() {
         // console.log(`swap: ${mintAmount} at i:${i} j:${j}`);
         [amountA ,amountB]=computeMintAmount(tokenInsArray[i].address,tokenInsArray[i+1].address,mintAmount,price);
 
-        txs.push(frontendUtil.generateTx(function([swapRouter,from,tokenA,tokenB,fee,amountIn]){
-          return swap(tokenA,tokenB,fee,from,amountIn,swapRouter,true);
+        txs.push(frontendUtil.generateTx(function([amm,from,tokenA,tokenB,fee,amountIn]){
+          return swap(tokenA,tokenB,fee,from,amountIn,amm,true);
         },amm,accounts[j],tokenInsArray[i].address,tokenInsArray[i+1].address,fee,amountA));
 
-        txs.push(frontendUtil.generateTx(function([swapRouter,from,tokenA,tokenB,fee,amountIn]){
-          return swap(tokenA,tokenB,fee,from,amountIn,swapRouter,true);
+        txs.push(frontendUtil.generateTx(function([amm,from,tokenA,tokenB,fee,amountIn]){
+          return swap(tokenA,tokenB,fee,from,amountIn,amm,true);
         },amm,accounts[j+1],tokenInsArray[i+1].address,tokenInsArray[i].address,fee,amountB));
 
       }
@@ -372,7 +372,7 @@ function parseEvent(receipt,eventName){
 }
 
 
-async function swap(tokenA,tokenB,fee,from,amountIn,swapRouter,isExecute){
+async function swap(tokenA,tokenB,fee,from,amountIn,amm,isExecute){
   const params = {
       tokenIn: tokenA,                
       tokenOut: tokenB,               
@@ -384,12 +384,12 @@ async function swap(tokenA,tokenB,fee,from,amountIn,swapRouter,isExecute){
       sqrtPriceLimitX96: 0                     
   };
   if(isExecute){
-    return swapRouter.connect(from).exactInputSingleDefer(params, {
+    return amm.connect(from).exactInputSingleDefer(params, {
       // gasLimit: 50000000000 ,
       gasPrice:255,
     });
   }else{
-    return swapRouter.connect(from).populateTransaction.exactInputSingleDefer(params, {
+    return amm.connect(from).populateTransaction.exactInputSingleDefer(params, {
       // gasLimit: 50000000000 ,
       gasPrice:255,
     });
@@ -499,11 +499,11 @@ async function deployBaseContract(){
   // await poolLibary.deployed();
   // console.log("poolLibary deployed to:", poolLibary.address);
   
-  console.log('===========start deploy SwapLogic=====================');
-  const swap_logic = await hre.ethers.getContractFactory("SwapLogic");
-  const swapLogic = await swap_logic.deploy(router.address);
-  await swapLogic.deployed();
-  console.log("SwapLogic deployed to:", swapLogic.address);
+  console.log('===========start deploy SwapCore=====================');
+  const swap_core = await hre.ethers.getContractFactory("SwapCore");
+  const swapCore = await swap_core.deploy(router.address);
+  await swapCore.deployed();
+  console.log("SwapCore deployed to:", swapCore.address);
   
   console.log('===========start deploy SwapAmmNetting=====================');
   // const amm_factory = await hre.ethers.getContractFactory("SwapAmmNetting", {
@@ -511,17 +511,17 @@ async function deployBaseContract(){
   //     PoolLibary: poolLibary.address, 
   //   },
   // });
-  const amm_factory = await hre.ethers.getContractFactory("SwapAmmNetting");
+  const amm_factory = await hre.ethers.getContractFactory("AmmNettingRouter");
   const amm = await amm_factory.deploy();
-  console.log("SwapAmmNetting deployed to:", amm.address);
+  console.log("AmmNettingRouter deployed to:", amm.address);
 
-  console.log('===========initialization for SwapAmmNetting=====================');
-  tx = await amm.init(swapfactory.address,swapLogic.address);
+  console.log('===========initialization for AmmNettingRouter=====================');
+  tx = await amm.init(swapfactory.address,swapCore.address);
   receipt = await tx.wait();
   // console.log(receipt);
   frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
   
-  return [swapfactory,nonfungiblePositionManager,router,amm,swapLogic]
+  return [swapfactory,nonfungiblePositionManager,router,amm]
 }
 
 

@@ -5,7 +5,7 @@ pragma abicoder v2;
 import "@arcologynetwork/concurrentlib/lib/shared/Base.sol";
 import "@arcologynetwork/concurrentlib/lib/shared/Const.sol";
 
-contract PoolDataMap is Base{
+contract PoolDatas is Base{
     struct PoolData {
         address tokenA;
         address tokenB;

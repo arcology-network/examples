@@ -7,7 +7,7 @@ import "@arcologynetwork/concurrentlib/lib/shared/Const.sol";
 import '../UniswapV3Periphery/libraries/Path.sol';
 import "./libraries/PriceLibary.sol";
 
-contract SwapCallDataArray is Base{
+contract SwapCallDatas is Base{
     using Path for bytes;
 
     struct SwapCallData {
