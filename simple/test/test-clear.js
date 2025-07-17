@@ -8,6 +8,7 @@ async function main() {
     const bt = await bt_factory.deploy();
     await bt.deployed();
     console.log(`Deployed ArrayClear Test at ${bt.address}`)
+    // console.log(bt)
 
 
     console.log('===========visit first bat=====================')

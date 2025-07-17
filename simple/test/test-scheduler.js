@@ -12,6 +12,7 @@ async function main() {
     let tx,receipt;
 
     console.log('========== first bat,Failed one ,two generations =====================')
+    //g1:6 g2:2
     var txs=new Array();
     for(i=1;i<=4;i++){
       txs.push(frontendUtil.generateTx(function([bt,from,val]){
@@ -40,7 +41,8 @@ async function main() {
       console.log('Test Failed');
     } 
 
-    console.log('=========== second bat,Failed tow ,four generations =====================')
+    console.log('=========== second bat,four generations =====================')
+    //g1:3 g2:1 g3:3 g4:1
     txs=new Array();
     for(i=5;i<=8;i++){
       txs.push(frontendUtil.generateTx(function([bt,from,val]){
@@ -70,6 +72,7 @@ async function main() {
     } 
 
     console.log('=========== third bat,four generations =====================')
+    //g1:1 g2:1 g3:1 g4:1
     txs=new Array();
     for(i=9;i<=10;i++){
       txs.push(frontendUtil.generateTx(function([bt,from,val]){
@@ -92,7 +95,7 @@ async function main() {
     // console.log(receipt);
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
-    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000011"){
+    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000010"){
       console.log('Test Successful');
     }else{
       console.log('Test Failed');
