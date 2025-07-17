@@ -16,59 +16,45 @@ contract ArrayClear {
     }
 
     U256 counter = new U256();
-    U256 flags = new U256(); 
-
     U256 counterAdd = new U256();
-    U256 flagsAdd = new U256(); 
     event CounterQuery(uint256 value);
 
     U256Cumulative sum=new U256Cumulative(0, 100); 
 
-    uint64 gasused=50000;
+    uint64 gasused=100000;
 
     constructor()  {
-        Runtime.defer(bytes4(keccak256(bytes("pvisit((uint256,uint256))")))); 
-        Runtime.defer(bytes4(keccak256(bytes("add(uint256)"))));                                                                                    
+        Runtime.defer(bytes4(keccak256(bytes("pvisit((uint256,uint256))"))),gasused); 
+        Runtime.defer(bytes4(keccak256(bytes("add(uint256)"))),gasused);                                                                                    
     }
-
+    event Step(uint256 step);
     function pvisit(ExactInputSingleParams calldata params) public {
-        
-        Runtime.sponsorGas(gasused);
+        emit Step(0);
+        if(!Runtime.isInDeferred()){
+            counter.clear();
+        }
         counter.push(params.seed); 
-        flags.push(1);
-
-        if(flags.committedLength()>0){
-
-            for(uint i=0;i<counter.fullLength();i++){
-                if(!counter.exists(i)) continue;
+        emit Step(1);
+        if(Runtime.isInDeferred()){
+            uint256 size=counter.fullLength();
+            for(uint i=0;i<size;i++){
                 sum.add(counter.get(i));
             }
-
-            counter.clear();
-            flags.clear();
         }
     }
-    function add(uint256 val)public {
-        //g1:3 t g2:1 t g3:3 2c 1t g4:1 t
+    function add(uint256 val)public { 
+        if(!Runtime.isInDeferred()){
+            counterAdd.clear();
+        }
         counterAdd.push(val); 
-        flagsAdd.push(1);
+        if(Runtime.isInDeferred()){
+            uint256 size=counterAdd.fullLength();
 
-        emit CounterQuery(flagsAdd.committedLength());
-        if(flagsAdd.committedLength()>0){
-
-            emit CounterQuery(counterAdd.fullLength());
-            emit CounterQuery(counterAdd.nonNilCount());
-            emit CounterQuery(counterAdd.committedLength());
-
-            for(uint i=0;i<counterAdd.fullLength();i++){
-                if(!counterAdd.exists(i)) continue;
+            for(uint i=0;i<size;i++){
                 sum.add(counterAdd.get(i));
             }
-
-            emit CounterQuery(counter.fullLength());
-
-            counterAdd.clear();
-            flagsAdd.clear();
+            emit CounterQuery(sum.get());
+            
         }
     }
 
