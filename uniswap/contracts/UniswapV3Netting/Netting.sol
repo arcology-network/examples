@@ -12,7 +12,7 @@ import "./PoolDatas.sol";
 
 
 
-contract SwapCore {
+contract Netting {
     // using Path for bytes;
     bytes32 constant eventSigner=keccak256(bytes("Swap(address,address,int256,int256,uint160,uint128,int24)"));    
     event WriteBackEvent(bytes32 indexed pid,bytes32 indexed eventSigner,bytes eventContext);
@@ -166,8 +166,8 @@ contract SwapCore {
             uint160   sqrtPriceLimitX96,
               
         )=list.get(idx);
-        ISwapRouter(router).safeTransfer(tokenIn, sender, amountIn);   //refund from common account
-        uint256 amountout=ISwapRouter(router).exactInputExternal(amountIn,recipient,sqrtPriceLimitX96,tokenIn,tokenOut,fee,sender);
+        // ISwapRouter(router).safeTransfer(tokenIn, sender, amountIn);   //refund from common account
+        uint256 amountout=ISwapRouter(router).exactInputExternal(amountIn,recipient,sqrtPriceLimitX96,tokenIn,tokenOut,fee,router);
         EmitSwapEvent(list,idx,amountIn,amountout,sqrtPriceX96);
     }
     function EmitSwapEvent(SwapCallDatas list,uint idx,uint256 amount0,uint256 amount1,uint160 sqrtPriceX96)internal{

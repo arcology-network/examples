@@ -8,7 +8,7 @@ import "@arcologynetwork/concurrentlib/lib/map/HashU256Cum.sol";
 
 
 
-interface ISwapCore {
+interface INetting {
     function findMax(address pooladr,PoolDatas pools,HashU256Map swapDataSum) external 
         returns(bool canswap,uint256 amountMinCounterPart,bytes32 keyMin,bytes32 keyMax);
 
