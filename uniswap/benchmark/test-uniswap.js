@@ -384,12 +384,12 @@ async function swap(tokenA,tokenB,fee,from,amountIn,nettingEngine,isExecute){
       sqrtPriceLimitX96: 0                     
   };
   if(isExecute){
-    return nettingEngine.connect(from).exactInputSingleDefer(params, {
+    return nettingEngine.connect(from).queueSwapRequest(params, {
       // gasLimit: 50000000000 ,
       gasPrice:255,
     });
   }else{
-    return nettingEngine.connect(from).populateTransaction.exactInputSingleDefer(params, {
+    return nettingEngine.connect(from).populateTransaction.queueSwapRequest(params, {
       // gasLimit: 50000000000 ,
       gasPrice:255,
     });

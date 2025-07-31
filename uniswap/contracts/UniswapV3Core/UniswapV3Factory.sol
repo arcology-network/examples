@@ -30,21 +30,31 @@ contract UniswapV3Factory is IUniswapV3Factory, UniswapV3PoolDeployer, NoDelegat
         feeAmountTickSpacing[10000] = 200;
         emit FeeAmountEnabled(10000, 200);
     }
-    
+    event PoolStep(uint256 step);
+    event PoolStepFee(uint24 fee);
+    event PoolStepInt24(int24 tickSpacing);
     /// @inheritdoc IUniswapV3Factory
     function createPool(
         address tokenA,
         address tokenB,
         uint24 fee
     ) external override noDelegateCall returns (address pool) {
-        // emit createPoolParamFee(fee);
+        emit PoolStep(0);
         require(tokenA != tokenB);
+        emit PoolStep(1);
         (address token0, address token1) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
         require(token0 != address(0));
+        emit PoolStep(2);
         int24 tickSpacing = feeAmountTickSpacing[fee];
+        emit PoolStep(3);
+        emit PoolStepFee(fee);
+        emit PoolStepInt24(tickSpacing);
         require(tickSpacing != 0);
+        emit PoolStep(4);
         require(getPool[token0][token1][fee] == address(0));
+        emit PoolStep(5);
         pool = deploy(address(this), token0, token1, fee, tickSpacing);
+        emit PoolStep(6);
         getPool[token0][token1][fee] = pool;
         // populate mapping in the reverse direction, deliberate choice to avoid the cost of comparing addresses
         getPool[token1][token0][fee] = pool;

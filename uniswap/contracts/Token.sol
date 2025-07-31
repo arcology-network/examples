@@ -38,8 +38,8 @@ contract Token {
         _symbol = symbol_;
         _decimals = 18;
         _totalSupply = new U256Cumulative(0, type(uint256).max);
-        _balances = new AddressU256CumMap();
-        _allowances = new HashU256Map();
+        _balances = new AddressU256CumMap(false);
+        _allowances = new HashU256Map(false);
         owner = msg.sender;
     }
 
