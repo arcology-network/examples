@@ -63,7 +63,7 @@ contract Netting {
      * @return smallerSideKey  The key for the smaller trade side.
      * @return largerSideKey The key for the larger trade side.
      */
-    function getPoolNettingInfo(
+    function findNettableAmount(
         address poolAddr,
         PoolLookup pools,
         HashU256Map directionTotals
@@ -172,7 +172,7 @@ contract Netting {
             }
         }
     }
-        
+    
     /**
      * @notice Deposits a single token into the router for later netting/swapping.
      * @dev 

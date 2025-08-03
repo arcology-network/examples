@@ -51,14 +51,10 @@ contract NettingEngine {
     /// @dev Set of active pools in current execution batch
     BytesOrderedSet private activePools = new BytesOrderedSet(false);
 
-    /// @dev Deferred call signature for `exactInputSingleDefer`
-    bytes4 private constant FUNC_SIGN = 0xc6678321;
-
-    uint64 private gasUsed = 50000;
 
     constructor() {
         // Register deferred call for batch swap execution
-        Runtime.defer(FUNC_SIGN, 300000);
+        Runtime.defer(bytes4(keccak256(bytes("queueSwapRequest((address,address,uint24,address,uint256,uint256,uint256,uint160))"))), 300000);
     }
 
     /**
