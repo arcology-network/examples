@@ -15,8 +15,8 @@ contract ArrayClear {
         uint256 sd;
     }
 
-    U256 counter = new U256();
-    U256 counterAdd = new U256();
+    U256 counter = new U256(false);
+    U256 counterAdd = new U256(false);
     event CounterQuery(uint256 value);
 
     U256Cumulative sum=new U256Cumulative(0, 100); 

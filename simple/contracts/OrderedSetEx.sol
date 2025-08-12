@@ -4,7 +4,7 @@ import "@arcologynetwork/concurrentlib/lib/shared/OrderedSet.sol";
 
 
 contract OrderedSetEx {
-    BytesOrderedSet container = new BytesOrderedSet();  
+    BytesOrderedSet container = new BytesOrderedSet(false);  
 
     constructor() {
     }

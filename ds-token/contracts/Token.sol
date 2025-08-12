@@ -32,7 +32,7 @@ import "@arcologynetwork/concurrentlib/lib/map/AddressUint256.sol";
 contract DSToken is DSMath, DSAuth {
     bool                                                     public  stopped;
     U256Cumulative                                           public  totalSupply;
-    AddressUint256Map                                        public  balanceOf = new AddressUint256Map();
+    AddressUint256Map                                        public  balanceOf = new AddressUint256Map(false);
     mapping (address => mapping (address => U256Cumulative)) public  allowance;
 
     string                                                   public  symbol;

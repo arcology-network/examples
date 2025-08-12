@@ -4,7 +4,7 @@ import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
 
 
 contract AddrCum256 {
-    AddressU256CumMap private cummap=new AddressU256CumMap();
+    AddressU256CumMap private cummap=new AddressU256CumMap(false);
 
     constructor() {
     }
