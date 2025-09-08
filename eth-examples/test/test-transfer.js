@@ -23,7 +23,7 @@ async function main() {
     console.log(`GasUsed : ${receipt.gasUsed}`)
 
     console.log('===========transfer=====================')
-    tx = await transferTest.transderToContract({value:10});
+    tx = await transferTest.transferToContract({value:10});
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     hexStr=frontendUtil.parseEvent(receipt,"TransferEvent");
@@ -51,7 +51,7 @@ async function main() {
 
 
     console.log('===========transfer will be failed=====================')
-    tx = await transferTest.transderToContract({value:20});
+    tx = await transferTest.transferToContract({value:20});
     await tx.wait()
     .then((rect) => {
         console.log("the transaction was successful")
