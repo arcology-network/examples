@@ -57,7 +57,8 @@ contract VisitCounterWithDeferred {
         // extra 2,000 gas to fund the deferred join step run later
         // in the block. If the deferred transaction fails, 
         // the unused gas is refunded.
-        Runtime.defer("visit()", 2000);
+        // Runtime.defer("visit()", 2000);
+        Runtime.defer("visit()",50000);   
     }
 
     // Increments the visit counter by 1.

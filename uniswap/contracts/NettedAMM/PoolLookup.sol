@@ -29,7 +29,7 @@ contract PoolLookup  is Base {
      * @dev Uses Arcology's concurrent container for thread‑safe, deterministic writes.
      *      `Const.BYTES` specifies raw byte storage for conflict‑free parallel inserts.
      */
-    constructor(bool isTransient) Base(Const.BYTES, isTransient) {}
+    constructor() Base(Const.BYTES,false) {}
 
     /**
      * @notice Check if a pool exists in the registry.

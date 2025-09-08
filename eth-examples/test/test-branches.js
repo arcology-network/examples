@@ -4,7 +4,7 @@ var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 async function main() {
     accounts = await ethers.getSigners(); 
 
-    const visit_factory = await ethers.getContractFactory("VisitCount");
+    const visit_factory = await ethers.getContractFactory("VisitCounter");
     const visitCounter = await visit_factory.deploy();
     await visitCounter.deployed();
     console.log(`Deployed visitCounter at ${visitCounter.address}`)
@@ -35,7 +35,7 @@ async function main() {
 
     for(i=4;i<=6;i++){
       txs.push(frontendUtil.generateTx(function([visitCounter,from]){
-        return visitCounter.connect(from).visit(i);
+        return visitCounter.connect(from).visit();
       },visitCounter,accounts[i]));
     }
 
@@ -78,7 +78,7 @@ async function main() {
 
     for(i=7;i<=10;i++){
       txs.push(frontendUtil.generateTx(function([visitCounter,from]){
-        return visitCounter.connect(from).visit(i);
+        return visitCounter.connect(from).visit();
       },visitCounter,accounts[i]));
     }
     await frontendUtil.waitingTxs(txs);

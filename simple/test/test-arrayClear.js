@@ -13,7 +13,7 @@ async function main() {
 
     console.log('===========visit first bat=====================')
     var txs=new Array();
-    for(i=1;i<=4;i++){
+    for(i=1;i<=3;i++){
       txs.push(frontendUtil.generateTx(function([bt,from,val]){
         const params = {
           seed: val,                
@@ -30,7 +30,7 @@ async function main() {
     // console.log(receipt);
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
-    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x000000000000000000000000000000000000000000000000000000000000000a"){
+    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000003"){
       console.log('Test Successful');
     }else{
       console.log('Test Failed');
@@ -38,7 +38,7 @@ async function main() {
 
     console.log('===========visit second bat=====================')
     txs=new Array();
-    for(i=5;i<=8;i++){
+    for(i=4;i<=6;i++){
       txs.push(frontendUtil.generateTx(function([bt,from,val]){
         const params = {
           seed: val,                
@@ -55,7 +55,43 @@ async function main() {
     // console.log(receipt);
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
-    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000024"){
+    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000006"){
+      console.log('Test Successful');
+    }else{
+      console.log('Test Failed');
+    } 
+
+    console.log('===========visit third bat=====================')
+    txs=new Array();
+    for(i=7;i<=9;i++){
+      txs.push(frontendUtil.generateTx(function([bt,from,val]){
+        const params = {
+          seed: val,                
+          sd: 1                 
+        };
+        return bt.connect(from).pvisit(params);
+      },bt,accounts[i],i));
+    }
+    for(i=10;i<=10;i++){
+      txs.push(frontendUtil.generateTx(function([bt,from,val]){
+        const params = {
+          seed: val,                
+          sd: 0                 
+        };
+        return bt.connect(from).pvisit(params);
+      },bt,accounts[i],i));
+    }
+
+    await frontendUtil.waitingTxs(txs);
+    
+    console.log('===========getCounter=====================')
+    tx = await bt.getCounter();
+    receipt=await tx.wait();
+    // console.log(receipt);
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    let result=frontendUtil.parseEvent(receipt,"CounterQuery");
+    console.log(result)
+    if(result==="0x000000000000000000000000000000000000000000000000000000000000000a" || result==='0x0000000000000000000000000000000000000000000000000000000000000008'){
       console.log('Test Successful');
     }else{
       console.log('Test Failed');

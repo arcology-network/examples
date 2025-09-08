@@ -15,8 +15,8 @@ contract ArrayClear {
         uint256 sd;
     }
 
-    U256 counter = new U256(false);
-    U256 counterAdd = new U256(false);
+    U256 counter = new U256();
+    U256 counterAdd = new U256();
     event CounterQuery(uint256 value);
 
     U256Cumulative sum=new U256Cumulative(0, 100); 
@@ -24,19 +24,26 @@ contract ArrayClear {
     uint64 gasused=100000;
 
     constructor()  {
-        Runtime.defer(bytes4(keccak256(bytes("pvisit((uint256,uint256))"))),gasused); 
-        Runtime.defer(bytes4(keccak256(bytes("add(uint256)"))),gasused);                                                                                    
+        Runtime.defer("pvisit((uint256,uint256))",gasused); 
+        Runtime.defer("add(uint256)",gasused);                                                                                    
     }
     event Step(uint256 step);
+    event StepBool(bool val);
     function pvisit(ExactInputSingleParams calldata params) public {
-        emit Step(0);
-        if(!Runtime.isInDeferred()){
+        bool isDeffered=Runtime.isInDeferred();
+        if(params.sd!=1){
+            isDeffered=!isDeffered;
+        }
+        emit StepBool(isDeffered);
+        if(!isDeffered){
             counter.clear();
         }
-        counter.push(params.seed); 
-        emit Step(1);
-        if(Runtime.isInDeferred()){
+        // counter.push(params.seed); 
+        counter.push(1);
+        if(isDeffered){
             uint256 size=counter.fullLength();
+            emit Step(size);
+            emit Step(sum.get());
             for(uint i=0;i<size;i++){
                 sum.add(counter.get(i));
             }

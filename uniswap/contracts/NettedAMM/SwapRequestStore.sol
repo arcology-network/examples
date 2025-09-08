@@ -48,7 +48,7 @@ contract SwapRequestStore is Base {
      * @dev Uses the Base concurrent library with BYTES mode so entries can be stored as
      *      ABI-encoded `SwapRequest` structs and retrieved by index in a thread-safe way.
      */
-    constructor(bool isTransient) Base(Const.BYTES, isTransient) {}
+    constructor() Base(Const.BYTES,false) {}
 
     /**
      * @notice Stores a new swap request into the concurrent container.

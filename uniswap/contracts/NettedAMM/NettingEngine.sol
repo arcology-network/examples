@@ -54,7 +54,7 @@ contract NettingEngine {
 
     constructor() {
         // Register deferred call for batch swap execution
-        Runtime.defer(bytes4(keccak256(bytes("queueSwapRequest((address,address,uint24,address,uint256,uint256,uint256,uint160))"))), 300000);
+        Runtime.defer("queueSwapRequest((address,address,uint24,address,uint256,uint256,uint256,uint160))", 300000);
     }
 
     /**
@@ -63,8 +63,8 @@ contract NettingEngine {
     function init(address _factory, address _swapCore) external {
         factory = _factory;
         swapCore = _swapCore;
-        pools = new PoolLookup(false);
-        swapTotals = new HashU256Map(false);
+        pools = new PoolLookup();
+        swapTotals = new HashU256Map();
     }
 
     /**
@@ -81,7 +81,7 @@ contract NettingEngine {
      * @dev Internal: initializes request and total tracking for a token in a pool.
      */
     function _registerRequestStore(address pool, address token) internal {
-        swapRequestBuckets[PoolLibrary.GetKey(pool, token)] = new SwapRequestStore(false);
+        swapRequestBuckets[PoolLibrary.GetKey(pool, token)] = new SwapRequestStore();
     }
 
     /// @notice Parameters for `exactInputSingleDefer`
