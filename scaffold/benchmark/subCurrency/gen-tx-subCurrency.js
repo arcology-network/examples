@@ -9,7 +9,8 @@ async function main() {
   const provider = new ethers.providers.JsonRpcProvider(nets[hre.network.name].url);
   const pkCreator=nets[hre.network.name].accounts[0]
   const signerCreator = new ethers.Wallet(pkCreator, provider);
-  frontendUtil.ensurePath('benchmark/subCurrency/data');
+  const txbase='benchmark/subCurrency/txs'
+  frontendUtil.ensurePath(txbase);
   
   let i,tx;
 
@@ -30,8 +31,8 @@ async function main() {
     });
     
   const percent=accountsLength/100
-  frontendUtil.ensurePath('benchmark/subCurrency/data/mint');
-  const handle_mint=frontendUtil.newFile('benchmark/subCurrency/data/mint/mint.out');
+  frontendUtil.ensurePath(txbase+'/mint');
+  const handle_mint=frontendUtil.newFile(txbase+'/mint/mint.out');
 
   etas=0;
   for(i=0;i<accountsLength;i++){
@@ -49,8 +50,8 @@ async function main() {
 
 
   console.log('===========start generate send tx=====================')
-  frontendUtil.ensurePath('benchmark/subCurrency/data/send');
-  const handle_send=frontendUtil.newFile('benchmark/subCurrency/data/send/send.out');
+  frontendUtil.ensurePath(txbase+'/send');
+  const handle_send=frontendUtil.newFile(txbase+'/send/send.out');
   
   const sendCount=accountsLength/2;
   const bar1 = new ProgressBar('Generating Tx data [:bar] :percent :etas', {

@@ -9,10 +9,9 @@ async function main() {
   const provider = new ethers.providers.JsonRpcProvider(nets[hre.network.name].url);
   const pkCreator=nets[hre.network.name].accounts[0]
   const signerCreator = new ethers.Wallet(pkCreator, provider);
-  frontendUtil.ensurePath('benchmark/like/data');
+  const txbase='benchmark/like/txs';
+  frontendUtil.ensurePath(txbase);
   
-  const trnsferMode=false;
-
   let i,tx;
 
   console.log('===========start create like=====================')
@@ -24,13 +23,13 @@ async function main() {
 
   console.log('===========start generate like tx=====================')
   let accountsLength=accounts.length
-  frontendUtil.ensurePath('benchmark/like/data/like');
-  const handle_like=frontendUtil.newFile('benchmark/like/data/like/like.out');
+  frontendUtil.ensurePath(txbase+'/like');
+  const handle_like=frontendUtil.newFile(txbase+'/like/like.out');
 
   const bar = new ProgressBar('Generating Tx data [:bar] :percent :etas', {
     total: 100,
     width: 40,
-    complete: '=',
+    complete: '*',
     incomplete: ' ',
   });
   
@@ -46,9 +45,9 @@ async function main() {
     if(i>0&&i%percent==0){
       bar.tick(1); 
     }
-
-    
   }
+  bar.tick(1); 
+
   if (bar.complete) {
     console.log(`Test data generation completed: ${accountsLength}`);
   }
