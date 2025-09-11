@@ -1,4 +1,4 @@
-### .获取项目
+# 获取项目
 请先下载我们准备的测试案例脚手架工程。项目结构如下图所示：
 
 ![caffold-path](images/scaffold-path.png)
@@ -58,23 +58,4 @@
 ```shell
 scaffold> yarn
 ```
-
-### .启动测试
-
-我们脚手架工程中默认集成了几个测试案例，您可以直接启动测试脚本运行，也可以以该案例为基础来构造自己的测试。测试案例启动指令如下：
-
-```shell
-scaffold> yarn hardhat run test/测试案例文件名 --network TestnetInfo
-```
-
-### .测试案例
-
-目前默认集成的测试案例如下：
-
-| Example                                  |                                                              |
-| ---------------------------------------- | ------------------------------------------------------------ |
-| **[Subcurrency](./docs/subcurrency.md)** | From Solidity's official document, a naturally parallelizable without needing modification. |
-| [Parallel Like](./docs/parallel-like.md) | Utilizes Arcology's concurrent library to handle parallel `like` calls to the same contract |
-
-
 
