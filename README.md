@@ -9,6 +9,11 @@ You need the following tools installed on your machine:
 - Node.js
 - Yarn
 - A Arcology DevNet docker container
+- Docker
+- 4 CPU cores
+- 16GB RAM +
+- 100GB free disk space
+  
 
 <h2> Start the DevNet <img align="center" height="25" src="./img/cloud.svg">  </h2>
 
@@ -82,14 +87,7 @@ The file looks like this:
 To get the examples, clone the repository with submodules:
 
 ```bash 
-    git clone --recurse-submodules https://github.com/arcology-network/examples.git
-```
-
-In the folder where you want to run the example, execute the following command to install dependencies.
-					
-```shell
-   yarn
-   npm install -g @arcologynetwork/frontend-tools
+   git clone --recurse-submodules https://github.com/arcology-network/examples.git
 ```
 
 ###  1. Package Overview
@@ -105,6 +103,21 @@ The examples are organized into folders.
 
 - **uniswap:** A parallelized version of the [uniswap v3](https://github.com/Uniswap/uniswap-v3-core).
   
+In the folder where you want to run the example, execute the following command to install dependencies.
+					
+```shell
+   [folder]> yarn
+   [folder]> npm install -g @arcologynetwork/frontend-tools
+```
+
+>> For example, to run the examples in the `scaffold` folder, you do:
+
+```shell
+    scaffold> yarn
+    scaffold> npm install -g @arcologynetwork/frontend-tools
+```
+
+
 
 ### 2. Execute the Test Script
 
@@ -163,10 +176,16 @@ The generated transaction files can be found in the `txs` subdirectory.
 >>```
 
 ### 2. Running the Benchmark
+
 Send the generated transactions to your local node using the `arcology.net-tx-sender` tool. Assuming your node's IP address is `192.168.1.103`, you would run:
 
+# Memory: 16GB
+
+The following command will load all the transaction files (could be multiple) in the `like/` folder and send them to the node.
+Assuming your node's IP address is `192.168.1.103`, you would run:
+
 ```shell
-   npx arcology.net-tx-sender http://192.168.1.103:8545 benchmark/like/txs/like/like.out
+   npx arcology.net-tx-sender http://192.168.1.103:8545 benchmark/like/txs/like/
 ```  
 
 You should see an output similar to this:
