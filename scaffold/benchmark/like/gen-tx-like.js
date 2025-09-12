@@ -2,17 +2,15 @@ const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 const nets = require('../../network.json');
 const ProgressBar = require('progress');
-
 async function main() {
-  
-  accounts = await ethers.getSigners(); 
+  accounts = await ethers.getSigners();
   const provider = new ethers.providers.JsonRpcProvider(nets[hre.network.name].url);
-  const pkCreator=nets[hre.network.name].accounts[0]
+  const pkCreator = nets[hre.network.name].accounts[0]
   const signerCreator = new ethers.Wallet(pkCreator, provider);
-  const txbase='benchmark/like/txs';
+  const txbase = 'benchmark/like/txs';
   frontendUtil.ensurePath(txbase);
-  
-  let i,tx;
+
+  let i, tx;
 
   console.log('===========start create like=====================')
   const like_factory = await ethers.getContractFactory("Like");
@@ -20,11 +18,10 @@ async function main() {
   await like.deployed();
   console.log(`Deployed Like Test at ${like.address}`)
 
-
   console.log('===========start generate like tx=====================')
-  let accountsLength=accounts.length
-  frontendUtil.ensurePath(txbase+'/like');
-  const handle_like=frontendUtil.newFile(txbase+'/like/like.out');
+  let accountsLength = accounts.length
+  frontendUtil.ensurePath(txbase + '/like');
+  const handle_like = frontendUtil.newFile(txbase + '/like/like.out');
 
   const bar = new ProgressBar('Generating Tx data [:bar] :percent :etas', {
     total: 100,
@@ -32,29 +29,26 @@ async function main() {
     complete: '*',
     incomplete: ' ',
   });
-  
-  const percent=accountsLength/100
-  let pk,signer
-  for(i=0;i<accountsLength;i++){
-    pk=nets[hre.network.name].accounts[i];
+
+  const percent = accountsLength / 100
+  let pk, signer
+  for (i = 0; i < accountsLength; i++) {
+    pk = nets[hre.network.name].accounts[i];
     signer = new ethers.Wallet(pk, provider);
 
     //like
     tx = await like.connect(accounts[i]).populateTransaction.like();
-    await frontendUtil.writePreSignedTxFile(handle_like,signer,tx);
-    if(i>0&&i%percent==0){
-      bar.tick(1); 
+    await frontendUtil.writePreSignedTxFile(handle_like, signer, tx);
+    if (i > 0 && i % percent == 0) {
+      bar.tick(1);
     }
   }
-  bar.tick(1); 
+  bar.tick(1);
 
   if (bar.complete) {
     console.log(`Test data generation completed: ${accountsLength}`);
   }
-    
 }
-  
-
 
 main()
   .then(() => process.exit(0))
