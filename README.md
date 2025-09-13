@@ -8,13 +8,15 @@ You need the following tools installed on your machine:
 
 - Node.js
 - Yarn
-- A Arcology DevNet docker container
+- An Arcology DevNet docker container
 - Docker
+
+<h2> Minimum Hardware  <img align="center" height="25" src="./img/ruler.svg">  </h2>
+
 - 4 CPU cores
-- 16GB RAM +
+- 16GB RAM
 - 100GB free disk space
   
-
 <h2> Start the DevNet <img align="center" height="25" src="./img/cloud.svg">  </h2>
 
 ```shell
@@ -110,12 +112,12 @@ In the folder where you want to run the example, execute the following command t
    [folder]> npm install -g @arcologynetwork/frontend-tools
 ```
 
->> For example, to run the examples in the `scaffold` folder, you do:
+>> For example, to run the examples in the `scaffold` folder, you would do:
 
-```shell
-    scaffold> yarn
-    scaffold> npm install -g @arcologynetwork/frontend-tools
-```
+>>```shell
+>>    scaffold> yarn
+>>    scaffold> npm install -g @arcologynetwork/frontend-tools
+>>```
 
 
 
@@ -178,8 +180,6 @@ The generated transaction files can be found in the `txs` subdirectory.
 ### 2. Running the Benchmark
 
 Send the generated transactions to your local node using the `arcology.net-tx-sender` tool. Assuming your node's IP address is `192.168.1.103`, you would run:
-
-# Memory: 16GB
 
 The following command will load all the transaction files (could be multiple) in the `like/` folder and send them to the node.
 Assuming your node's IP address is `192.168.1.103`, you would run:

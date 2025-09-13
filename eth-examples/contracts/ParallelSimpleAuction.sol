@@ -9,7 +9,7 @@
 // The original contract is here: https://docs.soliditylang.org/en/latest/solidity-by-example.html#simple-auction
 //
 // The following changes have been made to the original contract:
-//
+
 // 1. Added concurrent arrays for bidders and bids.
 // 
 // 2. Instead of finding the highest bidder and the highest bid in the auctionEnd function, all bidders 
