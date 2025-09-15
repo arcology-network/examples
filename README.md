@@ -7,8 +7,9 @@ Arcology provides several concurrent examples to help you get started. These exa
 You need the following tools installed on your machine:
 
 - Node.js
+- npm
 - Yarn
-- An Arcology DevNet docker container
+- Git
 - Docker
 
 <h2> Minimum Hardware  <img align="center" height="25" src="./img/ruler.svg">  </h2>
@@ -17,12 +18,14 @@ You need the following tools installed on your machine:
 - 16GB RAM
 - 100GB free disk space
   
-<h2> Start the DevNet <img align="center" height="25" src="./img/cloud.svg">  </h2>
+<h2> Set up the DevNet <img align="center" height="25" src="./img/cloud.svg">  </h2>
+
+Creates env var ip for your machine’s local IP, here 192.168.1.109. Then start the Arcology DevNet Docker container, replacing the IP address with your **machine's local IP**.
 
 ```shell
- ip=192.168.1.109;docker run -itd --name l1 -p 8545:8545 -p 26656:26656 -p 9191:9191 -p 9192:9192 -p 9292:9292 arcologynetwork/devnet -f http://$ip:7545 -b http://$ip:3500 -s http://$ip:8545 -r true -m false
+ > ip=192.168.1.109
+ > docker run -itd --name l1 -p 8545:8545 -p 26656:26656 -p 9191:9191 -p 9192:9192 -p 9292:9292 arcologynetwork/devnet -f http://$ip:7545 -b http://$ip:3500 -s http://$ip:8545 -r true -m false
 ```
->> Replace the `ip` variable with your machine's local IP address.
 
 You should see an output similar to this:
 
@@ -43,18 +46,74 @@ Status: Downloaded newer image for arcologynetwork/devnet:latest
 200ee2aac356625d5dad46384a678c3f5590d738f899893fa54b76bbcd3ff1d8
 ```
 
-### Update the DevNet Configuration
+### Check the Docker Container
+Check if the Docker container is running properly:
 
-Usually `network.json` is the only file you need to modify. the `url` field should point to
-the **RPC endpoint** of your running node. The default file includes 11 accounts for
-testing purposes. If you need more, you can copy and paste the private keys, accounts and
-balances from the `accounts.txt` file in the `account` directory.
+```shell
+   > docker ps
+```
+
+### Check the DevNet Status
+
+Check if your DevNet is running properly by using the `arcology.net-monitor` tool.
+
+```shell
+   > npm install -g @arcologynetwork/frontend-tools
+   > npx arcology.net-monitor http://$ip:8545
+```
+
+If the DevNet is running properly, you should see an output similar to this:
+
+```shell
+height = 494, empty block, timestamp = 1757874737, maxTps = 0, realtimeTps(1m) = 0
+height = 495, empty block, timestamp = 1757874738, maxTps = 0, realtimeTps(1m) = 0
+height = 496, empty block, timestamp = 1757874739, maxTps = 0, realtimeTps(1m) = 0
+height = 497, empty block, timestamp = 1757874740, maxTps = 0, realtimeTps(1m) = 0
+````
+
+## Install the Examples
+
+Pull the latest Arcology examples repository and install the Arcology frontend tools:
+
+```shell   
+   > git clone --recurse-submodules https://github.com/arcology-network/examples.git
+```
+
+### Structure:
+The examples are organized into folders.
+
+``` shell
+   examples/
+   ├── account/
+   ├── scaffold/
+   ├── eth-examples/
+   ├── ds-token/
+   └── uniswap/
+```
+
+- **Account:** Testing accounts. Columns: private key, account address, initial balance (wei).
+
+- **Scaffold:** Starting point with for building concurrent applications.
+  
+- **eth-examples:** Parallelized [examples](https://docs.soliditylang.org/en/v0.8.24/solidity-by-example.html) derived from some of the Ethereum examples. 
+
+- **ds-token:** A parallelized version of the [ds-token](https://github.com/dapphub/ds-token).									
+
+- **uniswap:** A parallelized version of the [uniswap v3](https://github.com/Uniswap/uniswap-v3-core).
+
+>> The `scaffold` folder is a good starting point for trying out the examples.
+
+## Run an Example 
+  
+### 1. Update the Configuration
+
+**Each example folder** contains a `network.json` file. It holds the info for connecting to your local node and some testing accounts. Replace the `url` field with your node's(devnet docker) RPC URL.
 
 The file looks like this:
 ```json
 {
   "TestnetInfo": {
-     "url": "http://192.168.117.128:8545", //Your rpc-url
+     "url": "http://192.168.117.128:8545", //Your Devnet rpc-url
      "accounts": ["5bb1315c3ffa654c89f1f8b27f93cb4ef6b0474c4797cf2eb40d1bdd98dc26e7",
                   "2289ae919f03075448d567c9c4a22846ce3711731c895f1bea572cef25bb346f",
                   "19c439237a1e2c86f87b2d31438e5476738dd67297bf92d752b16bdb4ff37aa2",
@@ -84,80 +143,42 @@ The file looks like this:
 }
 ```
 
-## Run the Examples 
+### 2. Run the Test Script
+>> Optionally, you can avoid SSH authentication by configuring Git to use HTTPS instead of SSH:
+>> ```shell
+>>    > git config --global url."https://github.com/".insteadOf ssh://git@github.com
+>> ```
 
-To get the examples, clone the repository with submodules:
+Run the test script inside the example folder (e.g. `scaffold/Like`):
 
-```bash 
-   git clone --recurse-submodules https://github.com/arcology-network/examples.git
-```
-
-###  1. Package Overview
-The examples are organized into folders.
-
-- **Account:** Testing accounts. Columns: private key, account address, initial balance (wei).
-
-- **Scaffold:** Starting point with for building concurrent applications.
-  
-- **eth-examples:** Parallelized [examples](https://docs.soliditylang.org/en/v0.8.24/solidity-by-example.html) derived from some of the Ethereum examples. 
-
-- **ds-token:** A parallelized version of the [ds-token](https://github.com/dapphub/ds-token).									
-
-- **uniswap:** A parallelized version of the [uniswap v3](https://github.com/Uniswap/uniswap-v3-core).
-  
-In the folder where you want to run the example, execute the following command to install dependencies.
-					
 ```shell
-   [folder]> yarn
-   [folder]> npm install -g @arcologynetwork/frontend-tools
+  scaffold> yarn add --dev hardhat
+  scaffold> yarn hardhat run test/test-like.js --network TestnetInfo
 ```
-
->> For example, to run the examples in the `scaffold` folder, you would do:
-
->>```shell
->>    scaffold> yarn
->>    scaffold> npm install -g @arcologynetwork/frontend-tools
->>```
-
-
-
-### 2. Execute the Test Script
-
-In the folder where you want to run the example, execute the following command to run the test script.
-```shell 
-  [folder]> yarn hardhat run test/test-[project].js --network TestnetInfo
-```
-
->> For example, to run the `Like` example in the `scaffold` folder, you do:
->>```shell
->>  scaffold> yarn hardhat run test/test-like.js --network TestnetInfo
->>```
 											
-
 ## Benchmarking <img align="center" height="25" src="./img/running.svg"> 
->> You will need a high-performance machine with multiple CPU cores to run the benchmarks effectively. Arcology is designed to leverage multi-core processors for optimal performance.
+>> The real-time TPS and gas consumption metrics are very much related to the performance of your machine.
+>> Machines with more CPU cores and higher clock speeds will yield better results.
 
-The `benchmark` folder in each folder contains transaction generation scripts, each in its own subfolder.
+The `benchmark` folder in each folder contains transaction generation scripts, each in its own subfolder. For example, the `Like` project has its transaction generation script at:
 
-```
-[folder]
-└── benchmark
-    └── [project]
-        └── gen-tx-[project].js
-
+```shell
+   examples/
+   └── scaffold/ 
+       └── benchmark/
+           └── like/
+               └── gen-tx-like.js
 ```
 
 ### 1. Generating Transactions
-Run the following command to generate transactions for the `Like` example:
+>> This process may take **quite a while**, depending on the number of transactions you want to generate and your machine's performance.
+
+A transaction generation script located under each `/benchmark/<project>/`.
+Run the following script to generate transactions for the `Like` under `scaffold`:
 
 ```shell
-   [folder]> yarn hardhat run benchmark/[project]/gen-tx-[project].js --network TestnetInfo
+   scaffold> yarn hardhat run benchmark/like/gen-tx-like.js --network TestnetInfo
 ```
->> For example, to generate transactions for the `Like` example in the `scaffold` folder, you would run:
->>```shell
->>   scaffold> yarn hardhat run benchmark/like/gen-tx-like.js --network TestnetInfo
->>```
-
 
 You should see an output similar to this:
 
@@ -166,23 +187,22 @@ Deploying like ==== Deployed Like at 0xBe5a9f4b7C2AF3000bAc55e114Ec3A3d55d330db
 Generating Txs [**** ] 9% 131.4s
 ```
 
-The generated transaction files can be found in the `txs` subdirectory. 
+The generated transaction files can be found in the `txs`. For `like`, they are at:
 
 ```shell
-   [folder]> benchmark/[project]/txs/[project]/[function].out
+   examples/
+   └── scaffold/ 
+      └── benchmark/
+         └── like/
+            └── txs/
+               └── like/
 ```
-
->>For example, the generated transaction files for the transactions calling the `like` function in the `Like` example >>can be found at:
->>```shell
->>   scaffold> benchmark/like/txs/like/like.out
->>```
+>> There could be multiple transaction files in the folder, each containing a batch of transactions.
 
 ### 2. Running the Benchmark
 
-Send the generated transactions to your local node using the `arcology.net-tx-sender` tool. Assuming your node's IP address is `192.168.1.103`, you would run:
-
-The following command will load all the transaction files (could be multiple) in the `like/` folder and send them to the node.
-Assuming your node's IP address is `192.168.1.103`, you would run:
+Send the generated transactions to your local node in batch mode. Assuming your **DevNet node IP** is `192.168.1.103`, you would run:
+>> The node IP isn't the same as your machine IP. 
 
 ```shell
    npx arcology.net-tx-sender http://192.168.1.103:8545 benchmark/like/txs/like/
@@ -196,10 +216,6 @@ height = 2015, total = 20000, success = 20000, fail = 0, timestamp = 17575099925
 height = 2016, total = 20000, success = 20000, fail = 0, timestamp = 1757509993742, maxTps = 16652, realtimeTps = 16652 maxGasBurned = 396286427, realtimeGasBurned = 396286427 
 height = 2017, total = 20000, success = 20000, fail = 0, timestamp = 1757509994826, maxTps = 18450, realtimeTps = 18450 maxGasBurned = 439059040, realtimeGasBurned = 439059040
 ```
-
->> The real-time TPS and gas consumption metrics are very much related to the performance of your machine.
->> Machines with more CPU cores and higher clock speeds will yield better results.
-
 
 ### 3. Benchmarking Metrics
 
