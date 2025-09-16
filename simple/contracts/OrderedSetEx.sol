@@ -2,13 +2,8 @@
 pragma solidity 0.7.6;
 import "@arcologynetwork/concurrentlib/lib/shared/OrderedSet.sol";
 
-
 contract OrderedSetEx {
     BytesOrderedSet container = new BytesOrderedSet(false);  
-
-    constructor() {
-    }
-
     event Query(address elem);
 
     function set(address adr,uint256 val)public {  

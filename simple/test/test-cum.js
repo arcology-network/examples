@@ -5,17 +5,14 @@ const nets = require('../network.json');
 async function main() {
     accounts = await ethers.getSigners(); 
 
-    const cum_factory = await ethers.getContractFactory("Cum");
-    const cum = await cum_factory.deploy();
-    await cum.deployed();
-    console.log(`Deployed Cum Test at ${cum.address}`)
-
+  const counter_factory = await ethers.getContractFactory("Counter");
+    const counter = await counter_factory.deploy();
+    await counter.deployed();
+    console.log(`Deployed Counter Test at ${counter.address}`)
     
     var txs=new Array();
     let i,tx,receipt;
-
-    
-
+   
     console.log('===========add=====================')
     tx = await cum.add(10);
     receipt=await tx.wait();
@@ -49,7 +46,6 @@ async function main() {
       console.log('Test Failed');
     }
 }
-
 
   // We recommend this pattern to be able to use async/await everywhere
   // and properly handle errors.

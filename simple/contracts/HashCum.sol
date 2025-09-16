@@ -24,12 +24,4 @@ contract HashCum {
         bytes32 key=abi.decode(abi.encodePacked(adr,fix), (bytes32));
         emit QueryBalance(cummap.get(key)); 
     }
-
-    // function insert(address adr,uint256 val)public { 
-    //     // emit QueryBalance(0);
-    //     // bytes32 key=abi.decode(abi.encodePacked(adr,"1"), (bytes32)); 
-    //     emit QueryBalance(1);
-    //     cummapadr.set(adr, int256(val), 0, type(uint256).max);
-    //     emit QueryBalance(2);
-    // }
 }

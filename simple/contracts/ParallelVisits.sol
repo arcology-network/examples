@@ -16,8 +16,7 @@ contract Visits {
             emit CounterQuery(counter.nonNilCount());
         }else{
             counter.push(true); // Add a new visit to the counter. Concurrent writes are OK !!.
-        }
-            
+        }            
     }
 
     function getCounter() public returns(uint256){

@@ -20,7 +20,6 @@ contract ArrayClear {
     event CounterQuery(uint256 value);
 
     U256Cumulative sum=new U256Cumulative(0, 100); 
-
     uint64 gasused=100000;
 
     constructor()  {
@@ -29,6 +28,7 @@ contract ArrayClear {
     }
     event Step(uint256 step);
     event StepBool(bool val);
+
     function pvisit(ExactInputSingleParams calldata params) public {
         bool isDeffered=Runtime.isInDeferred();
         if(params.sd!=1){
@@ -49,6 +49,7 @@ contract ArrayClear {
             }
         }
     }
+    
     function add(uint256 val)public { 
         if(!Runtime.isInDeferred()){
             counterAdd.clear();

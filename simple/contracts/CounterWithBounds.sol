@@ -1,14 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.7.6;
+pragma solidity >=0.7.0;
 import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
 
-
-contract Cum {
+contract CounterWithBounds {
     U256Cumulative sum=new U256Cumulative(0,100);
-
-    constructor() {
-    }
-
     event QueryBalance(uint256 val);
 
     function add(uint256 val)public {  
@@ -24,5 +19,4 @@ contract Cum {
         sum.sub(sum.get());
         emit QueryBalance(sum.get());
     }
-
 }
