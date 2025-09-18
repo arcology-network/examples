@@ -4,6 +4,7 @@ pragma solidity >=0.7.0;
 import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
 import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
 
+
 // This example is a parallelized version of the vending machine example from
 // https://ethereum.org/developers/docs/smart-contracts/#a-digital-vending-machine
 // This version allows multiple purchases and refills to be processed concurrently
@@ -43,7 +44,7 @@ contract VendingMachine {
     // Allow anyone to purchase cupcakes
     function purchase(uint256 amount) public payable {
         require(msg.value >= amount * 1 ether, "You must pay at least 1 ETH per cupcake");
-        cupcakeBalances.set(address(this),-int256(amount), 0, type(uint256).max);
+        cupcakeBalances.set(address(this),-int256(amount));
         cupcakeBalances.set(msg.sender,int256(amount), 0, type(uint256).max);
     }
 
