@@ -6,9 +6,7 @@ import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
 contract HashCum {
     HashU256Map private cummap=new HashU256Map();
     AddressU256CumMap private cummapadr=new AddressU256CumMap();
-    constructor() {
-    }
-
+    
     event QueryBalance(uint256 val);
     uint256 fix=1;
 
