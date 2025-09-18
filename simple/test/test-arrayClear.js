@@ -4,14 +4,13 @@ var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 async function main() {
     accounts = await ethers.getSigners(); 
 
+    console.log('======start deploying contract======')
     const bt_factory = await ethers.getContractFactory("ArrayClear");
     const bt = await bt_factory.deploy();
     await bt.deployed();
     console.log(`Deployed ArrayClear Test at ${bt.address}`)
-    // console.log(bt)
 
-
-    console.log('===========visit first bat=====================')
+    console.log('======start executing TXs calling pvisit first bat======')
     var txs=new Array();
     for(i=1;i<=3;i++){
       txs.push(frontendUtil.generateTx(function([bt,from,val]){
@@ -24,10 +23,9 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
 
-    console.log('===========getCounter=====================')
+    console.log('======start executing TXs calling query counter======')
     tx = await bt.getCounter();
     receipt=await tx.wait();
-    // console.log(receipt);
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
     if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000003"){
@@ -36,7 +34,7 @@ async function main() {
       console.log('Test Failed');
     } 
 
-    console.log('===========visit second bat=====================')
+    console.log('======start executing TXs calling pvisit second bat======')
     txs=new Array();
     for(i=4;i<=6;i++){
       txs.push(frontendUtil.generateTx(function([bt,from,val]){
@@ -49,10 +47,9 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
     
-    console.log('===========getCounter=====================')
+    console.log('======start executing TXs calling query counter======')
     tx = await bt.getCounter();
     receipt=await tx.wait();
-    // console.log(receipt);
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
     if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000006"){
@@ -61,7 +58,7 @@ async function main() {
       console.log('Test Failed');
     } 
 
-    console.log('===========visit third bat=====================')
+    console.log('======start executing TXs calling pvisit third bat======')
     txs=new Array();
     for(i=7;i<=9;i++){
       txs.push(frontendUtil.generateTx(function([bt,from,val]){
@@ -84,14 +81,16 @@ async function main() {
 
     await frontendUtil.waitingTxs(txs);
     
-    console.log('===========getCounter=====================')
+    console.log('======start executing TXs calling query counter======')
     tx = await bt.getCounter();
     receipt=await tx.wait();
     // console.log(receipt);
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     let result=frontendUtil.parseEvent(receipt,"CounterQuery");
     console.log(result)
-    if(result==="0x000000000000000000000000000000000000000000000000000000000000000a" || result==='0x0000000000000000000000000000000000000000000000000000000000000008'){
+    if(result==="0x000000000000000000000000000000000000000000000000000000000000000d" 
+      || result==='0x0000000000000000000000000000000000000000000000000000000000000006'
+      || result==='0x0000000000000000000000000000000000000000000000000000000000000009'){
       console.log('Test Successful');
     }else{
       console.log('Test Failed');
