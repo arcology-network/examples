@@ -4,12 +4,13 @@ var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 async function main() {
     accounts = await ethers.getSigners(); 
 
+    console.log('======start deploying contract======')
     const visit_factory = await ethers.getContractFactory("Counter");
     const visitCounter = await visit_factory.deploy();
     await visitCounter.deployed();
     console.log(`Deployed Counter at ${visitCounter.address}`)
 
-    console.log('===========add=====================')
+    console.log('======start executing TXs calling add======')
     var txs=new Array();
     for(i=1;i<=5;i++){
       txs.push(frontendUtil.generateTx(function([visitCounter,from]){
@@ -18,7 +19,7 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
     
-    console.log('===========getCounter=====================')
+    console.log('======start executing TXs calling getCounter======')
     tx = await visitCounter.getCounter();
     let receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
@@ -26,7 +27,7 @@ async function main() {
     console.log(`Counter Data ${hexStr}`)
     let transamt=BigInt(hexStr);
 
-    console.log('===========add=====================')
+    console.log('======start executing TXs calling add======')
     var txs=new Array();
     for(i=1;i<=5;i++){
       txs.push(frontendUtil.generateTx(function([visitCounter,from]){
@@ -35,7 +36,7 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
     
-    console.log('===========getCounter=====================')
+    console.log('======start executing TXs calling getCounter======')
     tx = await visitCounter.getCounter();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));

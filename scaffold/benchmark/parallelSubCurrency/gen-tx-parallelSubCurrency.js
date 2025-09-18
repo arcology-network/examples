@@ -13,13 +13,13 @@ async function main() {
 
   let i, tx;
 
-  console.log('===========start create parallelSubCurrency=====================')
+  console.log('======start deploying contract======')
   const coin_factory = await ethers.getContractFactory("ParallelCoin");
   const coin = await coin_factory.deploy();
   await coin.deployed();
   console.log(`Deployed parallelSubCurrency Test at ${coin.address}`)
 
-  console.log('===========start generate mint tx=====================')
+  console.log('======start generating TXs calling mint======')
   let accountsLength = accounts.length
   const bar = new ProgressBar('Generating Tx data [:bar] :percent :etas', {
     total: 100,
@@ -46,7 +46,7 @@ async function main() {
     console.log(`tx data generation completed: ${accountsLength}`);
   }
 
-  console.log('===========start generate send tx=====================')
+  console.log('======start generating TXs calling send======')
   frontendUtil.ensurePath(txbase + '/send');
   const handle_send = frontendUtil.newFile(txbase + '/send/send.out');
 

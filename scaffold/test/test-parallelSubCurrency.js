@@ -4,6 +4,7 @@ var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 async function main() {
     accounts = await ethers.getSigners(); 
 
+    console.log('======start deploying contract======')
     const coin_factory = await ethers.getContractFactory("ParallelCoin");
     const coin = await coin_factory.deploy();
     await coin.deployed();
@@ -11,7 +12,7 @@ async function main() {
 
     let receipt,i,txs; 
 
-    console.log('===========mint=====================')
+    console.log('======start executing TXs calling mint======')
     txs=new Array();
     for(i=1;i<=5;i++){
       txs.push(frontendUtil.generateTx(function([coin,to,val]){
@@ -20,7 +21,7 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
 
-    console.log('===========balance=====================')
+    console.log('======start executing TXs calling query balance======')
     for(i=1;i<=10;i++){
       tx = await coin.getter(accounts[i].address);
       receipt=await tx.wait();
@@ -28,7 +29,7 @@ async function main() {
       frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     }
     
-    console.log('===========send=====================')
+    console.log('======start executing TXs calling send======')
     txs=new Array();
     for(i=1;i<=5;i++){
       txs.push(frontendUtil.generateTx(function([coin,from,to,val]){
@@ -37,7 +38,7 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
 
-    console.log('===========balance=====================')
+    console.log('======start executing TXs calling query balance======')
     for(i=1;i<=10;i++){
       tx = await coin.getter(accounts[i].address);
       receipt=await tx.wait();

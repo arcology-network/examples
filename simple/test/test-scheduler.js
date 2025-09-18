@@ -4,14 +4,14 @@ var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 async function main() {
     accounts = await ethers.getSigners(); 
 
+    console.log('======start deploying contract======')
     const bt_factory = await ethers.getContractFactory("ArrayClear");
     const bt = await bt_factory.deploy();
     await bt.deployed();
     console.log(`Deployed ArrayClear Test at ${bt.address}`)
 
     let tx,receipt;
-
-    console.log('========== first bat,Failed one ,two generations =====================')
+    console.log('======first bat,Failed one ,two generations ======')
     //g1:6 g2:2
     var txs=new Array();
     for(i=1;i<=4;i++){
@@ -29,10 +29,9 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
 
-    console.log('===========getCounter=====================')
+    console.log('======start executing TXs calling getCounter======')
     tx = await bt.getCounter();
     receipt=await tx.wait();
-    // console.log(receipt);
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
     if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000004"){
@@ -41,7 +40,7 @@ async function main() {
       console.log('Test Failed');
     } 
 
-    console.log('=========== second bat,four generations =====================')
+    console.log('====== second bat,four generations ======')
     //g1:3 g2:1 g3:3 g4:1
     txs=new Array();
     for(i=5;i<=8;i++){
@@ -59,10 +58,9 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
 
-    console.log('===========getCounter=====================')
+    console.log('======start executing TXs calling getCounter======')
     tx = await bt.getCounter();
     receipt=await tx.wait();
-    // console.log(receipt);
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
     if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x000000000000000000000000000000000000000000000000000000000000000c"){
@@ -71,7 +69,7 @@ async function main() {
       console.log('Test Failed');
     } 
 
-    console.log('=========== third bat,four generations =====================')
+    console.log('====== third bat,four generations ======')
     //g1:1 g2:1 g3:1 g4:1
     txs=new Array();
     for(i=9;i<=10;i++){
@@ -89,10 +87,9 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
     
-    console.log('===========getCounter=====================')
+    console.log('======start executing TXs calling getCounter======')
     tx = await bt.getCounter();
     receipt=await tx.wait();
-    // console.log(receipt);
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
     if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000010"){

@@ -4,12 +4,13 @@ var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 async function main() {
     accounts = await ethers.getSigners(); 
 
+    console.log('======start deploying contract======')
     const bt_factory = await ethers.getContractFactory("Like");
     const bt = await bt_factory.deploy();
     await bt.deployed();
     console.log(`Deployed Like Test at ${bt.address}`)
 
-    console.log('===========like=====================')
+    console.log('======start executing TXs calling like======')
     var txs=new Array();
     for(i=1;i<=10;i++){
       txs.push(frontendUtil.generateTx(function([bt,from]){
@@ -18,7 +19,7 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
     
-    console.log('===========getLikes=====================')
+    console.log('======get total links======')
     tx = await bt.getLikes();
     const receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));

@@ -7,21 +7,21 @@ async function main() {
   const provider = new ethers.providers.JsonRpcProvider(nets[hre.network.name].url);
   const pkCreator = nets[hre.network.name].accounts[0]
   const signerCreator = new ethers.Wallet(pkCreator, provider);
-  const txbase = 'benchmark/like/txs';
+  const txbase = 'benchmark/boolArray/txs';
   frontendUtil.ensurePath(txbase);
 
   let i, tx;
 
   console.log('======start deploying contract======')
-  const like_factory = await ethers.getContractFactory("Like");
-  const like = await like_factory.deploy();
-  await like.deployed();
-  console.log(`Deployed Like Test at ${like.address}`)
+  const boolarray_factory = await ethers.getContractFactory("BoolArray");
+  const boolarray = await boolarray_factory.deploy();
+  await boolarray.deployed();
+  console.log(`Deployed boolarray Test at ${boolarray.address}`)
 
-  console.log('======start generating TXs calling like======')
+  console.log('======start generating TXs calling add======')
   let accountsLength = accounts.length
-  frontendUtil.ensurePath(txbase + '/like');
-  const handle_like = frontendUtil.newFile(txbase + '/like/like.out');
+  frontendUtil.ensurePath(txbase + '/add');
+  const handle_boolarray = frontendUtil.newFile(txbase + '/add/boolarray.out');
 
   const bar = new ProgressBar('Generating Tx data [:bar] :percent :etas', {
     total: 100,
@@ -36,9 +36,9 @@ async function main() {
     pk = nets[hre.network.name].accounts[i];
     signer = new ethers.Wallet(pk, provider);
 
-    //like
-    tx = await like.connect(accounts[i]).populateTransaction.like();
-    await frontendUtil.writePreSignedTxFile(handle_like, signer, tx);
+    //add
+    tx = await boolarray.connect(accounts[i]).populateTransaction.add();
+    await frontendUtil.writePreSignedTxFile(handle_boolarray, signer, tx);
     if (i > 0 && i % percent == 0) {
       bar.tick(1);
     }

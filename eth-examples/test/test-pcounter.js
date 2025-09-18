@@ -4,12 +4,13 @@ var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 async function main() {
     accounts = await ethers.getSigners(); 
 
+    console.log('======start deploying contract======')
     const pcounter_factory = await ethers.getContractFactory("ParallelCounter");
     const pcounter = await pcounter_factory.deploy();
     await pcounter.deployed();
     console.log(`Deployed Parallel Counter at ${pcounter.address}`)
 
-    console.log('===========set add1 as confilict=====================')
+    console.log('======start executing TXs calling add1 with conflict======')
     var txs=new Array();
     for(i=1;i<=2;i++){
       txs.push(frontendUtil.generateTx(function([pcounter,from]){
@@ -18,27 +19,19 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
     
-    console.log('===========getCounter=====================')
+    console.log('======start executing TXs calling getCounter======')
     tx = await pcounter.getCounter();
     let receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
 
     console.log(`Counter Data ${frontendUtil.parseEvent(receipt,"CounterQuery")}`)
     
-    console.log('===========reset=====================')
+    console.log('======start executing TXs calling reset======')
     tx = await pcounter.reset();
     receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));  
 
-    // console.log('===========getCounter=====================')
-    
-    // tx = await pcounter.getCounter();
-    // receipt=await tx.wait();
-    // frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-
-    // console.log(`Counter Data ${frontendUtil.parseEvent(receipt,"CounterQuery")}`)
-
-    console.log('===========two generations=====================')
+    console.log('======start executing TXs calling add1 and add2======')
     var txs=new Array();
     for(i=1;i<=2;i++){
       txs.push(frontendUtil.generateTx(function([pcounter,from]){
@@ -52,13 +45,11 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
     
-    console.log('===========getCounter=====================')
+    console.log('======start executing TXs calling getCounter======')
     tx = await pcounter.getCounter();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-
     console.log(`Counter Data ${frontendUtil.parseEvent(receipt,"CounterQuery")}`)
-
     if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000007"){
       console.log('Test Successful');
     }else{

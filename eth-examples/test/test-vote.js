@@ -6,6 +6,7 @@ var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 async function main() { 
     accounts = await ethers.getSigners(); 
 
+    console.log('======start deploying contract======')
     var proposals= new Array();
     proposals.push(hre.ethers.utils.formatBytes32String("Alice"));
     proposals.push(hre.ethers.utils.formatBytes32String("Bob"));
@@ -15,7 +16,7 @@ async function main() {
     await vote.deployed();
     console.log(`Deployed vote at ${vote.address}`)
 
-    console.log('===========giveRightToVote=====================')
+    console.log('======start executing TXs calling giveRightToVote======')
     var txs=new Array();
     for(i=1;i<=10;i++){
       txs.push(frontendUtil.generateTx(function([contract,addr]){
@@ -24,7 +25,7 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
     
-    console.log('===========delegate=====================')
+    console.log('======start executing TXs calling delegate======')
     txs=new Array();
     for(i=1;i<=5;i++){
       txs.push(frontendUtil.generateTx(function([vote,from,to]){
@@ -33,7 +34,7 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
 
-    console.log('===========vote=====================')
+    console.log('======start executing TXs calling vote======')
     var txs=new Array();
     for(i=6;i<=10;i++){
       voteidx=(i+5)%2
@@ -43,7 +44,7 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
 
-    console.log('===========winningProposal=====================')
+    console.log('======start executing TXs calling winningProposal======')
     const tx = await vote.winningProposal();
     const receipt = await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));

@@ -4,6 +4,7 @@ var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 async function main() {
     accounts = await ethers.getSigners(); 
 
+    console.log('======start deploying contract======')
     const transfer_factory = await ethers.getContractFactory("TransferTest");
     const transferTest = await transfer_factory.deploy();
     await transferTest.deployed();
@@ -11,7 +12,7 @@ async function main() {
 
     let gasprice=BigInt(255);
 
-    console.log('===========getBalance=====================')
+    console.log('======start executing TXs calling getBalance======')
     let tx = await transferTest.getBalance();
     let receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
@@ -22,7 +23,7 @@ async function main() {
     let gasused0=BigInt(receipt.gasUsed)*gasprice;
     console.log(`GasUsed : ${receipt.gasUsed}`)
 
-    console.log('===========transfer=====================')
+    console.log('======start executing TXs calling transfer======')
     tx = await transferTest.transferToContract({value:10});
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
@@ -32,7 +33,7 @@ async function main() {
     let gasused1=BigInt(receipt.gasUsed)*gasprice;
     console.log(`GasUsed : ${receipt.gasUsed}`)
 
-    console.log('===========getBalance=====================')
+    console.log('======start executing TXs calling getBalance======')
     tx = await transferTest.getBalance();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
@@ -42,15 +43,14 @@ async function main() {
     let balance=BigInt(hexStr);
     console.log(`GasUsed : ${receipt.gasUsed}`)
 
-    console.log('===========transfer checkSum=====================')
+    console.log('======start checking balance======')
     if(first-gasused0-transamt-gasused1==balance){
       console.log("Transfer Successful");
     }else{
       console.log("Transfer Failed");
     }
 
-
-    console.log('===========transfer will be failed=====================')
+    console.log('======start executing TXs calling transferToContract,but it will be failed======')
     tx = await transferTest.transferToContract({value:20});
     await tx.wait()
     .then((rect) => {
@@ -63,7 +63,7 @@ async function main() {
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(`GasUsed : ${receipt.gasUsed}`)
 
-    console.log('===========getBalance=====================')
+    console.log('======start executing TXs calling getBalance======')
     tx = await transferTest.getBalance();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));

@@ -4,12 +4,13 @@ var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 async function main() {
     accounts = await ethers.getSigners(); 
 
+    console.log('======start deploying contract======')
     const Auction_factory = await ethers.getContractFactory("SimpleAuction");
     const auction = await Auction_factory.deploy(30,accounts[0].address);
     await auction.deployed();
     console.log(`Deployed SimpleAuction at ${auction.address}`)
 
-    console.log('===========bid=====================')
+    console.log('======start executing TXs calling bid======')
     var txs=new Array();
     for(i=1;i<=10;i++){
       txs.push(frontendUtil.generateTx(function([auction,from,bidval]){
@@ -18,7 +19,7 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
     
-    console.log('===========auctionEnd=====================')
+    console.log('======start executing TXs calling auctionEnd======')
     while(true){
       await frontendUtil.sleep(35000)
       tx = await auction.auctionEnd();
@@ -31,13 +32,13 @@ async function main() {
       .catch((error) => {
           receipt = error.receipt
       })
-      // console.log(receipt);
       frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
       if(frontendUtil.parseEvent(receipt,"AuctionEndCompleted")==="0x0000000000000000000000000000000000000000000000000000000000000001"){
         break;
       }
     }
-    console.log('===========withdraw=====================')
+
+    console.log('======start executing TXs calling withdraw======')
     var txs=new Array();
     for(i=1;i<=10;i++){
       txs.push(frontendUtil.generateTx(function([auction,from]){

@@ -4,18 +4,19 @@ var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 async function main() {
     accounts = await ethers.getSigners(); 
 
+    console.log('======start deploying contract======')
     const vending_factory = await ethers.getContractFactory("VendingMachine");
     const vendingMachine = await vending_factory.deploy();
     await vendingMachine.deployed();
     console.log(`Deployed vendingMachine at ${vendingMachine.address}`)
 
     let receipt,i,txs;
-    console.log('===========refill=====================')
+    console.log('======start executing TXs calling refill======')
     tx = await vendingMachine.refill(100);
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
        
-    console.log('===========getCupcakeStock=====================')
+    console.log('======start executing TXs calling getCupcakeStock======')
     tx = await vendingMachine.getCupcakeStock();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
@@ -26,7 +27,7 @@ async function main() {
       console.log('Test Failed');
     } 
 
-    console.log('===========purchase=====================')
+    console.log('======start executing TXs calling purchase======')
     txs=new Array();
     for(i=1;i<=10;i++){
       txs.push(frontendUtil.generateTx(function([vendingMachine,from]){
@@ -35,7 +36,7 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
 
-    console.log('===========getCupcakeStock=====================')
+    console.log('======start executing TXs calling getCupcakeStock======')
     tx = await vendingMachine.getCupcakeStock();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
@@ -46,7 +47,7 @@ async function main() {
       console.log('Test Failed');
     } 
 
-    console.log('===========getCupcakeBalances=====================')
+    console.log('======start executing TXs calling getCupcakeBalances======')
     for(i=1;i<=10;i++){
       tx = await vendingMachine.getCupcakeBalances(accounts[i].address);
       receipt=await tx.wait();

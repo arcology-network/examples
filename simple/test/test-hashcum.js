@@ -1,22 +1,19 @@
 const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
 const nets = require('../network.json');
-
 async function main() {
     accounts = await ethers.getSigners(); 
 
+    console.log('======start deploying contract======')
     const cum_factory = await ethers.getContractFactory("HashCum");
     const cum = await cum_factory.deploy();
     await cum.deployed();
     console.log(`Deployed HashCum Test at ${cum.address}`)
 
-    
     var txs=new Array();
     let i,tx,receipt;
 
-    
-
-    console.log('===========insert bat=====================')
+    console.log('======start executing TXs calling insert======')
     for(i=1;i<=3;i++){
       txs.push(frontendUtil.generateTx(function([cum,from,val]){
         return cum.insert(from.address,val, {
@@ -26,7 +23,7 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
 
-    console.log('===========get exist=====================')
+    console.log('======start executing TXs calling getBalance for exist======')
     tx = await cum.getBalance(accounts[0].address);
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
@@ -37,7 +34,7 @@ async function main() {
       console.log('Test Failed');
     }
 
-    console.log('===========get not exist=====================')
+    console.log('======start executing TXs calling getBalance for not exist======')
     tx = await cum.getBalance(accounts[1].address);
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
