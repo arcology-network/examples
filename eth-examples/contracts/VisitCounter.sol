@@ -10,7 +10,6 @@ contract VisitCounter {
     // A cumulative counter instance that allows concurrent increments
     // from multiple transactions without conflicts.   
     U256Cumulative totalVisit; 
-    
     event CounterQuery(uint256 value);
 
     constructor()  {
