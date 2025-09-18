@@ -40,5 +40,4 @@ contract ParallelCounter {
         emit CounterQuery(visitCount1.get(),visitCount2.get(),visitCount3.get());
         return iCount;
     }
-
 }
