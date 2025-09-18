@@ -38,12 +38,10 @@ contract ArrayClear {
         if(!isDeffered){
             counter.clear();
         }
-        // counter.push(params.seed); 
+
         counter.push(1);
         if(isDeffered){
             uint256 size=counter.fullLength();
-            emit Step(size);
-            emit Step(sum.get());
             for(uint i=0;i<size;i++){
                 sum.add(counter.get(i));
             }
