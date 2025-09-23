@@ -5,10 +5,10 @@ async function main() {
     accounts = await ethers.getSigners(); 
 
     console.log('======start deploying contract======')
-    const bt_factory = await ethers.getContractFactory("ArrayClear");
+    const bt_factory = await ethers.getContractFactory("DuoDeferred");
     const bt = await bt_factory.deploy();
     await bt.deployed();
-    console.log(`Deployed ArrayClear Test at ${bt.address}`)
+    console.log(`Deployed DuoDeferred Test at ${bt.address}`)
 
     let tx,receipt;
     console.log('======first bat,Failed one ,two generations ======')

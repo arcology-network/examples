@@ -6,40 +6,46 @@ import "@arcologynetwork/concurrentlib/lib/array/U256.sol";
 import "@arcologynetwork/concurrentlib/lib/runtime/Runtime.sol";
 import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
 
-
-// This simple contract counts the number of visits to the contract. It uses the Bool contract provided by the concurrentlib
-// to support concurrent writes to the contract.
-contract ArrayClear {
+// This simple contract counts the number of visits to the contract. It defers two functions pvisit and add.
+// When there are multiple concurrent calls to pvisit or add, one of the calls will be executed deferred to 
+// the second generation for post processing. The other calls will be executed in the first generation.
+contract DuoDeferred {
     struct ExactInputSingleParams {
         uint256 seed;
         uint256 sd;
-    }
+    } 
 
     U256 counter = new U256();
     U256 counterAdd = new U256();
+
     event CounterQuery(uint256 value);
+    event Step(uint256 step);
+    event StepBool(bool val);
 
     U256Cumulative sum=new U256Cumulative(0, 100); 
     uint64 gasused=100000;
 
+    // We inform the scheduler module that the pvisit and add functions will be deferred 
+    // to the next generation for post processing.
     constructor()  {
         Runtime.defer("pvisit((uint256,uint256))",gasused); 
         Runtime.defer("add(uint256)",gasused);                                                                                    
     }
-    event Step(uint256 step);
-    event StepBool(bool val);
 
     function pvisit(ExactInputSingleParams calldata params) public {
         bool isDeffered=Runtime.isInDeferred();
-        if(params.sd!=1){
+
+        if(params.sd!=1) {
             isDeffered=!isDeffered;
         }
         emit StepBool(isDeffered);
+
         if(!isDeffered){
             counter.clear();
         }
 
         counter.push(1);
+ 
         if(isDeffered){
             uint256 size=counter.fullLength();
             for(uint i=0;i<size;i++){

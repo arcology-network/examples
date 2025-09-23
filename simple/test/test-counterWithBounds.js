@@ -6,7 +6,7 @@ async function main() {
     accounts = await ethers.getSigners(); 
 
     console.log('======start deploying contract======')
-    const counter_factory = await ethers.getContractFactory("CounterWithBounds");
+    const counter_factory = await ethers.getContractFactory("BoundedCounter");
     const counter = await counter_factory.deploy();
     await counter.deployed();
     console.log(`Deployed Counter Test at ${counter.address}`)

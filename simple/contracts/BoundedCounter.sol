@@ -2,7 +2,10 @@
 pragma solidity >=0.7.0;
 import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
 
-contract CounterWithBounds {
+// A simple bounded counter that can be incremented and decremented concurrently.
+// The counter is bounded between 0 and 100. Any attempt to increment the counter
+// above 100 or decrement it below 0 will cause the transaction to revert.
+contract BoundedCounter {
     U256Cumulative sum=new U256Cumulative(0,100);
     event QueryBalance(uint256 val);
 
@@ -10,6 +13,7 @@ contract CounterWithBounds {
         sum.add(val);
         emit QueryBalance(sum.get());
     }
+
     function sub(uint256 val)public {  
         sum.sub(val);
         emit QueryBalance(sum.get());
