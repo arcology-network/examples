@@ -1,5 +1,6 @@
 const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
+const { expect } = require("chai");
 
 async function main() {
     accounts = await ethers.getSigners(); 
@@ -18,14 +19,7 @@ async function main() {
       },visitCounter,accounts[i]));
     }
     await frontendUtil.waitingTxs(txs);
-    
-    console.log('======start executing TXs calling getCounter======')
-    tx = await visitCounter.getCounter();
-    let receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    let hexStr=frontendUtil.parseEvent(receipt,"CounterQuery")
-    console.log(`Counter Data ${hexStr}`)
-    let transamt=BigInt(hexStr);
+    const transamt = BigInt(await visitCounter.iCount());
 
     console.log('======start executing TXs calling add======')
     var txs=new Array();
@@ -36,17 +30,8 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
     
-    console.log('======start executing TXs calling getCounter======')
-    tx = await visitCounter.getCounter();
-    receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    hexStr=frontendUtil.parseEvent(receipt,"CounterQuery")
-    console.log(`Counter Data ${hexStr}`)
-    if(transamt+BigInt(15)==BigInt(hexStr)){
-      console.log("Transaction is Successful");
-    }else{
-      console.log("Transaction is Failed");
-    }
+    expect(await visitCounter.iCount()).to.equal(transamt+BigInt(15));
+
   }
 
   // We recommend this pattern to be able to use async/await everywhere

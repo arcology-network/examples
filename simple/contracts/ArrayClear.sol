@@ -64,8 +64,7 @@ contract ArrayClear {
         }
     }
 
-    function getCounter() public returns(uint256){
-        emit CounterQuery(sum.get());
+    function getCounter() public view returns(uint256){
         return sum.get();
     }
 }

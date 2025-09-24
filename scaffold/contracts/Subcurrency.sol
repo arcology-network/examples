@@ -5,6 +5,7 @@
 
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.0;
+import "hardhat/console.sol";
 
 contract Coin {
     // The keyword "public" makes variables
@@ -44,8 +45,7 @@ contract Coin {
         emit Sent(msg.sender, receiver, amount);
     }
     
-    function getter(address sender) public returns(uint256) {
-        emit Balance(balances[sender]);
+    function getter(address sender) public view returns(uint256) {
         return balances[sender];
     }
 }

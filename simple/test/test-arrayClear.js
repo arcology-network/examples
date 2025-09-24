@@ -1,5 +1,6 @@
 const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util') 
+const { expect } = require("chai");
 
 async function main() {
     accounts = await ethers.getSigners(); 
@@ -22,17 +23,8 @@ async function main() {
       },bt,accounts[i],i));
     }
     await frontendUtil.waitingTxs(txs);
+    expect(await bt.getCounter()).to.equal(3);
 
-    console.log('======start executing TXs calling query counter======')
-    tx = await bt.getCounter();
-    receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
-    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000003"){
-      console.log('Test Successful');
-    }else{
-      console.log('Test Failed');
-    } 
 
     console.log('======start executing TXs calling pvisit second bat======')
     txs=new Array();
@@ -45,18 +37,8 @@ async function main() {
         return bt.connect(from).pvisit(params);
       },bt,accounts[i],i));
     }
-    await frontendUtil.waitingTxs(txs);
-    
-    console.log('======start executing TXs calling query counter======')
-    tx = await bt.getCounter();
-    receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
-    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000006"){
-      console.log('Test Successful');
-    }else{
-      console.log('Test Failed');
-    } 
+    await frontendUtil.waitingTxs(txs); 
+    expect(await bt.getCounter()).to.equal(6);
 
     console.log('======start executing TXs calling pvisit third bat======')
     txs=new Array();
@@ -80,21 +62,8 @@ async function main() {
     }
 
     await frontendUtil.waitingTxs(txs);
-    
-    console.log('======start executing TXs calling query counter======')
-    tx = await bt.getCounter();
-    receipt=await tx.wait();
-    // console.log(receipt);
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    let result=frontendUtil.parseEvent(receipt,"CounterQuery");
-    console.log(result)
-    if(result==="0x000000000000000000000000000000000000000000000000000000000000000d" 
-      || result==='0x0000000000000000000000000000000000000000000000000000000000000006'
-      || result==='0x0000000000000000000000000000000000000000000000000000000000000009'){
-      console.log('Test Successful');
-    }else{
-      console.log('Test Failed');
-    } 
+    const result = await bt.getCounter();
+    expect(result == 6 || result == 9 || result == 13).to.be.true;
   }
 
 

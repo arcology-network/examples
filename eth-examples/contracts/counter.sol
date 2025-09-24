@@ -2,8 +2,7 @@
 pragma solidity >=0.7.0;
 
 contract Counter {    
-    uint256 iCount;
-    event CounterQuery(uint256 value);
+    uint256 public iCount;
 
     constructor() {
         iCount = 0 ;
@@ -12,10 +11,4 @@ contract Counter {
     function add(uint256 value) public {
         iCount = iCount + value ;
     }
-
-    function getCounter() public returns(uint256){
-        emit CounterQuery(iCount);
-        return iCount;
-    }
-
 }

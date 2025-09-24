@@ -1,5 +1,6 @@
 const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util') 
+const { expect } = require("chai");
 
 async function main() {
     accounts = await ethers.getSigners(); 
@@ -28,17 +29,7 @@ async function main() {
       },bt,accounts[i],1));
     }
     await frontendUtil.waitingTxs(txs);
-
-    console.log('======start executing TXs calling getCounter======')
-    tx = await bt.getCounter();
-    receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
-    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000004"){
-      console.log('Test Successful');
-    }else{
-      console.log('Test Failed');
-    } 
+    expect(await bt.getCounter()).to.equal(4);
 
     console.log('====== second bat,four generations ======')
     //g1:3 g2:1 g3:3 g4:1
@@ -57,17 +48,7 @@ async function main() {
       },bt,accounts[i],1));
     }
     await frontendUtil.waitingTxs(txs);
-
-    console.log('======start executing TXs calling getCounter======')
-    tx = await bt.getCounter();
-    receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
-    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x000000000000000000000000000000000000000000000000000000000000000c"){
-      console.log('Test Successful');
-    }else{
-      console.log('Test Failed');
-    } 
+    expect(await bt.getCounter()).to.equal(12);
 
     console.log('====== third bat,four generations ======')
     //g1:1 g2:1 g3:1 g4:1
@@ -86,17 +67,7 @@ async function main() {
       },bt,accounts[i],1));
     }
     await frontendUtil.waitingTxs(txs);
-    
-    console.log('======start executing TXs calling getCounter======')
-    tx = await bt.getCounter();
-    receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
-    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000010"){
-      console.log('Test Successful');
-    }else{
-      console.log('Test Failed');
-    } 
+    expect(await bt.getCounter()).to.equal(16);
   }
 
 

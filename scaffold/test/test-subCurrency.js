@@ -1,5 +1,6 @@
 const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
+const { expect } = require("chai");
 
 async function main() {
     accounts = await ethers.getSigners(); 
@@ -10,7 +11,7 @@ async function main() {
     await coin.deployed();
     console.log(`Deployed SubCurrency at ${coin.address}`)
 
-    let receipt,i,txs; 
+    let receipt,i,txs;
 
     console.log('======start executing TXs calling mint======')
     txs=new Array();
@@ -21,12 +22,9 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
 
-    console.log('======start executing TXs calling query balance======')
+    const bals=[101,102,103,104,105,0,0,0,0,0];
     for(i=1;i<=10;i++){
-      tx = await coin.getter(accounts[i].address);
-      receipt=await tx.wait();
-      console.log(frontendUtil.parseEvent(receipt,"Balance"));
-      frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+      expect(await coin.getter(accounts[i].address)).to.equal(bals[i-1]);
     }
     
     console.log('======start executing TXs calling send======')
@@ -37,13 +35,9 @@ async function main() {
       },coin,accounts[i],accounts[i+5],100+i));
     }
     await frontendUtil.waitingTxs(txs);
-
-    console.log('======start executing TXs calling query balance======')
+    const bals2=[0,0,0,0,0,101,102,103,104,105];
     for(i=1;i<=10;i++){
-      tx = await coin.getter(accounts[i].address);
-      receipt=await tx.wait();
-      console.log(frontendUtil.parseEvent(receipt,"Balance"));
-      frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+      expect(await coin.getter(accounts[i].address)).to.equal(bals2[i-1]);
     }
   }
 
