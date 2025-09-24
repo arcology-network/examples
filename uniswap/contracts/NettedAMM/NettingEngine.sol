@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-pragma solidity =0.7.6;
+pragma solidity >=0.7.6;
 pragma abicoder v2;
 
 import '../UniswapV3Periphery/libraries/Path.sol';
@@ -9,7 +9,7 @@ import "@arcologynetwork/concurrentlib/lib/multiprocess/Multiprocess.sol";
 import "./interfaces/INetting.sol";
 import "./libraries/PoolLibrary.sol";
 import "./SwapRequestStore.sol";
-import "@arcologynetwork/concurrentlib/lib/shared/OrderedSet.sol";
+import "@arcologynetwork/concurrentlib/lib/orderedset/OrderedSet.sol";
 
 /**
  * @title NettingEngine

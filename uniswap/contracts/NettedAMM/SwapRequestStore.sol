@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity =0.7.6;
+pragma solidity >=0.7.6;
 pragma abicoder v2;
 
-import "@arcologynetwork/concurrentlib/lib/shared/Base.sol";
-import "@arcologynetwork/concurrentlib/lib/shared/Const.sol";
+import "@arcologynetwork/concurrentlib/lib/core/Primitive.sol";
+import "@arcologynetwork/concurrentlib/lib/core/Const.sol";
 import '../UniswapV3Periphery/libraries/Path.sol';
 import "./libraries/PriceLibrary.sol";
 
