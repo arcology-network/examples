@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.7.6;
+pragma solidity >=0.7.0;
 import "@arcologynetwork/concurrentlib/lib/map/HashU256Cum.sol";
 import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
 
