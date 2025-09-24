@@ -2,22 +2,25 @@
 # yarn lockfile v1
 
 
-"@arcologynetwork/concurrentlib@^2.1.26":
-  version "2.1.26"
-  resolved "https://registry.yarnpkg.com/@arcologynetwork/concurrentlib/-/concurrentlib-2.1.26.tgz#5c7d2fe454955a091f2c892416c4f5ccece3e41b"
-  integrity sha512-4UL+1oW8dc5hWN9LM1b9zLbfR8C2xSvjp+jYZAyb8MfXKGO+2GIBK01DV5LaeGBRmKYUGG3IsST4Me9WqMqohw==
+"@arcologynetwork/concurrentlib@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@arcologynetwork/concurrentlib/-/concurrentlib-2.2.0.tgz#57f374844749e7388fcb94740327f913cb828c8a"
+  integrity sha512-6CkO0bqgYK02UcaGB1E/y6IQ2K7TYNkNv1ZEwAATd1hY5HADiR4qajurV6FYYPPkKGH+Inh/sl0UL3Y4u+BwJw==
 
-"@arcologynetwork/frontend-tools@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/@arcologynetwork/frontend-tools/-/frontend-tools-1.0.3.tgz"
-  integrity sha512-EnUM/Wvbxdch6zk16dqY9hT2JLn8+mbq8nXfrBvuX6FJS4iXjEUSs69ApBJr8rndUzGicvO5BC71h6Vy/d4SKQ==
+"@arcologynetwork/frontend-tools@^1.0.11":
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/@arcologynetwork/frontend-tools/-/frontend-tools-1.0.11.tgz#12ae7247eb3e5e3652c99c1a697c5fd012a7fc5c"
+  integrity sha512-23qQ4aRyMy/J2JB0XxsR3QrjFSSaCUEWQP6TmOfJAlkA2e0nink23CcXSnT+ZA42VJ2WiTlV3GcuLgYWQTov7w==
   dependencies:
-    "@arcologynetwork/frontend-util" "^1.0.3"
+    "@arcologynetwork/frontend-util" "^1.0.8"
+    "@mahsumurebe/jrpc-client" "^2.2.0"
 
-"@arcologynetwork/frontend-util@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/@arcologynetwork/frontend-util/-/frontend-util-1.0.3.tgz"
-  integrity sha512-YIlSz5k2pc/tlM15G21Iq+bQpsv6RASWg8bMMw+zCPZeSYRVsN2ofoUpkhV+c8u+YCsfloMdUZf8WvwMi4J5wQ==
+"@arcologynetwork/frontend-util@^1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@arcologynetwork/frontend-util/-/frontend-util-1.0.8.tgz#30565f0e9c9809897ed034b7c7dccb0b89167b29"
+  integrity sha512-RQQvHI+0B4bFXeYqOuSe8K+i58jY8DTBpPzLL7mF5i6rGXJtGYLNcOpnbWnzbFOBoWWNy8HKfQUor4rVcq0a9g==
+  dependencies:
+    "@mahsumurebe/jrpc-client" "^2.2.0"
 
 "@ensdomains/ens@^0.4.4":
   version "0.4.5"
@@ -493,6 +496,15 @@
   integrity sha512-ajo/heTlG3QgC8EGP6APIejksVAYt4ayz4tqoP3MolFELzcH1x1fzwEYRJTPO0IELutZ5HQ0c26/GqAYy79u3g==
   dependencies:
     call-bind "^1.0.5"
+
+"@mahsumurebe/jrpc-client@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@mahsumurebe/jrpc-client/-/jrpc-client-2.2.0.tgz#839ca5afeafecef19ef3ab1a269e9e7e4d99e407"
+  integrity sha512-3+shBgsNtoLSsQx25d9bfWXHD5vw8dqp9vDKTam8rsqe1NYj1342YQ0PP9AhI1Tf+eJLtpjpC2bBKgf+v1aoGg==
+  dependencies:
+    debug "^4.3.4"
+    node-fetch "^2.6.7"
+    ws "^8.10.0"
 
 "@metamask/eth-sig-util@^4.0.0":
   version "4.0.1"
@@ -2767,6 +2779,13 @@ debug@^3.1.0:
   integrity sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==
   dependencies:
     ms "^2.1.1"
+
+debug@^4.3.4:
+  version "4.4.3"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.4.3.tgz#c6ae432d9bd9662582fce08709b038c58e9e3d6a"
+  integrity sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==
+  dependencies:
+    ms "^2.1.3"
 
 decamelize@^1.1.1:
   version "1.2.0"
@@ -5708,9 +5727,9 @@ ms@2.1.2:
   resolved "https://registry.npmjs.org/ms/-/ms-2.1.2.tgz"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-ms@2.1.3, ms@^2.1.1:
+ms@2.1.3, ms@^2.1.1, ms@^2.1.3:
   version "2.1.3"
-  resolved "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz"
+  resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
 multibase@^0.7.0:
@@ -6252,6 +6271,11 @@ process@^0.11.10:
   version "0.11.10"
   resolved "https://registry.npmjs.org/process/-/process-0.11.10.tgz"
   integrity sha512-cdGef/drWFoydD1JsMzuFf8100nZl+GT+yacc2bEced5f9Rjk4z+WtFUTBu9PhOi9j/jfmBPu0mMEY4wIdAF8A==
+
+progress@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
+  integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
 promise-to-callback@^1.0.0:
   version "1.0.0"
@@ -8459,6 +8483,11 @@ ws@^7.4.6:
   version "7.5.9"
   resolved "https://registry.npmjs.org/ws/-/ws-7.5.9.tgz"
   integrity sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==
+
+ws@^8.10.0:
+  version "8.18.3"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.18.3.tgz#b56b88abffde62791c639170400c93dcb0c95472"
+  integrity sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==
 
 xhr-request-promise@^0.1.2:
   version "0.1.3"
