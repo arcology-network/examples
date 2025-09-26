@@ -6,11 +6,12 @@ Arcology provides several concurrent examples to help you get started. These exa
 <h2> Prerequisites  <img align="center" height="25" src="./img/ruler.svg">  </h2>
 You need the following tools installed on your machine:
 
-- Node.js
-- npm
+- Node.js 20.x. or upper
 - Yarn
 - Git
 - Docker
+- vscode
+- Hardhat v2.x
 
 <h2> Minimum Hardware  <img align="center" height="25" src="./img/ruler.svg">  </h2>
 
@@ -22,9 +23,21 @@ You need the following tools installed on your machine:
 
 Creates env var ip for your machine’s local IP, here 192.168.1.109. Then start the Arcology DevNet Docker container, replacing the IP address with your **machine's local IP**.
 
+### Linux
 ```shell
- > ip=192.168.1.109
- > docker run -itd --name l1 -p 8545:8545 -p 26656:26656 -p 9191:9191 -p 9192:9192 -p 9292:9292 arcologynetwork/devnet -f http://$ip:7545 -b http://$ip:3500 -s http://$ip:8545 -r true -m false
+   localip=$(hostname -I | awk '{print $1}')
+   echo $localip
+```
+
+### MacOS
+```shell
+   localip=$(ipconfig getifaddr en0)
+   echo $localip
+```
+
+Download and start the DevNet docker image.
+```shell
+ docker run -itd --name l1 -p 8545:8545 -p 26656:26656 -p 9191:9191 -p 9192:9192 -p 9292:9292 arcologynetwork/devnet -f http://$localip:7545 -b http://$localip:3500 -s http://$localip:8545 -r true -m false
 ```
 
 You should see an output similar to this:
@@ -59,7 +72,7 @@ Check if your DevNet is running properly by using the `arcology.net-monitor` too
 
 ```shell
    > npm install -g @arcologynetwork/frontend-tools
-   > npx arcology.net-monitor http://$ip:8545
+   > npx arcology.net-monitor http://$localip:8545
 ```
 
 If the DevNet is running properly, you should see an output similar to this:
@@ -149,11 +162,11 @@ The file looks like this:
 >>    > git config --global url."https://github.com/".insteadOf ssh://git@github.com
 >> ```
 
-Run the test script inside the example folder (e.g. `scaffold/Like`):
+Run the test script inside the example folder (e.g. `scaffold`):
 
 ```shell
-  scaffold> yarn add --dev hardhat
-  scaffold> yarn hardhat run test/test-like.js --network TestnetInfo
+  yarn add --dev hardhat
+  yarn hardhat run test/test-like.js --network TestnetInfo
 ```
 											
 ## Benchmarking <img align="center" height="25" src="./img/running.svg"> 

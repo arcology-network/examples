@@ -9,7 +9,7 @@ import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
 
 // This simple contract counts the number of visits to the contract. It uses the Bool contract provided by the concurrentlib
 // to support concurrent writes to the contract.
-contract ArrayClear {
+contract DuoDeferred {
     struct ExactInputSingleParams {
         uint256 seed;
         uint256 sd;
@@ -19,9 +19,10 @@ contract ArrayClear {
     U256 counterAdd = new U256();
     event CounterQuery(uint256 value);
 
-    U256Cumulative sum=new U256Cumulative(0, 100); 
+    U256Cumulative sum=new U256Cumulative(0, 100); clear
     uint64 gasused=100000;
 
+    // Defer the pvisit function and the add function to be executed in the deferred phase.
     constructor()  {
         Runtime.defer("pvisit((uint256,uint256))",gasused); 
         Runtime.defer("add(uint256)",gasused);                                                                                    
