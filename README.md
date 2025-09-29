@@ -3,7 +3,7 @@
 Arcology provides several concurrent examples to help you get started. These examples demonstrate the basics of building concurrent applications on the Arcology Network using Arcology’s concurrent library.
 
 
-<h2> Prerequisites  <img align="center" height="25" src="./img/ruler.svg">  </h2>
+### Prerequisites
 You need the following tools installed on your machine:
 
 - Node.js 20.x. or upper
@@ -13,31 +13,37 @@ You need the following tools installed on your machine:
 - vscode
 - Hardhat v2.x
 
-<h2> Minimum Hardware  <img align="center" height="25" src="./img/ruler.svg">  </h2>
+### Minimum Hardware
 
 - 4 CPU cores
 - 16GB RAM
 - 100GB free disk space
-  
+
+### Benchmark Hardware
+
+- 32 CPU cores or upper
+- 256GB RAM or more
+- 1000GB(NVMe SSD) free disk space or more
+
 <h2> Set up the DevNet <img align="center" height="25" src="./img/cloud.svg">  </h2>
 
 Creates env var ip for your machine’s local IP, here 192.168.1.109. Then start the Arcology DevNet Docker container, replacing the IP address with your **machine's local IP**.
 
 ### Linux
 ```shell
-   localip=$(hostname -I | awk '{print $1}')
-   echo $localip
+localip=$(hostname -I | awk '{print $1}')
+echo $localip
 ```
 
 ### MacOS
 ```shell
-   localip=$(ipconfig getifaddr en0)
-   echo $localip
+localip=$(ipconfig getifaddr en0)
+echo $localip
 ```
 
 Download and start the DevNet docker image.
 ```shell
- docker run -itd --name l1 -p 8545:8545 -p 26656:26656 -p 9191:9191 -p 9192:9192 -p 9292:9292 arcologynetwork/devnet -f http://$localip:7545 -b http://$localip:3500 -s http://$localip:8545 -r true -m false
+docker run -itd --name l1 -p 8545:8545 -p 26656:26656 -p 9191:9191 -p 9192:9192 -p 9292:9292 arcologynetwork/devnet -f http://$localip:7545 -b http://$localip:3500 -s http://$localip:8545 -r true -m false
 ```
 
 You should see an output similar to this:
@@ -63,17 +69,21 @@ Status: Downloaded newer image for arcologynetwork/devnet:latest
 Check if the Docker container is running properly:
 
 ```shell
-   > docker ps
+docker ps
 ```
 
 ### Check the DevNet Status
 
-Check if your DevNet is running properly by using the `arcology.net-monitor` tool.
-
+Install the Arcology frontend tools globally:
 ```shell
-   > npm install -g @arcologynetwork/frontend-tools
-   > npx arcology.net-monitor http://$localip:8545
+npm install -g @arcologynetwork/frontend-tools
 ```
+
+Check if your DevNet is running properly by using the `arcology.net-monitor` tool.
+```shell
+npx arcology.net-monitor http://$localip:8545
+```
+
 
 If the DevNet is running properly, you should see an output similar to this:
 
@@ -89,7 +99,7 @@ height = 497, empty block, timestamp = 1757874740, maxTps = 0, realtimeTps(1m) =
 Pull the latest Arcology examples repository and install the Arcology frontend tools:
 
 ```shell   
-   > git clone --recurse-submodules https://github.com/arcology-network/examples.git
+git clone --recurse-submodules https://github.com/arcology-network/examples.git
 ```
 
 ### Structure:
@@ -159,14 +169,17 @@ The file looks like this:
 ### 2. Run the Test Script
 >> Optionally, you can avoid SSH authentication by configuring Git to use HTTPS instead of SSH:
 >> ```shell
->>    > git config --global url."https://github.com/".insteadOf ssh://git@github.com
+>> git config --global url."https://github.com/".insteadOf ssh://git@github.com
 >> ```
 
-Run the test script inside the example folder (e.g. `scaffold`):
+Run the test script **inside** the example folder (e.g. `scaffold`):
 
 ```shell
-  yarn add --dev hardhat
-  yarn hardhat run test/test-like.js --network TestnetInfo
+yarn add --dev hardhat@^2
+```
+
+```shell
+yarn hardhat run test/test-like.js --network TestnetInfo
 ```
 											
 ## Benchmarking <img align="center" height="25" src="./img/running.svg"> 
@@ -190,7 +203,7 @@ A transaction generation script located under each `/benchmark/<project>/`.
 Run the following script to generate transactions for the `Like` under `scaffold`:
 
 ```shell
-   scaffold> yarn hardhat run benchmark/like/gen-tx-like.js --network TestnetInfo
+yarn hardhat run benchmark/like/gen-tx-like.js --network TestnetInfo
 ```
 
 You should see an output similar to this:
@@ -218,7 +231,7 @@ Send the generated transactions to your local node in batch mode. Assuming your 
 >> The node IP isn't the same as your machine IP. 
 
 ```shell
-   npx arcology.net-tx-sender http://192.168.1.103:8545 benchmark/like/txs/like/
+npx arcology.net-tx-sender http://192.168.1.103:8545 benchmark/like/txs/like/
 ```  
 
 You should see an output similar to this:

@@ -8,7 +8,6 @@ import "hardhat/console.sol";
 // It supports concurrent calls to the like function is OK.
 contract Like {
     U256Cumulative likes = new U256Cumulative(0, type(uint256).max); // Using a commutative counter to store the number of likes. 
-    event CounterQuery(uint256 value);
 
     //Increments the number of likes by 1. Concurrent calls to this function is OK
     function like() public {
