@@ -175,11 +175,11 @@ The file looks like this:
 Run the test script **inside** the example folder (e.g. `scaffold`):
 
 ```shell
-yarn add --dev hardhat@^2
+npm install
 ```
 
 ```shell
-yarn hardhat run test/test-like.js --network TestnetInfo
+npx hardhat run test/test-like.js --network TestnetInfo
 ```
 											
 ## Benchmarking <img align="center" height="25" src="./img/running.svg"> 
@@ -203,7 +203,7 @@ A transaction generation script located under each `/benchmark/<project>/`.
 Run the following script to generate transactions for the `Like` under `scaffold`:
 
 ```shell
-yarn hardhat run benchmark/like/gen-tx-like.js --network TestnetInfo
+npx hardhat run benchmark/like/gen-tx-like.js --network TestnetInfo
 ```
 
 You should see an output similar to this:
