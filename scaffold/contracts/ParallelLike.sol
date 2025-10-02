@@ -2,20 +2,19 @@
 pragma solidity >=0.8.0;
 
 import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
-import "hardhat/console.sol";
 
 // This is a simple contract that allows users to like and retrieve the number of likes. 
 // It supports concurrent calls to the like function is OK.
 contract Like {
-    U256Cumulative likes = new U256Cumulative(0, type(uint256).max); // Using a commutative counter to store the number of likes. 
+    U256Cumulative total = new U256Cumulative(0, type(uint256).max); // Using a commutative counter to store the number of likes. 
 
-    //Increments the number of likes by 1. Concurrent calls to this function is OK
+    //Increments the number of total by 1. Concurrent calls to this function is OK
     function like() public {
-        likes.add(1);
+        total.add(1);
     } 
 
     //Returns the number of likes
-    function getLikes() public view returns(uint256){
-        return likes.get();
+    function getTotal() public view returns(uint256){
+        return total.get();
     }
 }

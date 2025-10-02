@@ -19,7 +19,7 @@ async function main() {
       },bt,accounts[i]));
     }
     await frontendUtil.waitingTxs(txs);
-    expect(await bt.getLikes()).to.equal(10);
+    expect(await bt.getTotal()).to.equal(10);
 
   }
 
