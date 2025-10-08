@@ -11,13 +11,15 @@ You need the following tools installed on your machine:
 - Git
 - Docker
 - vscode
-- Hardhat v2.x
+- Hardhat
 
 ### Minimum Hardware
 
 - 4 CPU cores
 - 16GB RAM
 - 100GB free disk space
+  
+>> 2 cores and 8 GB RAM are fine for development—just but not for benchmarking.
 
 ### Benchmark Hardware
 
