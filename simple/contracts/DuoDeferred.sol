@@ -19,7 +19,7 @@ contract DuoDeferred {
     U256 counterAdd = new U256();
     event CounterQuery(uint256 value);
 
-    U256Cumulative sum=new U256Cumulative(0, 100); clear
+    U256Cumulative sum=new U256Cumulative(0, 100); 
     uint64 gasused=100000;
 
     // Defer the pvisit function and the add function to be executed in the deferred phase.
