@@ -23,11 +23,10 @@ async function main() {
     tx = await bt.getCounter();
     const receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(frontendUtil.parseEvent(receipt,"CounterQuery"))
-    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x000000000000000000000000000000000000000000000000000000000000000a"){
-      console.log('Test Successful');
+    if(Number(frontendUtil.parseEvent(receipt,bt,"CounterQuery"))===10){
+      console.log("✅ Test Successful");
     }else{
-      console.log('Test Failed');
+      console.log("❌ Test Failed");
     } 
   }
 

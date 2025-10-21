@@ -27,18 +27,17 @@ async function main() {
     tx = await cum.getBalance(accounts[0].address);
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(frontendUtil.parseEvent(receipt,"QueryBalance"))
-    if(frontendUtil.parseEvent(receipt,"QueryBalance")==="0x0000000000000000000000000000000000000000000000000000000000000006"){
-      console.log('Test Successful');
+    if(Number(frontendUtil.parseEvent(receipt,cum,"QueryBalance"))===6){
+      console.log("✅ Test Successful");
     }else{
-      console.log('Test Failed');
+      console.log("❌ Test Failed");
     }
 
     console.log('======start executing TXs calling getBalance for not exist======')
     tx = await cum.getBalance(accounts[1].address);
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(frontendUtil.parseEvent(receipt,"QueryBalance"))
+    console.log(`Balance Data ${frontendUtil.parseEvent(receipt,cum,"QueryBalance")}`);
 }
 
 

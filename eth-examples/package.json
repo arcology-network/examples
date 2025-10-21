@@ -13,7 +13,7 @@
   "dependencies": {
     "@arcologynetwork/concurrentlib": "^2.2.0",
     "@arcologynetwork/frontend-tools": "^1.0.3",
-    "@arcologynetwork/frontend-util": "^1.0.3",
+    "@arcologynetwork/frontend-util": "^1.0.10",
     "dotenv": "^16.0.0"
   }
 }

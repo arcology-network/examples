@@ -24,11 +24,12 @@ async function main() {
     tx = await visitCounter.getCounter();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(`Visit counter Data ${frontendUtil.parseEvent(receipt,"CounterQuery")}`);
-    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x000000000000000000000000000000000000000000000000000000000000000a"){
-      console.log('Test Successful');
+    let total=frontendUtil.parseEvent(receipt,visitCounter,"CounterQuery");
+    console.log(`Visit counter Data ${total}`);
+    if(Number(total)===10){
+      console.log("✅ Test Successful");
     }else{
-      console.log('Test Failed');
+      console.log("❌ Test Failed");
     } 
 
     console.log('======start executing TXs calling visit again======')
@@ -44,14 +45,15 @@ async function main() {
     tx = await visitCounter.getCounter();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(`Visit counter Data ${frontendUtil.parseEvent(receipt,"CounterQuery")}`);
-    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000014"){
-      console.log('Test Successful');
+    total=frontendUtil.parseEvent(receipt,visitCounter,"CounterQuery");
+    console.log(`Visit counter Data ${total}`);
+    if(Number(total)===20){
+      console.log("✅ Test Successful");
     }else{
-      console.log('Test Failed');
+      console.log("❌ Test Failed");
     }
   }
-
+  
   // We recommend this pattern to be able to use async/await everywhere
   // and properly handle errors.
   main().catch((error) => {

@@ -31,12 +31,12 @@ async function main() {
     const tx = await lottery.whoWin();
     const receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    const hexStr=frontendUtil.parseEvent(receipt,"PrizeQuery");
-    console.log(`${frontendUtil.parseEvent(receipt,"PrizeAddressQiery")} finally won the prize ${hexStr}`)
-    if(hexStr==="0x000000000000000000000000000000000000000000000000009fdf42f6e48000"){
-      console.log('Test Successful');
+    const PrizeQuery=frontendUtil.parseEvent(receipt,lottery,"PrizeQuery");
+    console.log(`${frontendUtil.parseEvent(receipt,lottery,"PrizeAddressQuery")} finally won the prize ${PrizeQuery}`)
+    if(PrizeQuery+""==="45000000000000000"){
+      console.log("✅ Test Successful");
     }else{
-      console.log('Test Failed');
+      console.log("❌ Test Failed");
     }
   }
 

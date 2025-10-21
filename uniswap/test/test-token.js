@@ -27,12 +27,9 @@ async function main() {
 
   console.log('===========query balance=====================')
   for(i=0;i<=tokenCount;i++){
-    // balance = await tokenIns.balanceOf(accounts[i].address);
-    // console.log(`Balance of account ${accounts[i].address}: ${balance} token`);
-
     tx = await tokenIns.balanceOf(accounts[i].address);
     receipt=await tx.wait();
-    console.log(`Balance of account ${accounts[i].address}: ${BalanceOf(receipt)} token`);
+    console.log(`Balance of account ${accounts[i].address}: ${BalanceOf(tokenIns,receipt)} token`);
   }
 
   console.log('===========start approve token=====================')
@@ -56,11 +53,9 @@ async function main() {
   console.log('===========query balance=====================')
   let balances=[300,0,0,0]
   for(i=0;i<=tokenCount;i++){
-    // balance = await tokenIns.balanceOf(accounts[i].address);
-
     tx = await tokenIns.balanceOf(accounts[i].address);
     receipt=await tx.wait();
-    balance=BalanceOf(receipt);
+    balance=BalanceOf(tokenIns,receipt);
 
     if(balances[i]==balance)
       console.log(`Balance of account ${accounts[i].address}: ${balance} token , Successful`);
@@ -70,10 +65,8 @@ async function main() {
   
 }
 
-function BalanceOf(receipt){
-  let hexStr=frontendUtil.parseEvent(receipt,"BalanceQuery")
-  // console.log(`Balance of sneder ${hexStr}`)
-  return BigInt(hexStr); 
+function BalanceOf(contract,receipt){
+  return frontendUtil.parseEvent(receipt,contract,"BalanceQuery")
 }
 
 main()

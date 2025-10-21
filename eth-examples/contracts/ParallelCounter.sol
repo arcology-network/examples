@@ -9,7 +9,7 @@ contract ParallelCounter {
     U256Cumulative visitCount3;
     uint256 iCount;
 
-    event CounterQuery(uint256 value1,uint256 value2,uint256 value3);
+    event CounterQuery(uint256 value);
 
     constructor() {
         visitCount1 = new U256Cumulative(0, 1000000) ;
@@ -36,8 +36,13 @@ contract ParallelCounter {
     }
 
 
-    function getCounter() public returns(uint256){
-        emit CounterQuery(visitCount1.get(),visitCount2.get(),visitCount3.get());
+    function getCounter(uint256 mod) public returns(uint256){
+        if(mod==1)
+            emit CounterQuery(visitCount1.get());
+        else if(mod==2)
+            emit CounterQuery(visitCount2.get());
+        else if(mod==3)
+            emit CounterQuery(visitCount3.get());
         return iCount;
     }
 }

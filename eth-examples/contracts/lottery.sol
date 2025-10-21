@@ -12,7 +12,7 @@ contract EduLottery {
     // error InsufficientFee(uint256 sent, uint256 required);
     // error NoPlayers();
     event PrizeQuery(uint256 val);
-    event PrizeAddressQiery(address addr);
+    event PrizeAddressQuery(address addr);
 
     address winner;
     uint256 prize;
@@ -68,6 +68,6 @@ contract EduLottery {
 
     function whoWin() external {
         emit PrizeQuery(prize);
-        emit PrizeAddressQiery(winner);
+        emit PrizeAddressQuery(winner);
     }
 }

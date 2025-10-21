@@ -26,14 +26,14 @@ async function main() {
       let receipt
       await tx.wait()
       .then((rect) => {
-          console.log("the transaction was successful")
+          console.log("✅ The transaction was successful")
           receipt=rect;
       })
       .catch((error) => {
           receipt = error.receipt
       })
       frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-      if(frontendUtil.parseEvent(receipt,"AuctionEndCompleted")==="0x0000000000000000000000000000000000000000000000000000000000000001"){
+      if(Number(frontendUtil.parseEvent(receipt,auction,"AuctionEndCompleted"))===1){
         break;
       }
     }

@@ -20,11 +20,10 @@ async function main() {
     await frontendUtil.waitingTxs(txs);
     
     console.log('======start executing TXs calling getCounter======')
-    tx = await pcounter.getCounter();
+    tx = await pcounter.getCounter(1);
     let receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-
-    console.log(`Counter Data ${frontendUtil.parseEvent(receipt,"CounterQuery")}`)
+    console.log(`Counter Data ${frontendUtil.parseEvent(receipt,pcounter,"CounterQuery")}`)
     
     console.log('======start executing TXs calling reset======')
     tx = await pcounter.reset();
@@ -46,14 +45,26 @@ async function main() {
     await frontendUtil.waitingTxs(txs);
     
     console.log('======start executing TXs calling getCounter======')
-    tx = await pcounter.getCounter();
+    tx = await pcounter.getCounter(1);
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(`Counter Data ${frontendUtil.parseEvent(receipt,"CounterQuery")}`)
-    if(frontendUtil.parseEvent(receipt,"CounterQuery")==="0x0000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000007"){
-      console.log('Test Successful');
+    const num1=Number(frontendUtil.parseEvent(receipt,pcounter,"CounterQuery"));
+
+    tx = await pcounter.getCounter(2);
+    receipt=await tx.wait();
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    const num2=Number(frontendUtil.parseEvent(receipt,pcounter,"CounterQuery"));
+
+    tx = await pcounter.getCounter(3);
+    receipt=await tx.wait();
+    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    const num3=Number(frontendUtil.parseEvent(receipt,pcounter,"CounterQuery"));
+
+    console.log(`Counter Data ${num1},${num2},${num3}`)
+    if(num1===3 && num2===10 && num3===7){
+      console.log("✅ Test Successful");
     }else{
-      console.log('Test Failed');
+      console.log("❌ Test Failed");
     }
   }
 

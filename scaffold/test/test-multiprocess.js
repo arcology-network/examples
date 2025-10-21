@@ -17,33 +17,30 @@ async function main() {
     tx = await mmp.add(5,2);
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(frontendUtil.parseEvent(receipt,"QueryBalance"))
-    if(frontendUtil.parseEvent(receipt,"QueryBalance")==="0x000000000000000000000000000000000000000000000000000000000000000a"){
-      console.log('Test Successful');
+    if(Number(frontendUtil.parseEvent(receipt,mmp,"QueryBalance"))===10){
+      console.log("✅ Test Successful");
     }else{
-      console.log('Test Failed');
+      console.log("❌ Test Failed");
     } 
 
     console.log('======start executing TXs calling reset======')
     tx = await mmp.reset();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(frontendUtil.parseEvent(receipt,"QueryBalance"))
-    if(frontendUtil.parseEvent(receipt,"QueryBalance")==="0x0000000000000000000000000000000000000000000000000000000000000000"){
-      console.log('Test Successful');
+    if(Number(frontendUtil.parseEvent(receipt,mmp,"QueryBalance"))===0){
+      console.log("✅ Test Successful");
     }else{
-      console.log('Test Failed');
+      console.log("❌ Test Failed");
     } 
 
     console.log('======start executing TXs calling add======')
     tx = await mmp.add(4,3);
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(frontendUtil.parseEvent(receipt,"QueryBalance"))
-    if(frontendUtil.parseEvent(receipt,"QueryBalance")==="0x000000000000000000000000000000000000000000000000000000000000000c"){
-      console.log('Test Successful');
+    if(Number(frontendUtil.parseEvent(receipt,mmp,"QueryBalance"))===12){
+      console.log("✅ Test Successful");
     }else{
-      console.log('Test Failed');
+      console.log("❌ Test Failed");
     } 
 }
 

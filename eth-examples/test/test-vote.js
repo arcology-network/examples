@@ -48,7 +48,7 @@ async function main() {
     const tx = await vote.winningProposal();
     const receipt = await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log("Winner Data:"+frontendUtil.parseEvent(receipt,"Winner"));
+    console.log(`Winner Data: ${frontendUtil.parseEvent(receipt,vote,"Winner")}`);
   }
 
   // We recommend this pattern to be able to use async/await everywhere

@@ -45,9 +45,7 @@ async function main() {
       receipt = await tx.wait();
       // console.log(receipt);
       frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-      PoolCreatedDate=frontendUtil.parseEvent(receipt,"PoolCreated");
-      strlen=PoolCreatedDate.length;
-      poolAddress='0x'+PoolCreatedDate.substring(strlen-40,strlen);
+      poolAddress=parseEvent(receipt,swapfactory,"PoolCreated");
       console.log(`UniswapV3Pool created at ${poolAddress}, token${i}<--->>token${i+1} fee:${fee}`);
       poolAdrArray.push(poolAddress); 
   }
@@ -58,7 +56,6 @@ async function main() {
       receipt = await tx.wait();
       frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
       console.log(`Init UniswapV3Pool at ${poolAdrArray[i]} in nettingEngine`);
-      // console.log(frontendUtil.parseEvent(receipt,"createPoolInited"));
   }
 
   console.log('===========start initialize UniswapV3Pool=====================')
@@ -295,82 +292,30 @@ async function main() {
       }
       console.log(`create swap txs : ${(i+1)*accounts.length} `);
     }
-    
   }
-  
-  
-}
-async function generateTx(fn,...args){
-  const tx = await fn(args);
-  let receipt; //=await tx.wait();
-
-  await tx.wait()
-  .then((rect) => {
-      // console.log("the transaction was successful")
-      receipt=rect;
-  })
-  .catch((error) => {
-      receipt = error.receipt
-      // console.log(error)
-  })
-
-  return new Promise((resolve, reject) => {  
-    resolve(receipt)
-  })
 }
 
-/**
- * Waits for multiple transactions to complete and shows the results.
- * @param {Array<Promise>} txs - An array of transaction promises.
- */
-async function waitingTxs(txs){
-  await Promise.all(txs).then((values) => {
-    values.forEach((item,idx) => {
-      showResult(parseReceipt(item))
-      console.log(item)
-    })
-  }).catch((error)=>{
-    console.log(error)
-  })
-}
-
-/**
- * Parses a transaction receipt and extracts the status and block height.
- * @param {Object} receipt - The transaction receipt object.
- * @returns {Object} - An object containing the status and height of the transaction.
- */
-function parseReceipt(receipt){
-  if(receipt.hasOwnProperty("status")){
-      return {status:receipt.status,height:receipt.blockNumber}
-  }
-  return {status:"",height:""}
-}
-
-/**
- * Displays the status and height of a transaction.
- * @param {Object} result - The result object containing the status and height.
- */
-function showResult(result){
-  console.log(`Tx Status:${result.status} Height:${result.height}`)
-}
-
-/**
- * Parses an event from a transaction receipt.
- * @param {Object} receipt - The transaction receipt object.
- * @param {string} eventName - The name of the event to parse.
- * @returns {Object|string} - The data of the event if found, otherwise an empty string.
- */
-function parseEvent(receipt,eventName){
+function parseEvent(receipt,contract,eventName){
   if(receipt.hasOwnProperty("status")&&receipt.status==1){
-      for(i=0;i<receipt.events.length;i++){
-          if(receipt.events[i].event===eventName){
-              return receipt.events[i].data;
-          } 
+    for (const log of receipt.logs) {
+      try {
+        const parsed = contract.interface.parseLog(log);
+        if(eventName===parsed.name){
+          idx=0;
+          for(const arg of parsed.args){
+              if(idx===4){
+                return arg;
+              }
+              idx=idx+1;
+          }
+        }
+      } catch (e) {
+        console.log(e);
       }
+    }
   }
   return "";
 }
-
 
 async function swap(tokenA,tokenB,fee,from,amountIn,nettingEngine,isExecute){
   const params = {
@@ -424,16 +369,13 @@ function getLiquidityParams(tokenInsA,tokenInsB,amountA,amountB){
 
   return [token0,token1,amount0Desired,amount1Desired]
 }
-function BalanceOf(receipt){
-  let hexStr=frontendUtil.parseEvent(receipt,"BalanceQuery")
-  return BigInt(hexStr); 
-}
+
 
 async function getBalance(token,account,tokenIdx){
   const decimals=18;
   let tx = await token.balanceOf(account.address);
   let receipt=await tx.wait();
-  let balance=BalanceOf(receipt);
+  let balance=BigInt(frontendUtil.parseEvent(receipt,token,"BalanceQuery"));
   formattedBalance = ethers.utils.formatUnits(balance, decimals);
   console.log(`Balance of account ${account.address}: ${formattedBalance} token${tokenIdx}`);
 }
@@ -518,8 +460,6 @@ async function deployBaseContract(){
   
   return [swapfactory,nonfungiblePositionManager,router,nettingEngine]
 }
-
-
 
 async function writePreSignedTxFile(txfile,signer,tx){
   const fulltx=await signer.populateTransaction(tx)

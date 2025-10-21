@@ -16,10 +16,9 @@ async function main() {
     let tx = await transferTest.getBalance();
     let receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,"BalanceEvent")}`)
-    let hexStr=frontendUtil.parseEvent(receipt,"Balance2Event")
-    console.log(`Balance of sneder ${hexStr}`)
-    let first = BigInt(hexStr); 
+    console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,transferTest,"BalanceEvent")}`)
+    let first=frontendUtil.parseEvent(receipt,transferTest,"Balance2Event")
+    console.log(`Balance of sneder ${first}`)
     let gasused0=BigInt(receipt.gasUsed)*gasprice;
     console.log(`GasUsed : ${receipt.gasUsed}`)
 
@@ -27,9 +26,8 @@ async function main() {
     tx = await transferTest.transferToContract({value:10});
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    hexStr=frontendUtil.parseEvent(receipt,"TransferEvent");
-    let transamt=BigInt(hexStr);
-    console.log(`Transfer to contract ${hexStr}`)
+    let transamt=frontendUtil.parseEvent(receipt,transferTest,"TransferEvent");
+    console.log(`Transfer to contract ${transamt}`)
     let gasused1=BigInt(receipt.gasUsed)*gasprice;
     console.log(`GasUsed : ${receipt.gasUsed}`)
 
@@ -37,17 +35,15 @@ async function main() {
     tx = await transferTest.getBalance();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,"BalanceEvent")}`)
-    hexStr=frontendUtil.parseEvent(receipt,"Balance2Event");
-    console.log(`Balance of sneder ${hexStr}`)
-    let balance=BigInt(hexStr);
+    console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,transferTest,"BalanceEvent")}`)
+    let balance=frontendUtil.parseEvent(receipt,transferTest,"Balance2Event");
     console.log(`GasUsed : ${receipt.gasUsed}`)
 
     console.log('======start checking balance======')
-    if(first-gasused0-transamt-gasused1==balance){
-      console.log("Transfer Successful");
+    if(BigInt(first)-gasused0-BigInt(transamt)-gasused1==balance){
+      console.log("✅ Test Successful");
     }else{
-      console.log("Transfer Failed");
+      console.log("❌ Test Failed");
     }
 
     console.log('======start executing TXs calling transferToContract,but it will be failed======')
@@ -67,8 +63,8 @@ async function main() {
     tx = await transferTest.getBalance();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,"BalanceEvent")}`)
-    console.log(`Balance of sneder ${frontendUtil.parseEvent(receipt,"Balance2Event")}`)
+    console.log(`Balance of contract ${frontendUtil.parseEvent(receipt,transferTest,"BalanceEvent")}`)
+    console.log(`Balance of sneder ${frontendUtil.parseEvent(receipt,transferTest,"Balance2Event")}`)
     console.log(`GasUsed : ${receipt.gasUsed}`)
   }
 

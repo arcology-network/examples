@@ -29,7 +29,6 @@ async function main() {
       },visitCounter,accounts[i]));
     }
     await frontendUtil.waitingTxs(txs);
-    
     expect(await visitCounter.iCount()).to.equal(transamt+BigInt(15));
 
   }

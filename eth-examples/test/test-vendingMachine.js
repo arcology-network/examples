@@ -20,11 +20,11 @@ async function main() {
     tx = await vendingMachine.getCupcakeStock();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(`vendingMachine balance Data ${frontendUtil.parseEvent(receipt,"BalanceQuery")}`);
-    if(frontendUtil.parseEvent(receipt,"BalanceQuery")==="0x0000000000000000000000000000000000000000000000000000000000000064"){
-      console.log('Test Successful');
+    console.log(`vendingMachine balance Data ${frontendUtil.parseEvent(receipt,vendingMachine,"BalanceQuery")}`);
+    if(Number(frontendUtil.parseEvent(receipt,vendingMachine,"BalanceQuery"))===100){
+      console.log("✅ Test Successful");
     }else{
-      console.log('Test Failed');
+      console.log("❌ Test Failed");
     } 
 
     console.log('======start executing TXs calling purchase======')
@@ -40,20 +40,19 @@ async function main() {
     tx = await vendingMachine.getCupcakeStock();
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    console.log(`vendingMachine balance Data ${frontendUtil.parseEvent(receipt,"BalanceQuery")}`);
-    if(frontendUtil.parseEvent(receipt,"BalanceQuery")==="0x000000000000000000000000000000000000000000000000000000000000002d"){
-      console.log('Test Successful');
+    console.log(`vendingMachine balance Data ${frontendUtil.parseEvent(receipt,vendingMachine,"BalanceQuery")}`);
+    if(Number(frontendUtil.parseEvent(receipt,vendingMachine,"BalanceQuery"))===45){
+      console.log("✅ Test Successful");
     }else{
-      console.log('Test Failed');
+      console.log("❌ Test Failed");
     } 
 
     console.log('======start executing TXs calling getCupcakeBalances======')
     for(i=1;i<=10;i++){
       tx = await vendingMachine.getCupcakeBalances(accounts[i].address);
       receipt=await tx.wait();
-      console.log(frontendUtil.parseEvent(receipt,"BalanceQuery"));
       frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-      console.log(`vendingMachine balance Data ${frontendUtil.parseEvent(receipt,"BalanceQuery")}`);
+      console.log(`vendingMachine balance Data ${frontendUtil.parseEvent(receipt,vendingMachine,"BalanceQuery")}`);
     }
   }
 

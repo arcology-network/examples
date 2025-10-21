@@ -25,7 +25,7 @@ async function main() {
     for(i=1;i<=10;i++){
       tx = await coin.getter(accounts[i].address);
       receipt=await tx.wait();
-      console.log(frontendUtil.parseEvent(receipt,"Balance"));
+      console.log(`Balance Data ${frontendUtil.parseEvent(receipt,coin,"Balance")}`);
       frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     }
     
@@ -42,7 +42,7 @@ async function main() {
     for(i=1;i<=10;i++){
       tx = await coin.getter(accounts[i].address);
       receipt=await tx.wait();
-      console.log(frontendUtil.parseEvent(receipt,"Balance"));
+      console.log(`Balance Data ${frontendUtil.parseEvent(receipt,coin,"Balance")}`);
       frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     }
   }
