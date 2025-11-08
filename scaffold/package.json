@@ -12,9 +12,10 @@
   },
   "dependencies": {
     "@arcologynetwork/concurrentlib": "^2.2.0",
-    "@arcologynetwork/frontend-tools": "^1.0.11",
-    "@arcologynetwork/frontend-util": "^1.0.10",
+    "@arcologynetwork/frontend-tools": "^1.0.13",
+    "@arcologynetwork/frontend-util": "^1.0.11",
     "dotenv": "^16.0.0",
+    "node-fetch": "^3.3.2",
     "progress": "^2.0.3"
   }
 }
