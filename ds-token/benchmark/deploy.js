@@ -1,6 +1,5 @@
 const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util') 
-const nets = require('../network.json');
 
 /**
  * Creates transactions for minting and transferring tokens using the DSToken contract.

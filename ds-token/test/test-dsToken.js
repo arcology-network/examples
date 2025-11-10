@@ -1,7 +1,9 @@
 const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util') 
+const { expect } = require("chai");
 
 async function main() {
+    
     accounts = await ethers.getSigners(); 
 
     const token_factory = await ethers.getContractFactory("DSToken");
@@ -20,12 +22,11 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
 
-    console.log('===========balance=====================')
-    for(i=1;i<=8;i++){
+    let expectedBalances1 = [101, 102, 103, 104, 105, 106, 107, 108];
+    for (let i = 1; i <= 8; i++) {
       tx = await dstoken.balance(accounts[i].address);
       receipt=await tx.wait();
-      console.log(`Balance Data ${frontendUtil.parseEvent(receipt,dstoken,"Balance")}`);
-      frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+      expect(Number(frontendUtil.parseEvent(receipt,dstoken,"Balance"))).to.equal(expectedBalances1[i - 1]);
     }
 
     console.log('===========transfer=====================')
@@ -37,12 +38,11 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
 
-    console.log('===========balance=====================')
-    for(i=1;i<=8;i++){
+    let expectedBalances2 = [0, 0, 0, 0, 206, 208, 210, 212];
+    for (let i = 1; i <= 8; i++) {
       tx = await dstoken.balance(accounts[i].address);
       receipt=await tx.wait();
-      console.log(`Balance Data ${frontendUtil.parseEvent(receipt,dstoken,"Balance")}`);
-      frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+      expect(Number(frontendUtil.parseEvent(receipt,dstoken,"Balance"))).to.equal(expectedBalances2[i - 1]);
     }
     
     console.log('===========approve=====================')
@@ -72,17 +72,10 @@ async function main() {
       },dstoken,accounts[i],50));
     }
     await frontendUtil.waitingTxs(txs);
-    
 
-    console.log('===========balance=====================')
     tx = await dstoken.balance(accounts[1].address);
     receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    if(Number(frontendUtil.parseEvent(receipt,dstoken,"Balance"))===50){
-      console.log("✅ Test Successful");
-    }else{
-      console.log("❌ Test Failed");
-    }
+    expect(Number(frontendUtil.parseEvent(receipt,dstoken,"Balance"))).to.equal(50);
 
     console.log('===========transfer=====================')
     txs=new Array();
@@ -93,15 +86,9 @@ async function main() {
     }
     await frontendUtil.waitingTxs(txs);
 
-    console.log('===========balance=====================')
     tx = await dstoken.balance(accounts[1].address);
     receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    if(Number(frontendUtil.parseEvent(receipt,dstoken,"Balance"))===30){
-      console.log("✅ Test Successful");
-    }else{
-      console.log("❌ Test Failed");
-    }
+    expect(Number(frontendUtil.parseEvent(receipt,dstoken,"Balance"))).to.equal(30);
   }
 
   // We recommend this pattern to be able to use async/await everywhere

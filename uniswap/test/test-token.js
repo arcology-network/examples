@@ -1,6 +1,6 @@
 const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
-const nets = require('../network.json');
+const { expect } = require("chai");
 
 async function main() {
   
@@ -25,11 +25,11 @@ async function main() {
   }
   await frontendUtil.waitingTxs(txs);
 
-  console.log('===========query balance=====================')
+  let bals=[0,100,100,100];
   for(i=0;i<=tokenCount;i++){
     tx = await tokenIns.balanceOf(accounts[i].address);
     receipt=await tx.wait();
-    console.log(`Balance of account ${accounts[i].address}: ${BalanceOf(tokenIns,receipt)} token`);
+    expect(BalanceOf(tokenIns,receipt)).to.equal(bals[i]);
   }
 
   console.log('===========start approve token=====================')
@@ -50,17 +50,11 @@ async function main() {
   }
   await frontendUtil.waitingTxs(txs);
 
-  console.log('===========query balance=====================')
-  let balances=[300,0,0,0]
+  bals=[300,0,0,0];
   for(i=0;i<=tokenCount;i++){
     tx = await tokenIns.balanceOf(accounts[i].address);
     receipt=await tx.wait();
-    balance=BalanceOf(tokenIns,receipt);
-
-    if(balances[i]==balance)
-      console.log(`Balance of account ${accounts[i].address}: ${balance} token , Successful`);
-    else
-      console.log(`Balance of account ${accounts[i].address}: ${balance} token , Failed`);
+    expect(BalanceOf(tokenIns,receipt)).to.equal(bals[i]);
   }
   
 }

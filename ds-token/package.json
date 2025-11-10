@@ -10,10 +10,13 @@
     "hardhat": "^2.8.4",
     "web3": "^1.10.4"
   },
+  "scripts": {
+    "test:serial": "for f in test/*.*js; do npx hardhat run $f --network TestnetInfo 2>&1 | grep -v 'Nothing to compile'  ; echo $f 'test completed'  || exit 1; done"
+  },
   "dependencies": {
     "@arcologynetwork/concurrentlib": "^2.2.0",
-    "@arcologynetwork/frontend-tools": "^1.0.3",
-    "@arcologynetwork/frontend-util": "^1.0.10",
+    "@arcologynetwork/frontend-tools": "^1.0.12",
+    "@arcologynetwork/frontend-util": "^1.0.11",
     "dotenv": "^16.0.0"
   }
 }

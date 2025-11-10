@@ -63,6 +63,7 @@ async function main() {
 
     await frontendUtil.waitingTxs(txs);
     const result = await bt.getCounter();
+    console.log(result);
     expect(result == 6 || result == 9 || result == 13).to.be.true;
   }
 

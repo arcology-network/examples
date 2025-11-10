@@ -1,7 +1,7 @@
 // require("@nomiclabs/hardhat-web3");
 const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
-
+const { expect } = require("chai");
 
 async function main() { 
     accounts = await ethers.getSigners(); 
@@ -33,11 +33,7 @@ async function main() {
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     const PrizeQuery=frontendUtil.parseEvent(receipt,lottery,"PrizeQuery");
     console.log(`${frontendUtil.parseEvent(receipt,lottery,"PrizeAddressQuery")} finally won the prize ${PrizeQuery}`)
-    if(PrizeQuery+""==="45000000000000000"){
-      console.log("✅ Test Successful");
-    }else{
-      console.log("❌ Test Failed");
-    }
+    expect(PrizeQuery+"").to.equal("45000000000000000");
   }
 
   // We recommend this pattern to be able to use async/await everywhere

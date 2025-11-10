@@ -9,10 +9,13 @@
     "ethers": "^5.6.9",
     "hardhat": "^2.9.9"
   },
+  "scripts": {
+    "test:serial": "for f in test/*.js; do npx hardhat run $f --network TestnetInfo 2>&1 | grep -v 'Nothing to compile' ; echo $f 'test completed' || exit 1; done"
+  },
   "dependencies": {
     "@arcologynetwork/concurrentlib": "^2.2.0",
-    "@arcologynetwork/frontend-tools": "^1.0.9",
-    "@arcologynetwork/frontend-util": "^1.0.10",
+    "@arcologynetwork/frontend-tools": "^1.0.12",
+    "@arcologynetwork/frontend-util": "^1.0.11",
     "@ethereumjs/common": "^4.4.0",
     "@openzeppelin/contracts": "3.4.2-solc-0.7",
     "@uniswap/lib": "^4.0.1-alpha",

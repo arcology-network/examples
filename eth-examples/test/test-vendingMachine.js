@@ -1,5 +1,6 @@
 const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
+const { expect } = require("chai");
 
 async function main() {
     accounts = await ethers.getSigners(); 
@@ -21,11 +22,13 @@ async function main() {
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(`vendingMachine balance Data ${frontendUtil.parseEvent(receipt,vendingMachine,"BalanceQuery")}`);
-    if(Number(frontendUtil.parseEvent(receipt,vendingMachine,"BalanceQuery"))===100){
-      console.log("✅ Test Successful");
-    }else{
-      console.log("❌ Test Failed");
-    } 
+    expect(Number(frontendUtil.parseEvent(receipt,vendingMachine,"BalanceQuery"))).to.equal(100);
+
+    // if(Number(frontendUtil.parseEvent(receipt,vendingMachine,"BalanceQuery"))===100){
+    //   console.log("✅ Test Successful");
+    // }else{
+    //   console.log("❌ Test Failed");
+    // } 
 
     console.log('======start executing TXs calling purchase======')
     txs=new Array();
@@ -41,19 +44,15 @@ async function main() {
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
     console.log(`vendingMachine balance Data ${frontendUtil.parseEvent(receipt,vendingMachine,"BalanceQuery")}`);
-    if(Number(frontendUtil.parseEvent(receipt,vendingMachine,"BalanceQuery"))===45){
-      console.log("✅ Test Successful");
-    }else{
-      console.log("❌ Test Failed");
-    } 
+    expect(Number(frontendUtil.parseEvent(receipt,vendingMachine,"BalanceQuery"))).to.equal(45);
 
-    console.log('======start executing TXs calling getCupcakeBalances======')
-    for(i=1;i<=10;i++){
+    let expectedBalances1 = [1, 2, 3, 4, 5, 6, 7, 8,9,10];
+    for (let i = 1; i <= 10; i++) {
       tx = await vendingMachine.getCupcakeBalances(accounts[i].address);
       receipt=await tx.wait();
-      frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-      console.log(`vendingMachine balance Data ${frontendUtil.parseEvent(receipt,vendingMachine,"BalanceQuery")}`);
+      expect(Number(frontendUtil.parseEvent(receipt,vendingMachine,"BalanceQuery"))).to.equal(expectedBalances1[i - 1]);
     }
+
   }
 
   // We recommend this pattern to be able to use async/await everywhere

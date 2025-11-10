@@ -1,6 +1,7 @@
 const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
-const nets = require('../network.json');
+const { expect } = require("chai");
+
 async function main() {
     accounts = await ethers.getSigners(); 
 
@@ -26,12 +27,7 @@ async function main() {
     console.log('======start executing TXs calling getBalance for exist======')
     tx = await cum.getBalance(accounts[0].address);
     receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    if(Number(frontendUtil.parseEvent(receipt,cum,"QueryBalance"))===6){
-      console.log("✅ Test Successful");
-    }else{
-      console.log("❌ Test Failed");
-    }
+    expect(Number(frontendUtil.parseEvent(receipt,cum,"QueryBalance"))).to.equal(6);
 
     console.log('======start executing TXs calling getBalance for not exist======')
     tx = await cum.getBalance(accounts[1].address);

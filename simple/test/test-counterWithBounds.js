@@ -1,6 +1,6 @@
 const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
-const nets = require('../network.json');
+const { expect } = require("chai");
 
 async function main() {
     accounts = await ethers.getSigners(); 
@@ -18,31 +18,19 @@ async function main() {
     tx = await counter.add(10);
     receipt=await tx.wait();
     frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    if(Number(frontendUtil.parseEvent(receipt,counter,"QueryBalance"))===10){
-      console.log("✅ Test Successful");
-    }else{
-      console.log("❌ Test Failed");
-    }
+    expect(Number(frontendUtil.parseEvent(receipt,counter,"QueryBalance"))).to.equal(10);
 
     console.log('======start executing TXs calling sub======')
     tx = await counter.sub(5);
     receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    if(Number(frontendUtil.parseEvent(receipt,counter,"QueryBalance"))===5){
-      console.log("✅ Test Successful");
-    }else{
-      console.log("❌ Test Failed");
-    }
+    expect(Number(frontendUtil.parseEvent(receipt,counter,"QueryBalance"))).to.equal(5);
+
 
     console.log('======start executing TXs calling reset======')
     tx = await counter.reset();
     receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    if(Number(frontendUtil.parseEvent(receipt,counter,"QueryBalance"))===0){
-      console.log("✅ Test Successful");
-    }else{
-      console.log("❌ Test Failed");
-    }
+    expect(Number(frontendUtil.parseEvent(receipt,counter,"QueryBalance"))).to.equal(0);
+   
 }
 
   // We recommend this pattern to be able to use async/await everywhere

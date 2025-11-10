@@ -1,5 +1,6 @@
 const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
+const { expect } = require("chai");
 
 async function main() {
     accounts = await ethers.getSigners(); 
@@ -39,12 +40,7 @@ async function main() {
     let balance=frontendUtil.parseEvent(receipt,transferTest,"Balance2Event");
     console.log(`GasUsed : ${receipt.gasUsed}`)
 
-    console.log('======start checking balance======')
-    if(BigInt(first)-gasused0-BigInt(transamt)-gasused1==balance){
-      console.log("✅ Test Successful");
-    }else{
-      console.log("❌ Test Failed");
-    }
+    expect(BigInt(first)-gasused0-BigInt(transamt)-gasused1).to.equal(balance);
 
     console.log('======start executing TXs calling transferToContract,but it will be failed======')
     tx = await transferTest.transferToContract({value:20});

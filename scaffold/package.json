@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "test:serial": "for f in test/*.ts; do npx hardhat run $f --network TestnetInfo 2>&1 | grep -v 'Nothing to compile' || exit 1; done",
+    "test:serial": "for f in test/*.ts; do npx hardhat run $f --network TestnetInfo 2>&1 | grep -v 'Nothing to compile'; echo $f 'test completed' || exit 1; done",
     "benchmark:boolArray": "HARDHAT_NETWORK=TestnetInfo  npx hardhat run benchmark/boolArray/gen-tx-bookArray.ts",
     "benchmark:like": "HARDHAT_NETWORK=TestnetInfo  npx hardhat run benchmark/like/gen-tx-like.ts",
     "benchmark:parallelSubCurrency": "HARDHAT_NETWORK=TestnetInfo  npx hardhat run benchmark/parallelSubCurrency/gen-tx-parallelSubCurrency.ts",

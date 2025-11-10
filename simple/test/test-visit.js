@@ -1,5 +1,6 @@
 const hre = require("hardhat");
 var frontendUtil = require('@arcologynetwork/frontend-util/utils/util') 
+const { expect } = require("chai");
 
 async function main() {
     accounts = await ethers.getSigners(); 
@@ -22,12 +23,8 @@ async function main() {
     console.log('======start executing TXs calling getCounter======')
     tx = await bt.getCounter();
     const receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    if(Number(frontendUtil.parseEvent(receipt,bt,"CounterQuery"))===10){
-      console.log("✅ Test Successful");
-    }else{
-      console.log("❌ Test Failed");
-    } 
+    expect(Number(frontendUtil.parseEvent(receipt,bt,"CounterQuery"))).to.equal(10);
+
   }
 
   // We recommend this pattern to be able to use async/await everywhere
