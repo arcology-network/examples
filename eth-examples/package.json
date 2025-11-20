@@ -12,7 +12,7 @@
   },
   "scripts": {
     "test:serial": "for f in test/*.js; do npx hardhat run $f --network TestnetInfo 2>&1 | grep -v 'Nothing to compile' ; echo $f 'test completed'  || exit 1; done",
-    "test:compatibility": "npx hardhat run test/test-compatibility.cjs --network TestnetInfo ; echo 'test/test-compatibility.cjs test completed'"
+    "test:compatibility": "npx hardhat run test/compatibility.test.cjs --network TestnetInfo ; echo 'test/compatibility.test.cjs test completed'"
   },
   "dependencies": {
     "@arcologynetwork/concurrentlib": "^2.2.0",
