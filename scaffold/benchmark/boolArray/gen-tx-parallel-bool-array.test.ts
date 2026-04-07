@@ -1,39 +1,32 @@
 import hre from "hardhat";
 import ProgressBar from "progress";
-import frontendUtil from "@arcologynetwork/frontend-util/utils/util";
+import cliUtil from "@arcologynetwork/cli-util/utils/util";
 
-async function parseNetwork(hre){
-    const networkName = process.env.HARDHAT_NETWORK || "hardhat";
-    const netCfg = hre.config.networks[networkName];
-    if (!netCfg?.url) {
-        throw new Error(`Network URL not found for network: ${networkName}`);
-    }
-    const rpcUrl = await netCfg.url.getUrl();
-    // console.log(rpcUrl);
-    const pks = netCfg.accounts;
-    return {rpcUrl,pks}
-}
 
 async function main() {
-  const {rpcUrl,pks}=await parseNetwork(hre);
+  const {rpcUrl,pks}=await cliUtil.parseNetworkV3(hre);
   const { ethers } = await hre.network.connect();
   const accounts = await ethers.getSigners();
 
   const provider = new ethers.JsonRpcProvider(rpcUrl);
 
   const txBase = "benchmark/boolArray/txs";
-  frontendUtil.ensurePath(txBase);
+  cliUtil.ensurePath(txBase);
+
+  const nonceManage=await cliUtil.InitNoncesV3(ethers,pks,provider)
 
   console.log("====== start deploying contract ======");
+  let nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
   const boolArrayFactory = await ethers.getContractFactory("BoolArray");
-  const boolArray = await boolArrayFactory.deploy();
+  const boolArray = await boolArrayFactory.deploy({nonce:nextnonce});
   await boolArray.waitForDeployment();
-  console.log(`Deployed BoolArray Test at ${boolArray.address}`);
+  const boolAddress = await boolArray.getAddress();
+  console.log(`Deployed BoolArray Test at ${boolAddress}`);
 
   console.log("====== start generating TXs calling add ======");
   const accountsLength = accounts.length;
-  frontendUtil.ensurePath(`${txBase}/add`);
-  const handleBoolArray = frontendUtil.newFile(`${txBase}/add/boolarray.out`);
+  cliUtil.ensurePath(`${txBase}/add`);
+  const handleBoolArray = cliUtil.newFile(`${txBase}/add/boolarray.out`);
 
   const bar = new ProgressBar("Generating Tx data [:bar] :percent :etas", {
     total: 100,
@@ -48,9 +41,11 @@ async function main() {
     const pk = await pks[i].getHexString();
     const signer = new ethers.Wallet(pk, provider);
 
-    const tx: ContractTransactionRequest = await boolArray.add.populateTransaction();
+    nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
 
-    await frontendUtil.writePreSignedTxFile(handleBoolArray, signer, tx);
+    const tx: ContractTransactionRequest = await boolArray.add.populateTransaction({nonce:nextnonce});
+
+    await cliUtil.writePreSignedTxFile(handleBoolArray, signer, tx);
 
     if (i > 0 && i % percent === 0) {
       bar.tick(1);

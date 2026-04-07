@@ -15,9 +15,8 @@
     "test:compatibility": "npx hardhat run test/compatibility.test.cjs --network TestnetInfo ; echo 'test/compatibility.test.cjs test completed'"
   },
   "dependencies": {
-    "@arcologynetwork/concurrentlib": "^2.2.0",
-    "@arcologynetwork/frontend-tools": "^1.0.12",
-    "@arcologynetwork/frontend-util": "^1.0.11",
+    "@arcologynetwork/concurrent": "^2.2.4",
+    "@arcologynetwork/cli-util": "^1.1.2",
     "dotenv": "^16.0.0"
   }
 }

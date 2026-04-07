@@ -1,33 +1,41 @@
 const hre = require("hardhat");
-var frontendUtil = require('@arcologynetwork/frontend-util/utils/util') 
+var cliUtil = require('@arcologynetwork/cli-util/utils/util') 
 const { expect } = require("chai");
+
 
 async function main() {
     accounts = await ethers.getSigners(); 
 
+    const {rpcUrl,pks}=cliUtil.parseNetworkV2(hre)
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const nonceManage=await cliUtil.InitNonces(pks,provider)
+
     console.log('======start deploying contract======')
+    let nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
     const bt_factory = await ethers.getContractFactory("CumulativeOutofRange");
-    const bt = await bt_factory.deploy();
+    const bt = await bt_factory.deploy({nonce:nextnonce});
     await bt.deployed();
     console.log(`Deployed CumulativeOutofRange Test at ${bt.address}`)
 
     console.log('======start executing TXs calling testlogforRevert======')
     var txs=new Array();
     for(i=1;i<=1;i++){
-      txs.push(frontendUtil.generateTx(function([bt,from,val]){
-        return bt.connect(from).testlogforRevert();
-      },bt,accounts[i],i));
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
+      txs.push(cliUtil.generateTx(function([bt,from,val,nextnonce]){
+        return bt.connect(from).testlogforRevert({nonce:nextnonce});
+      },bt,accounts[i],i,nextnonce));
     }
-    await frontendUtil.waitingTxs(txs);
+    await cliUtil.waitingTxs(txs);
 
     console.log('======start executing TXs calling testlogforConflict======')
     txs=new Array();
     for(i=1;i<=3;i++){
-      txs.push(frontendUtil.generateTx(function([bt,from,val]){
-        return bt.connect(from).testlogforConflict();
-      },bt,accounts[i],i));
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
+      txs.push(cliUtil.generateTx(function([bt,from,val,nextnonce]){
+        return bt.connect(from).testlogforConflict({nonce:nextnonce});
+      },bt,accounts[i],i,nextnonce));
     }
-    await frontendUtil.waitingTxs(txs);
+    await cliUtil.waitingTxs(txs);
     expect(await bt.getCounter()).to.equal(1);
   }
 

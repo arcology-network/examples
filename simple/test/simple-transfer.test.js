@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-var frontendUtil = require('@arcologynetwork/frontend-util/utils/util') 
+var cliUtil = require('@arcologynetwork/cli-util/utils/util') 
 const { expect } = require("chai");
 
 async function main() {

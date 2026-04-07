@@ -1,14 +1,15 @@
 const hre = require("hardhat");
-var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
-const nets = require('../../network.json');
+var cliUtil = require('@arcologynetwork/cli-util/utils/util')
+
 
 async function main() {  
+  const {rpcUrl,pks}=cliUtil.parseNetworkV2(hre)
   accounts = await ethers.getSigners(); 
-  const provider = new ethers.providers.JsonRpcProvider(nets[hre.network.name].url);
-  const pkCreator=nets[hre.network.name].accounts[0]
+  const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+  const pkCreator=pks[0]
   const signerCreator = new ethers.Wallet(pkCreator, provider);
   const txbase = 'benchmark/uniswap/txs';
-  frontendUtil.ensurePath(txbase);
+  cliUtil.ensurePath(txbase);
   
 
 
@@ -21,16 +22,18 @@ async function main() {
   const flag1_liquidity_mint=true;
   const flag2_swap=false;
 
-  const [swapfactory,nonfungiblePositionManager,router,nettingEngine] = await deployBaseContract();
+  const nonceManage=await cliUtil.InitNonces(pks,provider)
 
-  
-  let i,tx;
+  const [swapfactory,nonfungiblePositionManager,router,nettingEngine] = await deployBaseContract(nonceManage);
+
+  let i,tx,nextnonce;
 
   console.log('===========start create Token=====================')
   const tokenFactory = await ethers.getContractFactory("Token");
   var tokenInsArray=new Array();
   for(i=0;i<tokenCount;i++){
-    const tokenIns = await tokenFactory.deploy("token"+i, "TKN"+i);
+    nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
+    const tokenIns = await tokenFactory.deploy("token"+i, "TKN"+i,{nonce:nextnonce});
     await tokenIns.deployed();
     tokenInsArray.push(tokenIns);
     console.log(`Deployed token${i} at ${tokenIns.address}`);
@@ -41,10 +44,11 @@ async function main() {
   var poolAdrArray=new Array();
   let PoolCreatedDate,strlen,poolAddress;
   for (i=0;i+1<tokenCount;i=i+poolStyle) {
-      tx = await swapfactory.createPool(tokenInsArray[i].address, tokenInsArray[i+1].address, fee);
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
+      tx = await swapfactory.createPool(tokenInsArray[i].address, tokenInsArray[i+1].address, fee,{nonce:nextnonce});
       receipt = await tx.wait();
       // console.log(receipt);
-      frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+      cliUtil.showResult(cliUtil.parseReceipt(receipt));
       poolAddress=parseEvent(receipt,swapfactory,"PoolCreated");
       console.log(`UniswapV3Pool created at ${poolAddress}, token${i}<--->>token${i+1} fee:${fee}`);
       poolAdrArray.push(poolAddress); 
@@ -52,9 +56,10 @@ async function main() {
 
   console.log('===========start init UniswapV3Pool in nettingEngine=====================')
   for (i=0;i<poolAdrArray.length;i++)  {
-      tx = await nettingEngine.initPool(poolAdrArray[i],tokenInsArray[i*2].address, tokenInsArray[i*2+1].address);
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
+      tx = await nettingEngine.initPool(poolAdrArray[i],tokenInsArray[i*2].address, tokenInsArray[i*2+1].address,{nonce:nextnonce});
       receipt = await tx.wait();
-      frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+      cliUtil.showResult(cliUtil.parseReceipt(receipt));
       console.log(`Init UniswapV3Pool at ${poolAdrArray[i]} in nettingEngine`);
   }
 
@@ -74,11 +79,12 @@ async function main() {
   if(flag0_poolInit){
     var txs=new Array();
     for (i=0;i<poolArray.length;i++) {
-      txs.push(frontendUtil.generateTx(function([pool,sqrtPriceX96]){
-        return pool.initialize(sqrtPriceX96);
-      },poolArray[i],sqrtPriceX96));
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
+      txs.push(cliUtil.generateTx(function([pool,sqrtPriceX96,nextnonce]){
+        return pool.initialize(sqrtPriceX96,{nonce:nextnonce});
+      },poolArray[i],sqrtPriceX96,nextnonce));
     }
-    await frontendUtil.waitingTxs(txs);
+    await cliUtil.waitingTxs(txs);
   }
   
   // console.log('===========start mint token for addLiquidity=====================')
@@ -92,30 +98,34 @@ async function main() {
     for (i=0;i+1<tokenCount;i=i+poolStyle) {
       [amountA ,amountB]=computeMintAmount(tokenInsArray[i].address,tokenInsArray[i+1].address,mintAmount,price);
 
-      txs.push(frontendUtil.generateTx(function([token,receipt,amount]){
-        return token.mint(receipt,amount);
-      },tokenInsArray[i],accounts[i].address,amountA));
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
+      txs.push(cliUtil.generateTx(function([token,receipt,amount,nextnonce]){
+        return token.mint(receipt,amount,{nonce:nextnonce});
+      },tokenInsArray[i],accounts[i].address,amountA,nextnonce));
 
-      txs.push(frontendUtil.generateTx(function([token,receipt,amount]){
-        return token.mint(receipt,amount);
-      },tokenInsArray[i+1],accounts[i].address,amountB));
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
+      txs.push(cliUtil.generateTx(function([token,receipt,amount,nextnonce]){
+        return token.mint(receipt,amount,{nonce:nextnonce});
+      },tokenInsArray[i+1],accounts[i].address,amountB,nextnonce));
     }
-    await frontendUtil.waitingTxs(txs);
+    await cliUtil.waitingTxs(txs);
 
     console.log('===========start approve token=====================')
     txs=new Array();
     for (i=0;i+1<tokenCount;i=i+poolStyle) {
       [amountA ,amountB]=computeMintAmount(tokenInsArray[i].address,tokenInsArray[i+1].address,mintAmount,price);
 
-      txs.push(frontendUtil.generateTx(function([token,from,nonfungiblePositionManagerAdr,amount]){
-        return token.connect(from).approve(nonfungiblePositionManagerAdr,amount);
-      },tokenInsArray[i],accounts[i],nonfungiblePositionManager.address,amountA));
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
+      txs.push(cliUtil.generateTx(function([token,from,nonfungiblePositionManagerAdr,amount,nextnonce]){
+        return token.connect(from).approve(nonfungiblePositionManagerAdr,amount,{nonce:nextnonce});
+      },tokenInsArray[i],accounts[i],nonfungiblePositionManager.address,amountA,nextnonce));
 
-      txs.push(frontendUtil.generateTx(function([token,from,nonfungiblePositionManagerAdr,amount]){
-        return token.connect(from).approve(nonfungiblePositionManagerAdr,amount);
-      },tokenInsArray[i+1],accounts[i],nonfungiblePositionManager.address,amountB));
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
+      txs.push(cliUtil.generateTx(function([token,from,nonfungiblePositionManagerAdr,amount,nextnonce]){
+        return token.connect(from).approve(nonfungiblePositionManagerAdr,amount,{nonce:nextnonce});
+      },tokenInsArray[i+1],accounts[i],nonfungiblePositionManager.address,amountB,nextnonce));
     }
-    await frontendUtil.waitingTxs(txs);
+    await cliUtil.waitingTxs(txs);
 
   }
   
@@ -149,11 +159,13 @@ async function main() {
       recipient: from.address, 
       deadline: Math.floor(Date.now() / 1000) + 60 * 20,
     };
+    nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
     tx = await nonfungiblePositionManager.connect(from).mint(params, {
       gasLimit: 500000000,
+      nonce:nextnonce,
     });
     receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+    cliUtil.showResult(cliUtil.parseReceipt(receipt));
   }
   
   console.log('===========after addLiquidity=====================')
@@ -174,15 +186,17 @@ async function main() {
         // console.log(`mint token for swap: ${mintAmount} at i:${i} j:${j}`);
         [amountA ,amountB]=computeMintAmount(tokenInsArray[i].address,tokenInsArray[i+1].address,mintAmount,price);
 
-        txs.push(frontendUtil.generateTx(function([token,receipt,amount]){
-          return token.mint(receipt,amount);
-        },tokenInsArray[i],accounts[j].address,amountA));
+        nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
+        txs.push(cliUtil.generateTx(function([token,receipt,amount,nextnonce]){
+          return token.mint(receipt,amount,{nonce:nextnonce});
+        },tokenInsArray[i],accounts[j].address,amountA,nextnonce));
 
-        txs.push(frontendUtil.generateTx(function([token,receipt,amount]){
-          return token.mint(receipt,amount);
-        },tokenInsArray[i+1],accounts[j+1].address,amountB));
+        nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
+        txs.push(cliUtil.generateTx(function([token,receipt,amount,nextnonce]){
+          return token.mint(receipt,amount,{nonce:nextnonce});
+        },tokenInsArray[i+1],accounts[j+1].address,amountB,nextnonce));
       }
-      await frontendUtil.waitingTxs(txs);
+      await cliUtil.waitingTxs(txs);
     }
 
 
@@ -195,15 +209,17 @@ async function main() {
         //console.log(`approve token for swap: ${mintAmount} at i:${i} j:${j}`);
         [amountA ,amountB]=computeMintAmount(tokenInsArray[i].address,tokenInsArray[i+1].address,mintAmount,price);
 
-        txs.push(frontendUtil.generateTx(function([token,from,routerAdr,amount]){
-          return token.connect(from).approve(routerAdr,amount);
-        },tokenInsArray[i],accounts[j],router.address,amountA.mul(2)));
+        nextnonce=cliUtil.getNonce(nonceManage,accounts[j].address)
+        txs.push(cliUtil.generateTx(function([token,from,routerAdr,amount,nextnonce]){
+          return token.connect(from).approve(routerAdr,amount,{nonce:nextnonce});
+        },tokenInsArray[i],accounts[j],router.address,amountA.mul(2),nextnonce));
 
-        txs.push(frontendUtil.generateTx(function([token,from,routerAdr,amount]){
-          return token.connect(from).approve(routerAdr,amount);
-        },tokenInsArray[i+1],accounts[j+1],router.address,amountB.mul(2)));
+        nextnonce=cliUtil.getNonce(nonceManage,accounts[j+1].address)
+        txs.push(cliUtil.generateTx(function([token,from,routerAdr,amount,nextnonce]){
+          return token.connect(from).approve(routerAdr,amount,{nonce:nextnonce});
+        },tokenInsArray[i+1],accounts[j+1],router.address,amountB.mul(2),nextnonce));
       }
-      await frontendUtil.waitingTxs(txs);
+      await cliUtil.waitingTxs(txs);
     }
     
     console.log('===========before swap=====================')
@@ -225,16 +241,18 @@ async function main() {
         // console.log(`swap: ${mintAmount} at i:${i} j:${j}`);
         [amountA ,amountB]=computeMintAmount(tokenInsArray[i].address,tokenInsArray[i+1].address,mintAmount,price);
 
-        txs.push(frontendUtil.generateTx(function([nettingEngine,from,tokenA,tokenB,fee,amountIn]){
-          return swap(tokenA,tokenB,fee,from,amountIn,nettingEngine,true);
-        },nettingEngine,accounts[j],tokenInsArray[i].address,tokenInsArray[i+1].address,fee,amountA));
+        nextnonce=cliUtil.getNonce(nonceManage,accounts[j].address)
+        txs.push(cliUtil.generateTx(function([nettingEngine,from,tokenA,tokenB,fee,amountIn,nextnonce]){
+          return swap(tokenA,tokenB,fee,from,amountIn,nettingEngine,true,nextnonce);
+        },nettingEngine,accounts[j],tokenInsArray[i].address,tokenInsArray[i+1].address,fee,amountA,nextnonce));
 
-        txs.push(frontendUtil.generateTx(function([nettingEngine,from,tokenA,tokenB,fee,amountIn]){
-          return swap(tokenA,tokenB,fee,from,amountIn,nettingEngine,true);
-        },nettingEngine,accounts[j+1],tokenInsArray[i+1].address,tokenInsArray[i].address,fee,amountB));
+        nextnonce=cliUtil.getNonce(nonceManage,accounts[j+1].address)
+        txs.push(cliUtil.generateTx(function([nettingEngine,from,tokenA,tokenB,fee,amountIn,nextnonce]){
+          return swap(tokenA,tokenB,fee,from,amountIn,nettingEngine,true,nextnonce);
+        },nettingEngine,accounts[j+1],tokenInsArray[i+1].address,tokenInsArray[i].address,fee,amountB,nextnonce));
 
       }
-      await frontendUtil.waitingTxs(txs);
+      await cliUtil.waitingTxs(txs);
     }
 
     console.log('===========after swap=====================')
@@ -247,12 +265,12 @@ async function main() {
     }
 
   }else{
-    frontendUtil.ensurePath(txbase + '/mint');
-    const handle_swap_token_mint = frontendUtil.newFile(txbase + '/mint/mint.out');
-    frontendUtil.ensurePath(txbase + '/approve');
-    const handle_swap_token_approve=frontendUtil.newFile(txbase + '/approve/approve.out')
-    frontendUtil.ensurePath(txbase + '/swap');
-    const handle_swap=frontendUtil.newFile(txbase + '/swap/swap.out')
+    cliUtil.ensurePath(txbase + '/mint');
+    const handle_swap_token_mint = cliUtil.newFile(txbase + '/mint/mint.out');
+    cliUtil.ensurePath(txbase + '/approve');
+    const handle_swap_token_approve=cliUtil.newFile(txbase + '/approve/approve.out')
+    cliUtil.ensurePath(txbase + '/swap');
+    const handle_swap=cliUtil.newFile(txbase + '/swap/swap.out')
 
     let pk,signer,pk1,signer1,params
 
@@ -263,32 +281,34 @@ async function main() {
         [amountA ,amountB]=computeMintAmount(tokenInsArray[i].address,tokenInsArray[i+1].address,mintAmount,price);
         console.log(`swap: ${mintAmount} at i:${i} j:${j} amountA: ${amountA}  amountB:${amountB} `);
         //mint
-        tx = await tokenInsArray[i].populateTransaction.mint(accounts[j].address,amountA,{gasPrice:255,});
-        await writePreSignedTxFile(handle_swap_token_mint,signerCreator,tx);
+        nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
+        tx = await tokenInsArray[i].populateTransaction.mint(accounts[j].address,amountA,{gasPrice:255,nonce:nextnonce});
+        await cliUtil.writePreSignedTxFile(handle_swap_token_mint,signerCreator,tx);
 
-        tx = await tokenInsArray[i+1].populateTransaction.mint(accounts[j+1].address,amountB,{gasPrice:255,});
-        await writePreSignedTxFile(handle_swap_token_mint,signerCreator,tx);
+        nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
+        tx = await tokenInsArray[i+1].populateTransaction.mint(accounts[j+1].address,amountB,{gasPrice:255,nonce:nextnonce});
+        await cliUtil.writePreSignedTxFile(handle_swap_token_mint,signerCreator,tx);
 
         //approve
-        pk=nets[hre.network.name].accounts[j];
-        signer = new ethers.Wallet(pk, provider);
+        signer = new ethers.Wallet(pks[j], provider);
 
-        tx = await tokenInsArray[i].connect(accounts[j]).populateTransaction.approve(router.address,amountA,{gasPrice:255,});
-        await writePreSignedTxFile(handle_swap_token_approve,signer,tx);
+        nextnonce=cliUtil.getNonce(nonceManage,accounts[j].address)
+        tx = await tokenInsArray[i].connect(accounts[j]).populateTransaction.approve(router.address,amountA,{gasPrice:255,nonce:nextnonce});
+        await cliUtil.writePreSignedTxFile(handle_swap_token_approve,signer,tx);
 
 
-        pk1=nets[hre.network.name].accounts[j+1];
-        signer1 = new ethers.Wallet(pk1, provider);
+        signer1 = new ethers.Wallet(pks[j+1], provider);
+        nextnonce=cliUtil.getNonce(nonceManage,accounts[j+1].address)
+        tx = await tokenInsArray[i+1].connect(accounts[j+1]).populateTransaction.approve(router.address,amountB,{gasPrice:255,nonce:nextnonce});
+        await cliUtil.writePreSignedTxFile(handle_swap_token_approve,signer1,tx);
 
-        tx = await tokenInsArray[i+1].connect(accounts[j+1]).populateTransaction.approve(router.address,amountB,{gasPrice:255,});
-        await writePreSignedTxFile(handle_swap_token_approve,signer1,tx);
+        nextnonce=cliUtil.getNonce(nonceManage,accounts[j].address)
+        tx = await swap(tokenInsArray[i].address,tokenInsArray[i+1].address,fee,accounts[j],amountA,nettingEngine,false,nextnonce);
+        await cliUtil.writePreSignedTxFile(handle_swap,signer,tx);
 
-        
-        tx = await swap(tokenInsArray[i].address,tokenInsArray[i+1].address,fee,accounts[j],amountA,nettingEngine,false);
-        await writePreSignedTxFile(handle_swap,signer,tx);
-
-        tx = await swap(tokenInsArray[i+1].address,tokenInsArray[i].address,fee,accounts[j+1],amountB,nettingEngine,false);
-        await writePreSignedTxFile(handle_swap,signer1,tx);
+        nextnonce=cliUtil.getNonce(nonceManage,accounts[j+1].address)
+        tx = await swap(tokenInsArray[i+1].address,tokenInsArray[i].address,fee,accounts[j+1],amountB,nettingEngine,false,nextnonce);
+        await cliUtil.writePreSignedTxFile(handle_swap,signer1,tx);
       }
       console.log(`create swap txs : ${(i+1)*accounts.length} `);
     }
@@ -317,7 +337,7 @@ function parseEvent(receipt,contract,eventName){
   return "";
 }
 
-async function swap(tokenA,tokenB,fee,from,amountIn,nettingEngine,isExecute){
+async function swap(tokenA,tokenB,fee,from,amountIn,nettingEngine,isExecute,nextnonce){
   const params = {
       tokenIn: tokenA,                
       tokenOut: tokenB,               
@@ -332,11 +352,13 @@ async function swap(tokenA,tokenB,fee,from,amountIn,nettingEngine,isExecute){
     return nettingEngine.connect(from).queueSwapRequest(params, {
       // gasLimit: 50000000000 ,
       gasPrice:255,
+      nonce:nextnonce,
     });
   }else{
     return nettingEngine.connect(from).populateTransaction.queueSwapRequest(params, {
       // gasLimit: 50000000000 ,
       gasPrice:255,
+      nonce:nextnonce,
     });
   }
   
@@ -375,33 +397,37 @@ async function getBalance(token,account,tokenIdx){
   const decimals=18;
   let tx = await token.balanceOf(account.address);
   let receipt=await tx.wait();
-  let balance=BigInt(frontendUtil.parseEvent(receipt,token,"BalanceQuery"));
+  let balance=BigInt(cliUtil.parseEvent(receipt,token,"BalanceQuery"));
   formattedBalance = ethers.utils.formatUnits(balance, decimals);
   console.log(`Balance of account ${account.address}: ${formattedBalance} token${tokenIdx}`);
 }
 
-async function deployBaseContract(){
+async function deployBaseContract(nonceManage){
   console.log('===========start UniswapV3Factory=====================')
+  let nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
   const UniswapV3Factory = await hre.ethers.getContractFactory("UniswapV3Factory");
-  const swapfactory = await UniswapV3Factory.deploy();
+  const swapfactory = await UniswapV3Factory.deploy({nonce:nextnonce});
   await swapfactory.deployed();
   console.log("UniswapV3Factory deployed to:", swapfactory.address);
 
 
   console.log('===========start deploy WETH9=====================');
+  nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
   const weth9_factory = await ethers.getContractFactory("WETH9");
-  const weth9 = await weth9_factory.deploy();
+  const weth9 = await weth9_factory.deploy({nonce:nextnonce});
   await weth9.deployed();
   console.log(`Deployed WETH9 at ${weth9.address}`);
   const weth9addr=weth9.address
 
   console.log('===========start deploy NFTDescriptor=====================');
+  nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
   const Lib = await ethers.getContractFactory("NFTDescriptor");
-  const lib = await Lib.deploy();
+  const lib = await Lib.deploy({nonce:nextnonce});
   await lib.deployed();
   console.log(`Deployed NFTDescriptor at ${lib.address}`);
   
   console.log('===========start deploy NonfungibleTokenPositionDescriptor=====================');
+  nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
   const nativeCurrencyLabelBytes = ethers.utils.formatBytes32String("ACL");
   const NonfungibleTokenPositionDescriptor_factory = await hre.ethers.getContractFactory("NonfungibleTokenPositionDescriptor", {
     signer: accounts[0],
@@ -411,26 +437,31 @@ async function deployBaseContract(){
   });
   const nonfungibleTokenPositionDescriptor = await NonfungibleTokenPositionDescriptor_factory.deploy(
     weth9.address,
-    nativeCurrencyLabelBytes
+    nativeCurrencyLabelBytes,
+    {nonce:nextnonce}
   );
   await nonfungibleTokenPositionDescriptor.deployed();
   console.log("nonfungibleTokenPositionDescriptor deployed to:", nonfungibleTokenPositionDescriptor.address);
   
   console.log('===========start deploy NonfungiblePositionManager=====================');
+  nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
   const NonfungiblePositionManager_factory = await hre.ethers.getContractFactory("NonfungiblePositionManager");
   const nonfungiblePositionManager = await NonfungiblePositionManager_factory.deploy(
     swapfactory.address,   
     weth9.address,
-    nonfungibleTokenPositionDescriptor.address               
+    nonfungibleTokenPositionDescriptor.address ,
+    {nonce:nextnonce}              
   );
   await nonfungiblePositionManager.deployed();
   console.log("NonfungiblePositionManager deployed to:", nonfungiblePositionManager.address);
 
   console.log('===========start deploy SwapRouter=====================');
+  nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
   const router_factory = await hre.ethers.getContractFactory("SwapRouter");
   const router = await router_factory.deploy(
     swapfactory.address,   
-    weth9.address            
+    weth9.address,
+    {nonce:nextnonce}            
   );
   await router.deployed();
   console.log("SwapRouter deployed to:", router.address);
@@ -442,29 +473,26 @@ async function deployBaseContract(){
   // console.log("poolLibary deployed to:", poolLibary.address);
   
   console.log('===========start deploy Netting=====================');
+  nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
   const netting_factory = await hre.ethers.getContractFactory("Netting");
-  const netting = await netting_factory.deploy(router.address);
+  const netting = await netting_factory.deploy(router.address,{nonce:nextnonce});
   await netting.deployed();
   console.log("SwapCore deployed to:", netting.address);
   
   console.log('===========start deploy NettingEngine=====================');
+  nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
   const nettingEngine_factory = await hre.ethers.getContractFactory("NettingEngine");
-  const nettingEngine = await nettingEngine_factory.deploy();
+  const nettingEngine = await nettingEngine_factory.deploy({nonce:nextnonce});
   console.log("NettingEngine deployed to:", nettingEngine.address);
 
   console.log('===========initialization for NettingEngine=====================');
-  tx = await nettingEngine.init(swapfactory.address,netting.address);
+  nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
+  tx = await nettingEngine.init(swapfactory.address,netting.address,{nonce:nextnonce});
   receipt = await tx.wait();
   // console.log(receipt);
-  frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
+  cliUtil.showResult(cliUtil.parseReceipt(receipt));
   
   return [swapfactory,nonfungiblePositionManager,router,nettingEngine]
-}
-
-async function writePreSignedTxFile(txfile,signer,tx){
-  const fulltx=await signer.populateTransaction(tx)
-  const rawtx=await signer.signTransaction(fulltx)
-  frontendUtil.appendTo(txfile,rawtx+',\n')
 }
 
 function computeMintAmount(token0,token1,amount1,price){

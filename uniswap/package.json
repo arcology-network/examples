@@ -10,12 +10,14 @@
     "hardhat": "^2.9.9"
   },
   "scripts": {
-    "test:serial": "for f in test/*.js; do npx hardhat run $f --network TestnetInfo 2>&1 | grep -v 'Nothing to compile' ; echo $f 'test completed' || exit 1; done"
+    "test:serial": "for f in test/*.js; do npx hardhat run $f --network TestnetInfo 2>&1 | grep -v 'Nothing to compile' ; echo $f 'test completed' || exit 1; done",
+    "benchmark:token": "npx hardhat run benchmark/token/gen-tx-token.test.js --network TestnetInfo",
+    "benchmark:uniswap": "npx hardhat run benchmark/uniswap/gen-tx-uniswap.test.js --network TestnetInfo",
+    "benchmark:sendTx":"arcology.net-tx-sender"
   },
   "dependencies": {
-    "@arcologynetwork/concurrentlib": "^2.2.0",
-    "@arcologynetwork/frontend-tools": "^1.0.12",
-    "@arcologynetwork/frontend-util": "^1.0.11",
+    "@arcologynetwork/concurrent": "^2.2.4",
+    "@arcologynetwork/cli-util": "^1.1.2",
     "@ethereumjs/common": "^4.4.0",
     "@openzeppelin/contracts": "3.4.2-solc-0.7",
     "@uniswap/lib": "^4.0.1-alpha",

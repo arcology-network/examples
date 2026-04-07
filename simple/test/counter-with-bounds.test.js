@@ -1,13 +1,18 @@
 const hre = require("hardhat");
-var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
+var cliUtil = require('@arcologynetwork/cli-util/utils/util')
 const { expect } = require("chai");
 
 async function main() {
     accounts = await ethers.getSigners(); 
 
+    const {rpcUrl,pks}=cliUtil.parseNetworkV2(hre)
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const nonceManage=await cliUtil.InitNonces(pks,provider)
+
     console.log('======start deploying contract======')
+    let nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
     const counter_factory = await ethers.getContractFactory("BoundedCounter");
-    const counter = await counter_factory.deploy();
+    const counter = await counter_factory.deploy({nonce:nextnonce});
     await counter.deployed();
     console.log(`Deployed Counter Test at ${counter.address}`)
     
@@ -15,21 +20,24 @@ async function main() {
     let i,tx,receipt;
    
     console.log('======start executing TXs calling add======')
-    tx = await counter.add(10);
+    nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
+    tx = await counter.add(10,{nonce:nextnonce});
     receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    expect(Number(frontendUtil.parseEvent(receipt,counter,"QueryBalance"))).to.equal(10);
+    cliUtil.showResult(cliUtil.parseReceipt(receipt));
+    expect(Number(cliUtil.parseEvent(receipt,counter,"QueryBalance"))).to.equal(10);
 
     console.log('======start executing TXs calling sub======')
-    tx = await counter.sub(5);
+    nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
+    tx = await counter.sub(5,{nonce:nextnonce});
     receipt=await tx.wait();
-    expect(Number(frontendUtil.parseEvent(receipt,counter,"QueryBalance"))).to.equal(5);
+    expect(Number(cliUtil.parseEvent(receipt,counter,"QueryBalance"))).to.equal(5);
 
 
     console.log('======start executing TXs calling reset======')
-    tx = await counter.reset();
+    nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
+    tx = await counter.reset({nonce:nextnonce});
     receipt=await tx.wait();
-    expect(Number(frontendUtil.parseEvent(receipt,counter,"QueryBalance"))).to.equal(0);
+    expect(Number(cliUtil.parseEvent(receipt,counter,"QueryBalance"))).to.equal(0);
    
 }
 

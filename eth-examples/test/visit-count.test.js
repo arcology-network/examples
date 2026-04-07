@@ -1,13 +1,19 @@
 const hre = require("hardhat");
-var frontendUtil = require('@arcologynetwork/frontend-util/utils/util')
+var cliUtil = require('@arcologynetwork/cli-util/utils/util')
 const { expect } = require("chai");
+
 
 async function main() {
     accounts = await ethers.getSigners(); 
 
+    const {rpcUrl,pks}=cliUtil.parseNetworkV2(hre)
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const nonceManage=await cliUtil.InitNonces(pks,provider)
+
     console.log('======start deploying contract======')
+    let nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
     const visit_factory = await ethers.getContractFactory("VisitCounter");
-    const visitCounter = await visit_factory.deploy();
+    const visitCounter = await visit_factory.deploy({nonce:nextnonce});
     await visitCounter.deployed();
     console.log(`Deployed visitCounter at ${visitCounter.address}`)
 
@@ -15,34 +21,38 @@ async function main() {
     console.log('======start executing TXs calling visit======')
     var txs=new Array();
     for(i=1;i<=10;i++){
-      txs.push(frontendUtil.generateTx(function([visitCounter,from]){
-        return visitCounter.connect(from).visit();
-      },visitCounter,accounts[i]));
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
+      txs.push(cliUtil.generateTx(function([visitCounter,from,nextnonce]){
+        return visitCounter.connect(from).visit({nonce:nextnonce});
+      },visitCounter,accounts[i],nextnonce));
     }
-    await frontendUtil.waitingTxs(txs);
+    await cliUtil.waitingTxs(txs);
     
     console.log('======start executing TXs calling getCounter======')
-    tx = await visitCounter.getCounter();
+    nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
+    tx = await visitCounter.getCounter({nonce:nextnonce});
     receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    let total=frontendUtil.parseEvent(receipt,visitCounter,"CounterQuery");
+    cliUtil.showResult(cliUtil.parseReceipt(receipt));
+    let total=cliUtil.parseEvent(receipt,visitCounter,"CounterQuery");
     console.log(`Visit counter Data ${total}`);
     expect(Number(total)).to.equal(10);
 
     console.log('======start executing TXs calling visit again======')
     txs=new Array();
     for(i=1;i<=10;i++){
-      txs.push(frontendUtil.generateTx(function([visitCounter,from]){
-        return visitCounter.connect(from).visit();
-      },visitCounter,accounts[i]));
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
+      txs.push(cliUtil.generateTx(function([visitCounter,from,nextnonce]){
+        return visitCounter.connect(from).visit({nonce:nextnonce});
+      },visitCounter,accounts[i],nextnonce));
     }
-    await frontendUtil.waitingTxs(txs);
+    await cliUtil.waitingTxs(txs);
 
     console.log('======start executing TXs calling getCounter======')
-    tx = await visitCounter.getCounter();
+    nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
+    tx = await visitCounter.getCounter({nonce:nextnonce});
     receipt=await tx.wait();
-    frontendUtil.showResult(frontendUtil.parseReceipt(receipt));
-    total=frontendUtil.parseEvent(receipt,visitCounter,"CounterQuery");
+    cliUtil.showResult(cliUtil.parseReceipt(receipt));
+    total=cliUtil.parseEvent(receipt,visitCounter,"CounterQuery");
     console.log(`Visit counter Data ${total}`);
     expect(Number(total)).to.equal(20);
 

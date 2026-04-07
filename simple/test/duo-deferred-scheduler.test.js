@@ -1,13 +1,19 @@
 const hre = require("hardhat");
-var frontendUtil = require('@arcologynetwork/frontend-util/utils/util') 
+var cliUtil = require('@arcologynetwork/cli-util/utils/util') 
 const { expect } = require("chai");
+
 
 async function main() {
     accounts = await ethers.getSigners(); 
 
+    const {rpcUrl,pks}=cliUtil.parseNetworkV2(hre)
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const nonceManage=await cliUtil.InitNonces(pks,provider)
+
     console.log('======start deploying contract======')
+    let nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
     const bt_factory = await ethers.getContractFactory("DuoDeferred");
-    const bt = await bt_factory.deploy();
+    const bt = await bt_factory.deploy({nonce:nextnonce});
     await bt.deployed();
     console.log(`Deployed DuoDeferred Test at ${bt.address}`)
 
@@ -16,57 +22,63 @@ async function main() {
     //g1:6 g2:2
     var txs=new Array();
     for(i=1;i<=4;i++){
-      txs.push(frontendUtil.generateTx(function([bt,from,val]){
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
+      txs.push(cliUtil.generateTx(function([bt,from,val,nextnonce]){
         const params = {
           seed: val,                
           sd: 1                 
         };
-        return bt.connect(from).pvisit(params);
-      },bt,accounts[i],1));
+        return bt.connect(from).pvisit(params,{nonce:nextnonce});
+      },bt,accounts[i],1,nextnonce));
 
-      txs.push(frontendUtil.generateTx(function([bt,from,val]){
-        return bt.connect(from).add(val);
-      },bt,accounts[i],1));
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
+      txs.push(cliUtil.generateTx(function([bt,from,val,nextnonce]){
+        return bt.connect(from).add(val,{nonce:nextnonce});
+      },bt,accounts[i],1,nextnonce));
     }
-    await frontendUtil.waitingTxs(txs);
+    await cliUtil.waitingTxs(txs);
     expect(await bt.getCounter()).to.equal(4);
 
     console.log('====== second bat,four generations ======')
     //g1:3 g2:1 g3:3 g4:1
     txs=new Array();
     for(i=5;i<=8;i++){
-      txs.push(frontendUtil.generateTx(function([bt,from,val]){
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
+      txs.push(cliUtil.generateTx(function([bt,from,val,nextnonce]){
         const params = {
           seed: val,                
           sd: 1                 
         };
-        return bt.connect(from).pvisit(params);
-      },bt,accounts[i],1));
+        return bt.connect(from).pvisit(params,{nonce:nextnonce});
+      },bt,accounts[i],1,nextnonce));
 
-      txs.push(frontendUtil.generateTx(function([bt,from,val]){
-        return bt.connect(from).add(val);
-      },bt,accounts[i],1));
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
+      txs.push(cliUtil.generateTx(function([bt,from,val,nextnonce]){
+        return bt.connect(from).add(val,{nonce:nextnonce});
+      },bt,accounts[i],1,nextnonce));
     }
-    await frontendUtil.waitingTxs(txs);
+    await cliUtil.waitingTxs(txs);
     expect(await bt.getCounter()).to.equal(12);
 
     console.log('====== third bat,four generations ======')
     //g1:1 g2:1 g3:1 g4:1
     txs=new Array();
     for(i=9;i<=10;i++){
-      txs.push(frontendUtil.generateTx(function([bt,from,val]){
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
+      txs.push(cliUtil.generateTx(function([bt,from,val,nextnonce]){
         const params = {
           seed: val,                
           sd: 1                 
         };
-        return bt.connect(from).pvisit(params);
-      },bt,accounts[i],1));
+        return bt.connect(from).pvisit(params,{nonce:nextnonce});
+      },bt,accounts[i],1,nextnonce));
 
-      txs.push(frontendUtil.generateTx(function([bt,from,val]){
-        return bt.connect(from).add(val);
-      },bt,accounts[i],1));
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
+      txs.push(cliUtil.generateTx(function([bt,from,val,nextnonce]){
+        return bt.connect(from).add(val,{nonce:nextnonce});
+      },bt,accounts[i],1,nextnonce));
     }
-    await frontendUtil.waitingTxs(txs);
+    await cliUtil.waitingTxs(txs);
     expect(await bt.getCounter()).to.equal(16);
   }
 

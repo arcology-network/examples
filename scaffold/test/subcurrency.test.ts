@@ -1,14 +1,20 @@
 import { network } from "hardhat";
-import frontendUtil from "@arcologynetwork/frontend-util/utils/util";
+import cliUtil from "@arcologynetwork/cli-util/utils/util";
 import { expect } from "chai";
+import hre from "hardhat";
+
 
 async function main() {
-  const { ethers } = await network.connect();
+  const {rpcUrl,pks}=await cliUtil.parseNetworkV3(hre);
+  const { ethers } = await hre.network.connect();
+  const provider = new ethers.JsonRpcProvider(rpcUrl);
+  const nonceManage=await cliUtil.InitNoncesV3(ethers,pks,provider)
   const accounts = await ethers.getSigners();
 
   console.log("====== start deploying contract ======");
+  let nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
   const CoinFactory = await ethers.getContractFactory("Coin");
-  const coin = await CoinFactory.deploy();
+  const coin = await CoinFactory.deploy({nonce:nextnonce});
   await coin.waitForDeployment(); // 
   console.log(`Deployed SubCurrency at ${await coin.getAddress()}`);
 
@@ -17,18 +23,20 @@ async function main() {
   // ====== mint ======
   console.log("====== start executing TXs calling mint ======");
   for (let i = 1; i <= 5; i++) {
+    nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
     txs.push(
-      frontendUtil.generateTx(
-        function ([coin, to, val]: [any, any, number]) {
-          return coin.mint(to.address, val);
+      cliUtil.generateTx(
+        function ([coin, to, val,nextnonce]: [any, any, number,any]) {
+          return coin.mint(to.address, val,{nonce:nextnonce});
         },
         coin,
         accounts[i],
-        100 + i
+        100 + i,
+        nextnonce
       )
     );
   }
-  await frontendUtil.waitingTxs(txs);
+  await cliUtil.waitingTxs(txs);
 
   const expectedBalances1 = [101, 102, 103, 104, 105, 0, 0, 0, 0, 0];
   for (let i = 1; i <= 10; i++) {
@@ -41,19 +49,21 @@ async function main() {
   console.log("====== start executing TXs calling send ======");
   txs = [];
   for (let i = 1; i <= 5; i++) {
+    nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
     txs.push(
-      frontendUtil.generateTx(
-        function ([coin, from, to, val]: [any, any, any, number]) {
-          return coin.connect(from).send(to.address, val);
+      cliUtil.generateTx(
+        function ([coin, from, to, val,nextnonce]: [any, any, any, number,any]) {
+          return coin.connect(from).send(to.address, val,{nonce:nextnonce});
         },
         coin,
         accounts[i],
         accounts[i + 5],
-        100 + i
+        100 + i,
+        nextnonce
       )
     );
   }
-  await frontendUtil.waitingTxs(txs);
+  await cliUtil.waitingTxs(txs);
 
   const expectedBalances2 = [0, 0, 0, 0, 0, 101, 102, 103, 104, 105];
   for (let i = 1; i <= 10; i++) {

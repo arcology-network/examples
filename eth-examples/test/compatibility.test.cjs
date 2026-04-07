@@ -1,59 +1,67 @@
 const hre = require("hardhat");
 const { expect } = require("chai");
+var cliUtil = require('@arcologynetwork/cli-util/utils/util')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const nilhash="0x0000000000000000000000000000000000000000000000000000000000000000";
 const readline = require("readline");
 
 async function main() {
-    const rpcurl = hre.network.config.url; 
     const chainid =hre.network.config.chainId; 
-    const pks =hre.network.config.accounts;
     const accounts = await ethers.getSigners(); 
 
-    await test_eth_chainid(rpcurl,chainid);
-    await test_eth_blockNumber(rpcurl);
-    const nilblockhash=await test_eth_getBlockByNumber(rpcurl);
-    await test_eth_getBlockByHash(rpcurl,nilblockhash);
-    await test_eth_getBalance(rpcurl,accounts[0].address,nilblockhash);
+    const {rpcUrl,pks}=cliUtil.parseNetworkV2(hre)
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const nonceManage=await cliUtil.InitNonces(pks,provider)
+
+    await test_eth_chainid(rpcUrl,chainid);
+    await test_eth_blockNumber(rpcUrl);
+    const nilblockhash=await test_eth_getBlockByNumber(rpcUrl);
+    await test_eth_getBlockByHash(rpcUrl,nilblockhash);
+    await test_eth_getBalance(rpcUrl,accounts[0].address,nilblockhash);
     
     //deploy a contract
+    let nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
     const st_factory = await ethers.getContractFactory("StorageTest");
-    const st = await st_factory.deploy();
+    const st = await st_factory.deploy({nonce:nextnonce});
     await st.deployed();
     // console.log(`Deployed StorageTest Test at ${st.address}`)
     // console.log("Contract deployed with tx:", st.deployTransaction.hash);  //hardhat v2 / 
 
-    await test_eth_getCode(rpcurl,st.address,nilblockhash)
-    await test_eth_getTransactionCount(rpcurl,accounts[0].address,nilblockhash);
-    await test_eth_getStorageAt(rpcurl,st.address,nilblockhash);
+    await test_eth_getCode(rpcUrl,st.address,nilblockhash)
+    await test_eth_getTransactionCount(rpcUrl,accounts[0].address,nilblockhash);
+    await test_eth_getStorageAt(rpcUrl,st.address,nilblockhash);
 
-    const provider = new ethers.providers.JsonRpcProvider(rpcurl);
-    const txhash= await test_eth_sendRawTransaction(rpcurl,st,pks,provider,accounts);
+    // const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    
+    const txhash= await test_eth_sendRawTransaction(rpcUrl,st,pks,provider,accounts,nonceManage);
 
+    
     //send a simple transfer
+    nextnonce=cliUtil.getNonce(nonceManage,accounts[4].address)
     const tx = {
         to: accounts[5].address,
         value: ethers.utils.parseEther("1.0"), 
+        nonce:nextnonce,
     };
     const txResponse = await accounts[4].sendTransaction(tx);
     const receipt = await txResponse.wait();
     const transferTxhash=receipt.transactionHash
-    const {blockhash,blocknum} = await test_eth_getTransactionReceipt(rpcurl,st,txhash[0],transferTxhash);
+    const {blockhash,blocknum} = await test_eth_getTransactionReceipt(rpcUrl,st,txhash[0],transferTxhash);
 
-    await test_eth_getBlockReceipts(rpcurl,blockhash,blocknum);
-    await test_eth_getTransactionByHash(rpcurl,st,txhash[0],transferTxhash);
-    await test_eth_getBlockTransactionCountByHash(rpcurl,blockhash)
-    await test_eth_getBlockTransactionCountByNumber(rpcurl,blocknum);
+    await test_eth_getBlockReceipts(rpcUrl,blockhash,blocknum);
+    await test_eth_getTransactionByHash(rpcUrl,st,txhash[0],transferTxhash);
+    await test_eth_getBlockTransactionCountByHash(rpcUrl,blockhash)
+    await test_eth_getBlockTransactionCountByNumber(rpcUrl,blocknum);
 
     //get txhash from a block
-    let result=await sendRequest(rpcurl,'eth_getBlockByNumber',[blocknum,false],null);
+    let result=await sendRequest(rpcUrl,'eth_getBlockByNumber',[blocknum,false],null);
     const txhashInBlock=result['transactions'];
-    await test_eth_getTransactionByBlockHashAndIndex(rpcurl,blockhash,'0x1',txhashInBlock[1])
-    await test_eth_getTransactionByBlockNumberAndIndex(rpcurl,blocknum,'0x1',txhashInBlock[1])
-    await test_eth_estimateGas(rpcurl,st,accounts);
-    await test_eth_call(rpcurl,st,accounts);
-    await test_eth_getProof(rpcurl,st,accounts,blockhash);
-    await test_eth_getLogs(rpcurl,st);
+    await test_eth_getTransactionByBlockHashAndIndex(rpcUrl,blockhash,'0x1',txhashInBlock[1])
+    await test_eth_getTransactionByBlockNumberAndIndex(rpcUrl,blocknum,'0x1',txhashInBlock[1])
+    await test_eth_estimateGas(rpcUrl,st,accounts);
+    await test_eth_call(rpcUrl,st,accounts);
+    await test_eth_getProof(rpcUrl,st,accounts,blockhash);
+    await test_eth_getLogs(rpcUrl,st);
 
     console.log("");
     console.log("✅ All Test Successful");
@@ -311,15 +319,16 @@ async function test_eth_getStorageAt(url,addr,blockhash) {
 }
 
 //8 - eth_sendRawTransaction
-async function test_eth_sendRawTransaction(url,contract,pks,provider,accounts) {
+async function test_eth_sendRawTransaction(url,contract,pks,provider,accounts,nonceManage) {
     try{
         process.stdout.write("8. Start test eth_sendRawTransaction ... ");
 
         const txhash=[]
-        let pk, signer,fulltx,rawtx,params,result
+        let pk, signer,fulltx,rawtx,result,nextnonce
         for (i = 0; i < 2; i++) {
+            nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
             signer = new ethers.Wallet(pks[i], provider);
-            tx = await contract.connect(accounts[i]).populateTransaction.add(i);
+            tx = await contract.connect(accounts[i]).populateTransaction.add(i,{nonce:nextnonce});
             fulltx=await signer.populateTransaction(tx)
             rawtx=await signer.signTransaction(fulltx)
             
@@ -400,7 +409,6 @@ async function test_eth_getBlockReceipts(url,blockhash,blocknumber) {
 
         process.stdout.write("10.2. Get receipts by hash ...");
         result=await sendRequest(url,'eth_getBlockReceipts',[blockhash],null);
-        // expect(result.length).to.equal(3);
         expect(result.length == 2 || result.length == 3 ).to.be.true;
         processCompleted(true);
 

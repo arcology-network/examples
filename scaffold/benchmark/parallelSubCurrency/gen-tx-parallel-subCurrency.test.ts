@@ -1,22 +1,11 @@
 import hre from "hardhat";
 import { JsonRpcProvider, Wallet, ContractTransactionRequest } from "ethers";
-import frontendUtil from "@arcologynetwork/frontend-util/utils/util";
+import cliUtil from "@arcologynetwork/cli-util/utils/util";
 import ProgressBar from "progress";
 
-async function parseNetwork(hre){
-    const networkName = process.env.HARDHAT_NETWORK || "hardhat";
-    const netCfg = hre.config.networks[networkName];
-    if (!netCfg?.url) {
-        throw new Error(`Network URL not found for network: ${networkName}`);
-    }
-    const rpcUrl = await netCfg.url.getUrl();
-    // console.log(rpcUrl);
-    const pks = netCfg.accounts;
-    return {rpcUrl,pks}
-}
 
 async function main() {
-  const {rpcUrl,pks}=await parseNetwork(hre);
+  const {rpcUrl,pks}=await cliUtil.parseNetworkV3(hre);
   const { ethers } = await hre.network.connect();
   const accounts = await ethers.getSigners();
 
@@ -25,14 +14,17 @@ async function main() {
   const signerCreator = new Wallet(pk0, provider);
 
   const txbase = "benchmark/parallelSubCurrency/txs";
-  frontendUtil.ensurePath(txbase);
+  cliUtil.ensurePath(txbase);
 
+  const nonceManage=await cliUtil.InitNoncesV3(ethers,pks,provider)
 
   console.log("====== start deploying contract ======");
+  let nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
   const coinFactory = await ethers.getContractFactory("ParallelCoin");
-  const coin = await coinFactory.deploy();
+  const coin = await coinFactory.deploy({nonce:nextnonce});
   await coin.waitForDeployment();
-  console.log(`Deployed parallelSubCurrency Test at ${coin.address}`);
+  const coinAddress = await coin.getAddress();
+  console.log(`Deployed parallelSubCurrency Test at ${coinAddress}`);
 
   console.log("====== start generating TXs calling mint ======");
   const accountsLength = accounts.length;
@@ -44,16 +36,17 @@ async function main() {
   });
 
   const percent = accountsLength / 100;
-  frontendUtil.ensurePath(`${txbase}/mint`);
-  const handleMint = frontendUtil.newFile(`${txbase}/mint/mint.out`);
+  cliUtil.ensurePath(`${txbase}/mint`);
+  const handleMint = cliUtil.newFile(`${txbase}/mint/mint.out`);
 
   for (let i = 0; i < accountsLength; i++) {
+    nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
     const tx: ContractTransactionRequest = await coin.mint.populateTransaction(
       accounts[i].address,
-      100
+      100,{nonce:nextnonce}
     );
 
-    await frontendUtil.writePreSignedTxFile(handleMint, signerCreator, tx);
+    await cliUtil.writePreSignedTxFile(handleMint, signerCreator, tx);
 
     if (i > 0 && i % percent === 0) {
       bar.tick(1);
@@ -66,8 +59,8 @@ async function main() {
   }
 
   console.log("====== start generating TXs calling send ======");
-  frontendUtil.ensurePath(`${txbase}/send`);
-  const handleSend = frontendUtil.newFile(`${txbase}/send/send.out`);
+  cliUtil.ensurePath(`${txbase}/send`);
+  const handleSend = cliUtil.newFile(`${txbase}/send/send.out`);
 
   const sendCount = Math.floor(accountsLength / 2);
   const bar1 = new ProgressBar("Generating Tx data [:bar] :percent :etas", {
@@ -80,17 +73,18 @@ async function main() {
   const percent1 = sendCount / 100;
 
   for (let i = 0; i < sendCount; i++) {
-    const pk=await pks[i].getHexString();
-    const signer = new Wallet(pk, provider);
-
-    const tx: ContractTransactionRequest =
-      await coin.mint.populateTransaction(accounts[i + sendCount].address, 100);
-
-    await frontendUtil.writePreSignedTxFile(handleSend, signer, tx);
-
-    if (i > 0 && i % percent1 === 0) {
-      bar1.tick(1);
-    }
+      const pk=await pks[i].getHexString();
+      const signer = new ethers.Wallet(pk, provider);
+  
+      nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
+  
+      const tx: ContractTransactionRequest = await coin.send.populateTransaction(accounts[i + sendCount].address, 100,{nonce:nextnonce});
+  
+      await cliUtil.writePreSignedTxFile(handleSend, signer, tx);
+  
+      if (i > 0 && i % percent1 === 0) {
+        bar1.tick(1);
+      }
   }
 
   bar1.tick(1);

@@ -4,15 +4,14 @@
   "type": "module",
   "scripts": {
     "test:serial": "for f in test/*.ts; do npx hardhat run $f --network TestnetInfo 2>&1 | grep -v 'Nothing to compile'; echo $f 'test completed' || exit 1; done",
-    "benchmark:boolArray": "HARDHAT_NETWORK=TestnetInfo  npx hardhat run benchmark/boolArray/gen-tx-bookArray.ts",
-    "benchmark:like": "HARDHAT_NETWORK=TestnetInfo  npx hardhat run benchmark/like/gen-tx-like.ts",
-    "benchmark:parallelSubCurrency": "HARDHAT_NETWORK=TestnetInfo  npx hardhat run benchmark/parallelSubCurrency/gen-tx-parallelSubCurrency.ts",
-    "benchmark:subCurrency": "HARDHAT_NETWORK=TestnetInfo  npx hardhat run benchmark/subCurrency/gen-tx-subCurrency.ts"
+    "benchmark:boolArray": "HARDHAT_NETWORK=TestnetInfo  npx hardhat run benchmark/boolArray/gen-tx-parallel-bool-array.test.ts",
+    "benchmark:like": "HARDHAT_NETWORK=TestnetInfo  npx hardhat run benchmark/like/gen-tx-parallel-like.test.ts",
+    "benchmark:parallelSubCurrency": "HARDHAT_NETWORK=TestnetInfo  npx hardhat run benchmark/parallelSubCurrency/gen-tx-parallel-subCurrency.test.ts",
+    "benchmark:subCurrency": "HARDHAT_NETWORK=TestnetInfo  npx hardhat run benchmark/subCurrency/gen-tx-subCurrency.test.ts"
   },
   "devDependencies": {
-    "@arcologynetwork/concurrentlib": "^2.2.0",
-    "@arcologynetwork/frontend-tools": "^1.0.12",
-    "@arcologynetwork/frontend-util": "^1.0.11",
+    "@arcologynetwork/concurrent": "^2.2.4",
+    "@arcologynetwork/cli-util": "^1.1.3",
     "@nomicfoundation/hardhat-ethers": "^4.0.3",
     "@nomicfoundation/hardhat-ignition": "^3.0.3",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",

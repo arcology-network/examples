@@ -1,34 +1,23 @@
 import hre from "hardhat";
 import ProgressBar from "progress";
-import frontendUtil from "@arcologynetwork/frontend-util/utils/util";
-
-async function parseNetwork(hre){
-    const networkName = process.env.HARDHAT_NETWORK || "hardhat";
-    const netCfg = hre.config.networks[networkName];
-    if (!netCfg?.url) {
-        throw new Error(`Network URL not found for network: ${networkName}`);
-    }
-    const rpcUrl = await netCfg.url.getUrl();
-    // console.log(rpcUrl);
-    const pks = netCfg.accounts;
-    return {rpcUrl,pks}
-}
+import cliUtil from "@arcologynetwork/cli-util/utils/util";
 
 async function main() {
-  const {rpcUrl,pks}=await parseNetwork(hre);
+  const {rpcUrl,pks}=await cliUtil.parseNetworkV3(hre);
   const { ethers } = await hre.network.connect();
   const accounts = await ethers.getSigners();
 
   const provider = new ethers.JsonRpcProvider(rpcUrl);
 
   const txBase = "benchmark/like/txs";
-  frontendUtil.ensurePath(txBase);
+  cliUtil.ensurePath(txBase);
+
+  const nonceManage=await cliUtil.InitNoncesV3(ethers,pks,provider)
 
   console.log("====== start deploying contract ======");
-
-  // 部署 Like 合约
+  let nextnonce=cliUtil.getNonce(nonceManage,accounts[0].address)
   const likeFactory = await ethers.getContractFactory("Like");
-  const like = await likeFactory.deploy();
+  const like = await likeFactory.deploy({nonce:nextnonce});
   await like.waitForDeployment();
 
   const likeAddress = await like.getAddress();
@@ -37,9 +26,9 @@ async function main() {
   console.log("====== start generating TXs calling like ======");
 
   const accountsLength = accounts.length;
-  frontendUtil.ensurePath(`${txBase}/like`);
+  cliUtil.ensurePath(`${txBase}/like`);
 
-  const handleLike = frontendUtil.newFile(`${txBase}/like/like.out`);
+  const handleLike = cliUtil.newFile(`${txBase}/like/like.out`);
 
   const bar = new ProgressBar(
     "Generating Tx data [:bar] :percent :etas",
@@ -51,11 +40,11 @@ async function main() {
   for (let i = 0; i < accountsLength; i++) {
     const pk = await pks[i].getHexString();
     const signer = new ethers.Wallet(pk, provider);
-
+    nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
     const tx: ContractTransactionRequest =
-          await like.like.populateTransaction();
+          await like.like.populateTransaction({nonce:nextnonce});
 
-    await frontendUtil.writePreSignedTxFile(handleLike, signer, tx);
+    await cliUtil.writePreSignedTxFile(handleLike, signer, tx);
 
     if (i > 0 && i % percent === 0) {
       bar.tick(1);
