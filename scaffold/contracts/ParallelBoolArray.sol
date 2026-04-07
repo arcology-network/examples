@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.0 <0.9.0;
-import "@arcologynetwork/concurrentlib/lib/array/Bool.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/array/Bool.sol";
 
 contract BoolArray {
     // The concurrent Bool array is used to store boolean values in a thread-safe and 

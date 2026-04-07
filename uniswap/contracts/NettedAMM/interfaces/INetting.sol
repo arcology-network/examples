@@ -4,7 +4,7 @@ pragma abicoder v2;
 
 import "../SwapRequestStore.sol";
 import "../PoolLookup.sol";
-import "@arcologynetwork/concurrentlib/lib/map/HashU256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/map/HashU256Cum.sol";
 
 /**
  * @title INetting

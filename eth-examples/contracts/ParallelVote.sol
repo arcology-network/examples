@@ -11,7 +11,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0;
 
-import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/scalar/U256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/runtime/Runtime.sol";
 
 /// @title Voting with delegation.
 contract Ballot {
@@ -36,7 +37,7 @@ contract Ballot {
 
     event GiveRightToVote(address voter);
     event Winner(uint idx);
-    event DelegateStep(uint step);
+    event Step(uint step);
 
     // This declares a state variable that
     // stores a `Voter` struct for each possible address.
@@ -49,7 +50,8 @@ contract Ballot {
     // constructor() {
     constructor(bytes32[] memory proposalNames) {
         chairperson = msg.sender;
-        voters[chairperson].weight = new U256Cumulative(1, type(uint256).max);
+        
+        voters[chairperson].weight = new U256Cumulative{salt: keccak256(Runtime.uuid())}(1, type(uint256).max);
         voters[chairperson].weight.add(1);
 
         voters[chairperson].canDelegata = true;
@@ -62,7 +64,7 @@ contract Ballot {
             // appends it to the end of `proposals`.
             proposals.push(Proposal({
                 name: proposalNames[i],
-                voteCount: new U256Cumulative(0, type(uint256).max)
+                voteCount: new U256Cumulative{salt: keccak256(Runtime.uuid())}(0, type(uint256).max)
             }));
         }
     }
@@ -96,7 +98,7 @@ contract Ballot {
         // voters[voter].weight = 1;
 
         require(address(voters[voter].weight) == address(0));
-        voters[voter].weight = new U256Cumulative(0, type(uint256).max);
+        voters[voter].weight = new U256Cumulative{salt: keccak256(Runtime.uuid())}(0, type(uint256).max);
         voters[voter].weight.add(1);
         voters[voter].canDelegata = true;
     }
@@ -111,7 +113,7 @@ contract Ballot {
         require(!sender.voted, "You already voted.");
 
         require(to != msg.sender, "Self-delegation is disallowed.");
-
+ 
         // Forward the delegation as long as
         // `to` also delegated.
         // In general, such loops are very dangerous,

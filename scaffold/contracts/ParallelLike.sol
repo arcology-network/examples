@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.0;
 
-import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/scalar/U256Cum.sol";
 
 // This is a simple contract that allows users to like and retrieve the number of likes. 
 // It supports concurrent calls to the like function is OK.

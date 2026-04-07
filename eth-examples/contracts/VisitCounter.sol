@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0;
 
-import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol"; 
-import "@arcologynetwork/concurrentlib/lib/runtime/Runtime.sol"; 
+import "@arcologynetwork/concurrent/contracts/crdt/scalar/U256Cum.sol"; 
+import "@arcologynetwork/concurrent/contracts/runtime/Runtime.sol"; 
 
 // This counter supports commutative updates, allowing safe aggregation
 // of increments from multiple transactions in parallel.

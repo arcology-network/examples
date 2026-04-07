@@ -2,9 +2,9 @@
 pragma solidity >=0.7.0;
 pragma abicoder v2;
 
-import "@arcologynetwork/concurrentlib/lib/array/U256.sol";
-import "@arcologynetwork/concurrentlib/lib/runtime/Runtime.sol";
-import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/array/U256.sol";
+import "@arcologynetwork/concurrent/contracts/runtime/Runtime.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/scalar/U256Cum.sol";
 
 
 // This simple contract counts the number of visits to the contract. It uses the Bool contract provided by the concurrentlib
@@ -44,7 +44,8 @@ contract DuoDeferred {
         if(isDeffered){
             uint256 size=counter.fullLength();
             for(uint i=0;i<size;i++){
-                sum.add(counter.get(i));
+                (uint256 ut,)=counter.get(i);
+                sum.add(ut);
             }
         }
     }
@@ -58,7 +59,8 @@ contract DuoDeferred {
             uint256 size=counterAdd.fullLength();
 
             for(uint i=0;i<size;i++){
-                sum.add(counterAdd.get(i));
+                (uint256 ut,)=counterAdd.get(i);
+                sum.add(ut);
             }
             emit CounterQuery(sum.get());
             

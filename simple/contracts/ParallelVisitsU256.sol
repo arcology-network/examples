@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0;
 
-import "@arcologynetwork/concurrentlib/lib/array/U256.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/array/U256.sol";
 
 // This simple contract counts the number of visits to the contract. It uses the Bool contract provided by the concurrentlib
 // to support concurrent writes to the contract.

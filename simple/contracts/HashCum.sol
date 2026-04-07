@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
-import "@arcologynetwork/concurrentlib/lib/map/HashU256Cum.sol";
-import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/map/HashU256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/map/AddressU256Cum.sol";
 
 contract HashCum {
     HashU256Map private cummap=new HashU256Map();
@@ -20,6 +20,7 @@ contract HashCum {
 
     function getBalance(address adr)public {
         bytes32 key=abi.decode(abi.encodePacked(adr,fix), (bytes32));
-        emit QueryBalance(cummap.get(key)); 
+        (uint256 count,)=cummap.get(key);
+        emit QueryBalance(count); 
     }
 }

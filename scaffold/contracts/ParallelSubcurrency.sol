@@ -5,7 +5,7 @@
 
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.0;
-import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/map/AddressU256Cum.sol";
 
 contract ParallelCoin {
     // The keyword "public" makes variables
@@ -42,16 +42,18 @@ contract ParallelCoin {
     // Sends an amount of existing coins
     // from any caller to an address
     function send(address receiver, uint amount) public {
-        require(amount <= balances.get(msg.sender),"InsufficientBalance");
+        (uint256 bal,)=balances.get(msg.sender);
+        require(amount <= bal,"InsufficientBalance");
+
         // balances[msg.sender] -= amount;
         // balances[receiver] += amount;
         balances.set(msg.sender, -int256(amount));
-        balances.set(receiver, int256(amount), 0, type(uint256).max);
+        balances.set(receiver, int256(amount));
         emit Sent(msg.sender, receiver, amount);
     }
     
     function getter(address sender) public returns(uint256) {
-        uint256 bal=balances.get(sender);
+        (uint256 bal,)=balances.get(sender);
         emit Balance(bal);
         return bal;
     }

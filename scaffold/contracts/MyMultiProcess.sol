@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
-import "@arcologynetwork/concurrentlib/lib/multiprocess/Multiprocess.sol";
-import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/multiprocess/Multiprocess.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/scalar/U256Cum.sol";
 
 contract MyMultiProcess {
     U256Cumulative sum=new U256Cumulative(0,100);

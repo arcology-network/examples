@@ -23,7 +23,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0;
 
-import "@arcologynetwork/concurrentlib/lib/map/AddressUint256.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/map/AddressUint256.sol";
 
 contract SimpleAuction {
     // Parameters of the auction. Times are either
@@ -138,8 +138,8 @@ contract SimpleAuction {
             return false;
         }
 
-        uint amount = bidders.get(msg.sender);
-        if (amount > 0) {
+        (uint amount,bool successful) = bidders.get(msg.sender);
+        if (successful && amount > 0) {
             // It is important to set this to zero because the recipient
             // can call this function again as part of the receiving call
             // before `send` returns.

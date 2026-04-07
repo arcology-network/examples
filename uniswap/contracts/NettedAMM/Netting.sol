@@ -3,10 +3,10 @@ pragma solidity >=0.6.0;
 import "./libraries/PriceLibrary.sol";
 import "./libraries/PoolLibrary.sol";
 import "./SwapRequestStore.sol";
-import "@arcologynetwork/concurrentlib/lib/map/HashU256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/map/HashU256Cum.sol";
 import "../UniswapV3Periphery/libraries/TransferHelper.sol";
 import "./interfaces/ISwapRouter.sol";
-import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/map/AddressU256Cum.sol";
 import "./PoolLookup.sol";
 
 
@@ -136,8 +136,8 @@ contract Netting {
         )
     {
         // Get aggregated swap amounts for both directions
-        uint256 totalAToB = directionTotals.get(aToBKey); // total A→B volume
-        uint256 totalBToA = directionTotals.get(bToAKey); // total B→A volume
+        (uint256 totalAToB,) = directionTotals.get(aToBKey); // total A→B volume
+        (uint256 totalBToA,) = directionTotals.get(bToAKey); // total B→A volume
 
         // Default: no swap possible
         isNettable = false;

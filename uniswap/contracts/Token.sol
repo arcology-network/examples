@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
-import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
-import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
-import "@arcologynetwork/concurrentlib/lib/map/HashU256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/scalar/U256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/map/AddressU256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/map/HashU256Cum.sol";
 
 contract Token {
 
@@ -91,7 +91,7 @@ contract Token {
             emit BalanceQuery(0);
             return 0;
         }
-        balance=_balances.get(account);
+        (balance,)=_balances.get(account);
         emit BalanceQuery(balance);
         return balance;
     }
@@ -117,10 +117,11 @@ contract Token {
      */
     function allowance(address owner, address spender) external returns (uint256) {
         bytes32 key = _key(owner,spender);
-        if(!_allowances.exist(key)){
+        (uint256 all,bool exist)=_allowances.get(key);
+        if(!exist){
             return 0;
         }
-        return _allowances.get(key);
+        return all;
     }
 
     /**
@@ -151,10 +152,12 @@ contract Token {
     function transferFrom(address sender, address recipient, uint256 amount) external returns (bool) {
         _transfer(sender, recipient, amount);
         bytes32 key = _key(sender,msg.sender);
-        require(_allowances.exist(key), "this operation requires approve");
-        require(_allowances.get(key)>= amount, "transfer amount exceeds allowance");
+        (uint256 all,bool exist)=_allowances.get(key);
+        require(exist, "this operation requires approve");
+        require(all>= amount, "transfer amount exceeds allowance");
         _allowances.set(key,-int256(amount));
-        _approve(sender, msg.sender, _allowances.get(key));
+        ( all,)=_allowances.get(key);
+        _approve(sender, msg.sender, all);
         return true;
     }
 
@@ -176,8 +179,9 @@ contract Token {
         require(sender != address(0), "transfer from the zero address");
         require(recipient != address(0), "transfer to the zero address");
         _beforeTokenTransfer(sender, recipient, amount);
-        require(_balances.exist(sender), "transfer amount exceeds balance");
-        require(_balances.get(sender)>= amount, "transfer amount exceeds balance");
+        (uint256 amountFrom,bool exist)=_balances.get(sender);
+        require(exist, "transfer amount exceeds balance");
+        require(amountFrom>= amount, "transfer amount exceeds balance");
         _balances.set(sender,-int256(amount));
         _balances.set(recipient, int256(amount), 0, type(uint256).max);
 
@@ -216,8 +220,9 @@ contract Token {
 
         _beforeTokenTransfer(account, address(0), amount);
 
-        require(_balances.exist(account), "burn amount exceeds balance");
-        require(_balances.get(account)>= amount, "burn amount exceeds balance");
+        (uint256 all,bool exist)=_balances.get(account);
+        require(exist, "burn amount exceeds balance");
+        require(all>= amount, "burn amount exceeds balance");
         _balances.set(account,-int256(amount));
 
         _totalSupply.sub(amount);

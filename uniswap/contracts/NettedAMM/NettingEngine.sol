@@ -3,13 +3,13 @@ pragma solidity >=0.7.6;
 pragma abicoder v2;
 
 import '../UniswapV3Periphery/libraries/Path.sol';
-import "@arcologynetwork/concurrentlib/lib/runtime/Runtime.sol";
-import "@arcologynetwork/concurrentlib/lib/map/HashU256Cum.sol";
-import "@arcologynetwork/concurrentlib/lib/multiprocess/Multiprocess.sol";
+import "@arcologynetwork/concurrent/contracts/runtime/Runtime.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/map/HashU256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/multiprocess/Multiprocess.sol";
 import "./interfaces/INetting.sol";
 import "./libraries/PoolLibrary.sol";
 import "./SwapRequestStore.sol";
-import "@arcologynetwork/concurrentlib/lib/orderedset/OrderedSet.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/orderedset/OrderedSet.sol";
 
 /**
  * @title NettingEngine
@@ -63,8 +63,8 @@ contract NettingEngine {
     function init(address _factory, address _swapCore) external {
         factory = _factory;
         swapCore = _swapCore;
-        pools = new PoolLookup();
-        swapTotals = new HashU256Map();
+        pools = new PoolLookup{salt: keccak256(Runtime.uuid())}();
+        swapTotals = new HashU256Map{salt: keccak256(Runtime.uuid())}();
     }
 
     /**
@@ -81,7 +81,7 @@ contract NettingEngine {
      * @dev Internal: initializes request and total tracking for a token in a pool.
      */
     function _registerRequestStore(address pool, address token) internal {
-        swapRequestBuckets[PoolLibrary.GetKey(pool, token)] = new SwapRequestStore();
+        swapRequestBuckets[PoolLibrary.GetKey(pool, token)] = new SwapRequestStore{salt: keccak256(Runtime.uuid())}();
     }
 
     /// @notice Parameters for `exactInputSingleDefer`

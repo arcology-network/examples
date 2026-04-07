@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0;
 
-import "@arcologynetwork/concurrentlib/lib/map/AddressU256Cum.sol";
-import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/map/AddressU256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/scalar/U256Cum.sol";
 
 
 // This example is a parallelized version of the vending machine example from
@@ -49,12 +49,14 @@ contract VendingMachine {
     }
 
     function getCupcakeStock() public returns(uint256){
-        emit BalanceQuery(cupcakeBalances.get(address(this)));
-        return cupcakeBalances.get(address(this));
+        (uint256 amount,)=cupcakeBalances.get(address(this));
+        emit BalanceQuery(amount);
+        return amount;
     }
 
     function getCupcakeBalances(address addr) public returns(uint256){
-        emit BalanceQuery(cupcakeBalances.get(addr));
-        return cupcakeBalances.get(addr);
+        (uint amount,)=cupcakeBalances.get(addr);
+        emit BalanceQuery(amount);
+        return amount;
     }
 }

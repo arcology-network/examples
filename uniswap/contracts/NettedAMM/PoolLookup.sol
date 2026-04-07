@@ -2,8 +2,8 @@
 pragma solidity >=0.7.6;
 pragma abicoder v2;
 
-import "@arcologynetwork/concurrentlib/lib/core/Primitive.sol";
-import "@arcologynetwork/concurrentlib/lib/core/Const.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/core/Primitive.sol";
+import "@arcologynetwork/concurrent/contracts/runtime/Const.sol";
 
 /**
  * @title PoolLookup

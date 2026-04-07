@@ -26,13 +26,14 @@ pragma solidity >=0.4.23;
 
 import "../ds-auth/src/auth.sol";
 import "../ds-math/src/math.sol";
-import "@arcologynetwork/concurrentlib/lib/commutative/U256Cum.sol";
-import "@arcologynetwork/concurrentlib/lib/map/AddressUint256.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/scalar/U256Cum.sol";
+import "@arcologynetwork/concurrent/contracts/crdt/map/AddressUint256.sol";
+import "@arcologynetwork/concurrent/contracts/runtime/Runtime.sol";
 
 contract DSToken is DSMath, DSAuth {
     bool                                                     public  stopped;
     U256Cumulative                                           public  totalSupply;
-    AddressUint256Map                                        public  balanceOf = new AddressUint256Map();
+    AddressUint256Map                                        public  balanceOf = new AddressUint256Map{salt: keccak256(Runtime.uuid())}();
     mapping (address => mapping (address => U256Cumulative)) public  allowance;
 
     string                                                   public  symbol;
@@ -41,7 +42,7 @@ contract DSToken is DSMath, DSAuth {
 
     constructor(string memory symbol_) public {
         symbol = symbol_;
-        totalSupply = new U256Cumulative(0, type(uint256).max);
+        totalSupply = new U256Cumulative{salt: keccak256(Runtime.uuid())}(0, type(uint256).max);
     }
 
     event Approval(address indexed src, address indexed guy, uint wad);
@@ -66,7 +67,7 @@ contract DSToken is DSMath, DSAuth {
     function approve(address guy, uint256 wad) public stoppable returns (bool) {
         
         if (address(allowance[msg.sender][guy]) == address(0)) {
-            allowance[msg.sender][guy] = new U256Cumulative(0, type(uint256).max);
+            allowance[msg.sender][guy] = new U256Cumulative{salt: keccak256(Runtime.uuid())}(0, type(uint256).max);
         }
         allowance[msg.sender][guy].add(wad);
 
@@ -89,9 +90,13 @@ contract DSToken is DSMath, DSAuth {
             allowance[src][msg.sender].sub(wad);
         }
 
-        require(balanceOf.exist(src) && balanceOf.get(src) >= wad, "ds-token-insufficient-balance");
-        balanceOf.set(src,balanceOf.get(src) - wad);
-        balanceOf.set(dst,balanceOf.get(dst) + wad);
+        (uint256 balsrc,bool exist)=balanceOf.get(src);
+
+        require(exist &&  balsrc>= wad, "ds-token-insufficient-balance");
+        balanceOf.set(src,balsrc - wad);
+
+        (uint256 baldst,)=balanceOf.get(dst);
+        balanceOf.set(dst,baldst + wad);
         emit Transfer(src, dst, wad);
 
         return true;
@@ -110,7 +115,8 @@ contract DSToken is DSMath, DSAuth {
     }
 
     function balance(address src) external {
-        emit Balance(balanceOf.get(src));
+        (uint256 bal,)=balanceOf.get(src);
+        emit Balance(bal);
     }
 
     function mints(uint wad) external {
@@ -122,18 +128,18 @@ contract DSToken is DSMath, DSAuth {
     }
 
     function mint(address guy, uint wad) public auth stoppable {
-
-        if (!balanceOf.exist(guy)) {
+        (uint256 balguy,bool exist)=balanceOf.get(guy);
+        if (!exist) {
             balanceOf.set(guy,wad);
         } else {            
-            balanceOf.set(guy, balanceOf.get(guy) + wad);
+            balanceOf.set(guy, balguy + wad);
         }
 
 
         totalSupply.add(wad);
         emit Mint(guy, wad);
-
-        emit Balance(balanceOf.get(guy));
+        (balguy,)=balanceOf.get(guy);
+        emit Balance(balguy);
     }
 
     function burn(address guy, uint256 wad) public auth stoppable {
@@ -142,9 +148,10 @@ contract DSToken is DSMath, DSAuth {
             allowance[guy][msg.sender].sub(wad);
         }
 
+        (uint256 balguy,bool exist)=balanceOf.get(guy);
 
-        require(balanceOf.exist(guy) && balanceOf.get(guy) >= wad, "ds-token-insufficient-balance");
-        balanceOf.set(guy, balanceOf.get(guy) - wad);
+        require(exist && balguy >= wad, "ds-token-insufficient-balance");
+        balanceOf.set(guy, balguy - wad);
 
         totalSupply.sub(wad);
         emit Burn(guy, wad);

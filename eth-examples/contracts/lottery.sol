@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
 
-import "@arcologynetwork/concurrentlib/lib/array/Address.sol"; 
-import "@arcologynetwork/concurrentlib/lib/runtime/Runtime.sol"; 
+import "@arcologynetwork/concurrent/contracts/crdt/array/Address.sol"; 
+import "@arcologynetwork/concurrent/contracts/runtime/Runtime.sol"; 
 
 // SUPER SIMPLE educational lottery — not secure for real funds.
 // join(): send ≥0.005 ETH to join the round.
@@ -58,7 +58,7 @@ contract EduLottery {
         // if (_players.fullLength() == 0) revert NoPlayers();
         require(_players.fullLength() > 0,"NoPlayers");
         uint256 idx = _randomSeed() % _players.fullLength();
-        winner = _players.get(idx);
+        (winner,) = _players.get(idx);
 
         _players.clear(); // Clear players for the next round
         prize = address(this).balance;
