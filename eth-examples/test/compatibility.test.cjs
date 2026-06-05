@@ -24,12 +24,23 @@ async function main() {
     const st_factory = await ethers.getContractFactory("StorageTest");
     const st = await st_factory.deploy({nonce:nextnonce});
     await st.deployed();
-    // console.log(`Deployed StorageTest Test at ${st.address}`)
-    // console.log("Contract deployed with tx:", st.deployTransaction.hash);  //hardhat v2 / 
 
-    await test_eth_getCode(rpcUrl,st.address,nilblockhash)
-    await test_eth_getTransactionCount(rpcUrl,accounts[0].address,nilblockhash);
-    await test_eth_getStorageAt(rpcUrl,st.address,nilblockhash);
+    //console.log(`Deployed StorageTest Test at ${st.address}`)
+    //console.log("Contract deployed with tx:", st.deployTransaction.hash);  //hardhat v2 / 
+
+    process.stdout.write(" Get receipt of legacy contract call transaction ...");
+    let result=await sendRequest(rpcUrl,'eth_getTransactionReceipt',[st.deployTransaction.hash],null); 
+    fieldCount = Object.keys(result).length;
+    expect(fieldCount).to.equal(14);
+
+    if(result['status']!='0x1'){
+        throw new Error(`eth_getTransactionReceipt error, result: ${result}`);
+    }
+    const txblockhash=result['blockHash'];
+
+    await test_eth_getCode(rpcUrl,st.address,txblockhash)
+    await test_eth_getTransactionCount(rpcUrl,accounts[0].address,txblockhash);
+    await test_eth_getStorageAt(rpcUrl,st.address,txblockhash);
 
     // const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     
@@ -54,7 +65,7 @@ async function main() {
     await test_eth_getBlockTransactionCountByNumber(rpcUrl,blocknum);
 
     //get txhash from a block
-    let result=await sendRequest(rpcUrl,'eth_getBlockByNumber',[blocknum,false],null);
+    result=await sendRequest(rpcUrl,'eth_getBlockByNumber',[blocknum,false],null);
     const txhashInBlock=result['transactions'];
     await test_eth_getTransactionByBlockHashAndIndex(rpcUrl,blockhash,'0x1',txhashInBlock[1])
     await test_eth_getTransactionByBlockNumberAndIndex(rpcUrl,blocknum,'0x1',txhashInBlock[1])
