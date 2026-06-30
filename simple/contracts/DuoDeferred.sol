@@ -25,7 +25,7 @@ contract DuoDeferred {
     // Defer the pvisit function and the add function to be executed in the deferred phase.
     constructor()  {
         Runtime.defer("pvisit((uint256,uint256))",gasused); 
-        Runtime.defer("add(uint256)",gasused);                                                                                    
+        Runtime.defer("duoAdd(uint256)",gasused);                                                                                    
     }
     event Step(uint256 step);
     event StepBool(bool val);
@@ -50,7 +50,7 @@ contract DuoDeferred {
         }
     }
     
-    function add(uint256 val)public { 
+    function duoAdd(uint256 val)public { 
         if(!Runtime.isInDeferred()){
             counterAdd.clear();
         }

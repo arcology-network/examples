@@ -33,7 +33,7 @@ async function main() {
 
       nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
       txs.push(cliUtil.generateTx(function([bt,from,val,nextnonce]){
-        return bt.connect(from).add(val,{nonce:nextnonce});
+        return bt.connect(from).duoAdd(val,{nonce:nextnonce});
       },bt,accounts[i],1,nextnonce));
     }
     await cliUtil.waitingTxs(txs);
@@ -54,7 +54,7 @@ async function main() {
 
       nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
       txs.push(cliUtil.generateTx(function([bt,from,val,nextnonce]){
-        return bt.connect(from).add(val,{nonce:nextnonce});
+        return bt.connect(from).duoAdd(val,{nonce:nextnonce});
       },bt,accounts[i],1,nextnonce));
     }
     await cliUtil.waitingTxs(txs);
@@ -75,7 +75,7 @@ async function main() {
 
       nextnonce=cliUtil.getNonce(nonceManage,accounts[i].address)
       txs.push(cliUtil.generateTx(function([bt,from,val,nextnonce]){
-        return bt.connect(from).add(val,{nonce:nextnonce});
+        return bt.connect(from).duoAdd(val,{nonce:nextnonce});
       },bt,accounts[i],1,nextnonce));
     }
     await cliUtil.waitingTxs(txs);
